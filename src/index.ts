@@ -3,6 +3,7 @@ import './style.css';
 // import Icon from './icon.png';
 import { figure4, figure5, SENSORS, MODULES } from './examples';
 import { Graph } from './graph';
+import { EdgeHTML } from './edge_html';
 
 function component() {
   const element = document.createElement('div');
@@ -31,6 +32,7 @@ document.getElementById("figure5").onclick = function() {
 };
 
 let g = new Graph();
+EdgeHTML.renderInitialForm(g)
 document.getElementById("button-A").onclick = function() {
   g.add_sensor(SENSORS["camera"])
 };

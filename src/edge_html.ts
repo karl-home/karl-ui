@@ -1,3 +1,5 @@
+import { Graph } from './graph';
+
 export module EdgeHTML {
   export type NodeType = 'module' | 'sensor';
 
@@ -5,13 +7,37 @@ export module EdgeHTML {
   let targetName: HTMLSpanElement;
   let edgeTypeName: HTMLSpanElement;
   let statelessP: HTMLParagraphElement;
+  let statelessCheckbox: HTMLInputElement;
 
-  function _addEdge(e: MouseEvent) {
+  function _addEdge(e: MouseEvent, g: Graph) {
     e.preventDefault()
-    console.log('add edge')
+    let edgeType = edgeTypeName.innerText
+    if (edgeType == 'data') {
+      let stateless: boolean = statelessCheckbox.checked;
+      g.add_data_edge({
+        stateless: stateless,
+        out_id: sourceElem.getAttribute('node-id'),
+        out_ret: sourceElem.getAttribute('name'),
+        module_id: targetElem.getAttribute('node-id'),
+        module_param: targetElem.getAttribute('name'),
+      })
+    } else {
+      console.error(`unhandled edge type: ${edgeType}`)
+    }
+
+    // clear the form
+    sourceName.innerText = '-'
+    targetName.innerText = '-'
+    edgeTypeName.innerText = '-'
+    statelessP.style.visibility = 'hidden'
+    statelessCheckbox.checked = true
+    sourceElem.style.backgroundColor = ''
+    targetElem.style.backgroundColor = ''
+    sourceElem = undefined;
+    targetElem = undefined;
   }
 
-  function _renderInitialForm() {
+  export function renderInitialForm(g: Graph) {
     let source = document.createElement('p')
     sourceName = document.createElement('span')
     sourceName.innerText = '-'
@@ -27,16 +53,18 @@ export module EdgeHTML {
     edgeTypeName.innerText = '-'
     edgeType.appendChild(document.createTextNode('Type: '))
     edgeType.appendChild(edgeTypeName);
-    let checkbox = document.createElement('input')
-    checkbox.setAttribute('type', 'checkbox')
-    checkbox.checked = true
+    statelessCheckbox = document.createElement('input')
+    statelessCheckbox.setAttribute('type', 'checkbox')
+    statelessCheckbox.checked = true
     statelessP = document.createElement('p')
     statelessP.appendChild(document.createTextNode('Stateless? '))
-    statelessP.appendChild(checkbox)
+    statelessP.appendChild(statelessCheckbox)
     statelessP.style.visibility = 'hidden'
     let button = document.createElement('button')
     button.appendChild(document.createTextNode('Add Edge'))
-    button.onclick = _addEdge
+    button.onclick = function(e) {
+      _addEdge(e, g)
+    }
 
     // Add all elements to form UI
     let form = document.getElementById('edge-form')
@@ -46,8 +74,6 @@ export module EdgeHTML {
     form.appendChild(statelessP)
     form.appendChild(button)
   }
-
-  _renderInitialForm()
 
   let sourceElem: HTMLButtonElement = undefined;
   let targetElem: HTMLButtonElement = undefined;

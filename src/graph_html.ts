@@ -117,7 +117,9 @@ export module GraphHTML {
     inputs.forEach(function(val) {
       let button = document.createElement('button');
       button.className = 'hover-button'
+      button.setAttribute('node-id', id)
       button.setAttribute('node-type', ty)
+      button.setAttribute('name', val)
       button.onclick = function(e) {
         EdgeHTML.clickTarget(button, `${id} (${val})`)
       };
@@ -132,7 +134,9 @@ export module GraphHTML {
     outputs.forEach(function(val) {
       let button = document.createElement('button');
       button.className = 'hover-button'
+      button.setAttribute('node-id', id)
       button.setAttribute('node-type', ty)
+      button.setAttribute('name', val)
       button.onclick = function(e) {
         EdgeHTML.clickSource(button, `${id} (${val})`)
       };
