@@ -9,7 +9,7 @@
   border: 1px solid #d3d3d3;
   background-color: #f1f1f1;
   left: 100px;
-  cursor: move;
+  cursor: pointer;
   min-width: 150px;
 }
 
@@ -92,5 +92,13 @@ form {
 }
 
 line {
-  cursor: move;
+  cursor: pointer;
+}
+
+.network-input {
+  width: 100%;
+}
+
+.interval-input {
+  width: 50%;
 }

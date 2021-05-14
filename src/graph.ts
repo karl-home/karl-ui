@@ -54,6 +54,7 @@ export interface ModuleInner {
   data_edges: DataEdge[];
   state_edges: StateEdge[];
   network_edges: NetworkEdge[];
+  interval?: number,
   html: HTMLElement;
   outgoing_edges: SVGLineElement[];
   incoming_edges: SVGLineElement[];

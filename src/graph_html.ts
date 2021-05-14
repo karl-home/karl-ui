@@ -1,5 +1,6 @@
 import { SensorInner, ModuleInner } from './graph';
 import { EdgeHTML } from './edge_html';
+import { ModuleHTML } from './module_html';
 
 type NodeType = 'module' | 'sensor';
 
@@ -51,13 +52,15 @@ _initArrows();
 
 export module GraphHTML {
   function _dragElement(
-    elem: HTMLElement,
+    elem: HTMLDivElement,
     outgoingEdges: SVGLineElement[],
     incomingEdges: SVGLineElement[],
+    moduleInner?: ModuleInner,
   ) {
     // pos3 pos4 are the mouse's current position
     // pos1 pos2 are the deltas
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    var dragged = false;
     document.getElementById(elem.id).onmousedown = dragMouseDown;
 
     function dragMouseDown(e: MouseEvent) {
@@ -70,6 +73,7 @@ export module GraphHTML {
 
     function elementDrag(e: MouseEvent) {
       e.preventDefault();
+      dragged = true;
       pos1 = pos3 - e.clientX;
       pos2 = pos4 - e.clientY;
       pos3 = e.clientX;
@@ -93,6 +97,10 @@ export module GraphHTML {
     }
 
     function closeDragElement(e: MouseEvent) {
+      if (!dragged && moduleInner !== undefined) {
+        ModuleHTML.renderViewForm(elem, moduleInner)
+      }
+      dragged = false;
       document.onmouseup = null;
       document.onmousemove = null;
     }
@@ -154,12 +162,11 @@ export module GraphHTML {
     node.appendChild(footer);
     // modify the DOM
     graph.appendChild(node);
-    _dragElement(node, outgoingEdges, incomingEdges);
     return node;
   }
 
   export function renderModule(id: string, inner: ModuleInner): HTMLDivElement {
-    return _renderNode(
+    let node = _renderNode(
       id,
       'module',
       inner.value.params,
@@ -169,10 +176,12 @@ export module GraphHTML {
       inner.outgoing_buttons,
       inner.incoming_buttons,
     )
+    _dragElement(node, inner.outgoing_edges, inner.incoming_edges, inner);
+    return node
   }
 
   export function renderSensor(id: string, inner: SensorInner): HTMLDivElement {
-    return _renderNode(
+    let node = _renderNode(
       id,
       'sensor',
       inner.value.state_keys,
@@ -182,6 +191,8 @@ export module GraphHTML {
       inner.outgoing_buttons,
       inner.incoming_buttons,
     )
+    _dragElement(node, inner.outgoing_edges, inner.incoming_edges);
+    return node
   }
 
   export function renderDataEdge(
