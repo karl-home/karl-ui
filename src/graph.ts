@@ -158,7 +158,7 @@ export class Graph {
         } else if (mod.data_edges.includes(edge)) {
           console.error("data edge already exists")
         } else {
-          GraphHTML.renderDataEdge(mod.value.html, target);
+          GraphHTML.renderDataEdge(mod.value.html, target, edge.stateless);
           mod.data_edges.push(edge)
           return true
         }
@@ -168,7 +168,7 @@ export class Graph {
         } else if (sensor.edges.includes(edge)) {
           console.error("data edge already exists")
         } else {
-          GraphHTML.renderDataEdge(sensor.value.html, target);
+          GraphHTML.renderDataEdge(sensor.value.html, target, edge.stateless);
           sensor.edges.push(edge)
           return true
         }
