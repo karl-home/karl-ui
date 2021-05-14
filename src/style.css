@@ -12,14 +12,6 @@
   z-index: 100;
 }
 
-.sensor {
-  top: 100px;
-}
-
-.module {
-  top: 250px;
-}
-
 .node-header {
   padding: 10px;
   cursor: move;
@@ -38,7 +30,7 @@
   position: absolute;
   top: 0px;
   left: 0px;
-  z-index: 0;
+  z-index: -1;
   width: 800px;
   height: 1000px;
 }

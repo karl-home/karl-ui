@@ -1,6 +1,6 @@
 import { Sensor, Module, Graph } from './graph';
 
-const SENSORS: { [key: string]: Sensor } = {
+export const SENSORS: { [key: string]: Sensor } = {
   mic: { id: "mic", state_keys: ["response"], returns: ["sound"] },
   bulb: { id: "bulb", state_keys: ["on"], returns: [] },
   camera: {
@@ -10,7 +10,7 @@ const SENSORS: { [key: string]: Sensor } = {
   }
 };
 
-const MODULES: { [key: string]: Module } = {
+export const MODULES: { [key: string]: Module } = {
   command_classifier: {
     id: "command_classifier",
     params: ["sound"],

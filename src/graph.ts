@@ -1,3 +1,5 @@
+import { GraphHTML } from './graph_html';
+
 export const NETWORK_NODE_ID: string = "NET";
 
 export type ModuleID = string;
@@ -8,6 +10,7 @@ export interface Sensor {
   id: SensorID;
   state_keys: string[];
   returns: string[];
+  html?: HTMLElement;
 }
 
 export interface Module {
@@ -15,6 +18,7 @@ export interface Module {
   params: string[];
   returns: string[];
   network: boolean;
+  html?: HTMLElement;
 }
 
 export interface StateEdge {
@@ -22,11 +26,13 @@ export interface StateEdge {
   module_ret: string;
   sensor_id: SensorID;
   sensor_key: string;
+  html?: HTMLElement;
 }
 
 export interface NetworkEdge {
   module_id: ModuleID;
   domain: string;
+  html?: HTMLElement;
 }
 
 export interface DataEdge {
@@ -35,6 +41,7 @@ export interface DataEdge {
   out_ret: string;
   module_id: ModuleID;
   module_param: string;
+  html?: HTMLElement;
 }
 
 export class Graph {
@@ -68,6 +75,7 @@ export class Graph {
     if (this._exists(sensor.id)) {
       return false
     } else {
+      sensor.html = GraphHTML.renderSensor(sensor.id);
       this.sensors[sensor.id] = {
         value: sensor,
         edges: [],
@@ -80,6 +88,7 @@ export class Graph {
     if (this._exists(mod.id)) {
       return false
     } else {
+      mod.html = GraphHTML.renderModule(mod.id);
       this.modules[mod.id] = {
         value: mod,
         data_edges: [],
