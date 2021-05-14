@@ -51,7 +51,9 @@ export module ModuleHTML {
       e.preventDefault()
       g.remove_network_edges(inner.value.id)
       networkInput.value.split('\n').forEach(function(domain) {
-        g.add_network_edge({ module_id: inner.value.id, domain: domain })
+        if (domain) {
+          g.add_network_edge({ module_id: inner.value.id, domain: domain })
+        }
       })
       g.set_interval(inner.value.id, parseInt(intervalInput.value))
       _renderViewForm(node, inner)
@@ -62,7 +64,7 @@ export module ModuleHTML {
 
   function _renderViewForm(node: HTMLDivElement, inner: ModuleInner) {
     activeModule = { node: node, inner: inner }
-    activeModule.node.style.border = '3px solid #ffd700'
+    activeModule.node.style.outline = '3px solid #ffd700'
     moduleIDSpan.innerText = inner.value.id
     networkSpan.innerText = inner.network_edges.map(edge => edge.domain).join('\n')
     if (inner.hasOwnProperty('interval')) {
@@ -87,7 +89,7 @@ export module ModuleHTML {
 
   export function clickModule(node: HTMLDivElement, inner: ModuleInner) {
     if (activeModule !== undefined) {
-      activeModule.node.style.border = ''
+      activeModule.node.style.outline = ''
       if (activeModule.inner.value.id == inner.value.id) {
         activeModule = undefined
         _renderDefaultForm()

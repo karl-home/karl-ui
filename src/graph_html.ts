@@ -1,4 +1,4 @@
-import { SensorInner, ModuleInner } from './graph';
+import { ModuleID, SensorInner, ModuleInner } from './graph';
 import { EdgeHTML } from './edge_html';
 import { ModuleHTML } from './module_html';
 
@@ -112,8 +112,6 @@ export module GraphHTML {
     ty: NodeType,
     inputs: string[],
     outputs: string[],
-    outgoingEdges: SVGLineElement[],
-    incomingEdges: SVGLineElement[],
     outgoingButtons: HTMLButtonElement[],
     incomingButtons: HTMLButtonElement[],
   ): HTMLDivElement {
@@ -122,7 +120,8 @@ export module GraphHTML {
     node.className = "node " + ty;
     node.style.top = topNext.toString() + 'px';
     topNext += topDelta;
-    let header = document.createElement('span');
+    let header = document.createElement('div');
+    header.className = 'node-header'
     inputs.forEach(function(val) {
       let button = document.createElement('button');
       button.className = 'hover-button'
@@ -166,14 +165,36 @@ export module GraphHTML {
     return node;
   }
 
+  export function renderModuleProperties(inner: ModuleInner) {
+    // set the background-color of the header based on the network edges
+    let header: HTMLElement =
+      inner.html.getElementsByClassName('node-header')[0] as HTMLElement
+    console.log(inner.network_edges)
+    if (inner.network_edges.length > 0) {
+      header.style.backgroundColor = '#32CD32'
+    } else {
+      header.style.backgroundColor = ''
+    }
+
+    // add a clock icon if the module is on an interval schedule
+    let images = inner.html.getElementsByTagName('IMG')
+    if (images.length > 0) {
+      images[0].remove()
+    }
+    if (inner.hasOwnProperty('interval')) {
+      const img = new Image()
+      img.src = require('./clock.png')
+      img.className = 'icon'
+      inner.html.appendChild(img)
+    }
+  }
+
   export function renderModule(id: string, inner: ModuleInner): HTMLDivElement {
     let node = _renderNode(
       id,
       'module',
       inner.value.params,
       inner.value.returns,
-      inner.outgoing_edges,
-      inner.incoming_edges,
       inner.outgoing_buttons,
       inner.incoming_buttons,
     )
@@ -187,8 +208,6 @@ export module GraphHTML {
       'sensor',
       inner.value.state_keys,
       inner.value.returns,
-      inner.outgoing_edges,
-      inner.incoming_edges,
       inner.outgoing_buttons,
       inner.incoming_buttons,
     )

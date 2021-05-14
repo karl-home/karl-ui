@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import './style.css';
-// import Icon from './icon.png';
 import { figure4, figure5, SENSORS, MODULES } from './examples';
 import { Graph } from './graph';
 import { EdgeHTML } from './edge_html';
@@ -12,12 +11,6 @@ function component() {
   // Lodash, now imported by this script
   element.innerHTML = _.join(['Hello', 'webpack'], ' ');
   element.classList.add('hello');
-
-  // Add the image to our existing div.existing
-  // const myIcon = new Image();
-  // myIcon.src = Icon;
-
-  // element.appendChild(myIcon);
 
   return element;
 }

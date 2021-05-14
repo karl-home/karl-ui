@@ -120,6 +120,7 @@ export class Graph {
         incoming_buttons: [],
       }
       inner.html = GraphHTML.renderModule(mod.id, inner);
+      GraphHTML.renderModuleProperties(inner)
       this.modules[mod.id] = inner;
       return true
     }
@@ -160,7 +161,9 @@ export class Graph {
       console.error("network edge already exists")
     } else {
       // TODO
-      this.modules[edge.module_id].network_edges.push(edge)
+      let mod = this.modules[edge.module_id];
+      mod.network_edges.push(edge)
+      GraphHTML.renderModuleProperties(mod)
       return true
     }
     console.error(JSON.stringify(edge))
@@ -169,7 +172,9 @@ export class Graph {
 
   remove_network_edges(module_id: ModuleID): boolean {
     if (this.modules.hasOwnProperty(module_id)) {
-      this.modules[module_id].network_edges = []
+      let mod = this.modules[module_id]
+      mod.network_edges = []
+      GraphHTML.renderModuleProperties(mod)
       return true
     } else {
       console.error(`output module does not exist: ${module_id}`)
@@ -282,14 +287,16 @@ export class Graph {
 
   set_interval(module_id: ModuleID, interval: number): boolean {
     if (this.modules.hasOwnProperty(module_id)) {
+      let mod = this.modules[module_id];
       if (isNaN(interval)) {
-        delete this.modules[module_id].interval
+        delete mod.interval
       } else if (interval > 0) {
-        this.modules[module_id].interval = interval
+        mod.interval = interval
       } else {
         console.error(`positive interval required: ${interval}`)
         return false
       }
+      GraphHTML.renderModuleProperties(mod)
       return true
     } else {
       console.error(`output module does not exist: ${module_id}`)
