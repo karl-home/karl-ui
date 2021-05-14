@@ -36,13 +36,7 @@ export module EdgeHTML {
     _renderAddButtons()
   }
 
-  function _renderModifyButtons() {
-    function modifyEdge(e: MouseEvent, g: Graph) {
-      e.preventDefault()
-      console.log('modifying')
-      _resetForm()
-    }
-
+  function _renderDeleteButtons() {
     function deleteEdge(e: MouseEvent, g: Graph) {
       e.preventDefault()
       let stateless: boolean = statelessCheckbox.checked;
@@ -60,21 +54,16 @@ export module EdgeHTML {
       buttonContainer.remove()
     }
     buttonContainer = document.createElement('div')
-    buttonContainer.setAttribute('form-type', 'modify')
+    buttonContainer.setAttribute('form-type', 'delete')
     let form = document.getElementById('edge-form')
-    let modifyButton = document.createElement('button')
-    modifyButton.appendChild(document.createTextNode('Modify Edge'))
-    modifyButton.onclick = function(e) {
-      modifyEdge(e, g)
-    }
-    let deleteButton = document.createElement('button')
-    deleteButton.appendChild(document.createTextNode('Delete'))
-    deleteButton.onclick = function(e) {
+    let button = document.createElement('button')
+    button.appendChild(document.createTextNode('Delete Edge'))
+    button.onclick = function(e) {
       deleteEdge(e, g)
     }
-    buttonContainer.appendChild(modifyButton)
-    buttonContainer.appendChild(deleteButton)
+    buttonContainer.appendChild(button)
     form.appendChild(buttonContainer)
+    statelessCheckbox.disabled = true;
   }
 
   function _renderAddButtons() {
@@ -113,6 +102,7 @@ export module EdgeHTML {
     }
     buttonContainer.appendChild(button)
     form.appendChild(buttonContainer)
+    statelessCheckbox.disabled = false;
   }
 
   export function renderInitialForm(graph: Graph) {
@@ -186,7 +176,7 @@ export module EdgeHTML {
     if (edgeType == 'data') {
       statelessCheckbox.checked = stateless;
     }
-    _renderModifyButtons()
+    _renderDeleteButtons()
   }
 
   function _setSourceElem(elem: HTMLButtonElement) {
@@ -228,7 +218,7 @@ export module EdgeHTML {
   }
 
   export function clickSource(elem: HTMLButtonElement) {
-    if (buttonContainer.getAttribute('form-type') == 'modify') {
+    if (buttonContainer.getAttribute('form-type') == 'delete') {
       _resetForm()
       _renderAddButtons()
     }
@@ -236,7 +226,7 @@ export module EdgeHTML {
   }
 
   export function clickTarget(elem: HTMLButtonElement) {
-    if (buttonContainer.getAttribute('form-type') == 'modify') {
+    if (buttonContainer.getAttribute('form-type') == 'delete') {
       _resetForm()
       _renderAddButtons()
     }
