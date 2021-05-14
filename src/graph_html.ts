@@ -1,4 +1,5 @@
 import { SensorInner, ModuleInner } from './graph';
+import { EdgeHTML } from './edge_html';
 
 type NodeType = 'module' | 'sensor';
 
@@ -116,6 +117,10 @@ export module GraphHTML {
     inputs.forEach(function(val) {
       let button = document.createElement('button');
       button.className = 'hover-button'
+      button.setAttribute('node-type', ty)
+      button.onclick = function(e) {
+        EdgeHTML.clickTarget(button, `${id} (${val})`)
+      };
       let tooltip = document.createElement('span');
       tooltip.className = 'tooltip tooltip-top'
       tooltip.appendChild(document.createTextNode(val))
@@ -127,6 +132,10 @@ export module GraphHTML {
     outputs.forEach(function(val) {
       let button = document.createElement('button');
       button.className = 'hover-button'
+      button.setAttribute('node-type', ty)
+      button.onclick = function(e) {
+        EdgeHTML.clickSource(button, `${id} (${val})`)
+      };
       let tooltip = document.createElement('span');
       tooltip.className = 'tooltip tooltip-bottom'
       tooltip.appendChild(document.createTextNode(val))
