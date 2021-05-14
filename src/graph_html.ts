@@ -3,6 +3,7 @@ type NodeType = 'module' | 'sensor';
 let topNext = 100;
 const topDelta = 150;
 const graph = document.getElementById('graph');
+const canvas = document.getElementById("canvas");
 
 export module GraphHTML {
   function _dragElement(elem: HTMLElement) {
@@ -61,7 +62,23 @@ export module GraphHTML {
     return _renderNode(id, 'sensor')
   }
 
-  export function renderEdge() {
+  export function renderDataEdge(source: HTMLElement, target: HTMLElement) {
+    let x1 = source.offsetLeft + source.offsetWidth / 2;
+    let y1 = source.offsetTop + source.offsetHeight / 2;
+    let x2 = target.offsetLeft + target.offsetWidth / 2;
+    let y2 = target.offsetTop + target.offsetHeight / 2;
+    // https://dev.to/gavinsykes/appending-a-child-to-an-svg-using-pure-javascript-1h9g
+    let line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1.toString());
+    line.setAttribute('y1', y1.toString());
+    line.setAttribute('x2', x2.toString());
+    line.setAttribute('y2', y2.toString());
+    line.setAttribute('stroke', 'black');
+    line.setAttribute('stroke-width', '2px');
+    canvas.append(line);
+  }
+
+  export function renderStateEdge(source: HTMLElement, target: HTMLElement) {
 
   }
 }

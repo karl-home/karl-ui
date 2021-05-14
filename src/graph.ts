@@ -115,6 +115,9 @@ export class Graph {
     } else if (this.modules[edge.module_id].state_edges.includes(edge)) {
       console.error("state edge already exists")
     } else {
+      let source = this.modules[edge.module_id].value.html;
+      let target = this.sensors[edge.sensor_id].value.html;
+      GraphHTML.renderStateEdge(source, target);
       this.modules[edge.module_id].state_edges.push(edge)
       return true
     }
@@ -130,6 +133,7 @@ export class Graph {
     } else if (this.modules[edge.module_id].network_edges.includes(edge)) {
       console.error("network edge already exists")
     } else {
+      // TODO
       this.modules[edge.module_id].network_edges.push(edge)
       return true
     }
@@ -147,12 +151,14 @@ export class Graph {
     } else {
       let mod = this.modules[edge.out_id];
       let sensor = this.sensors[edge.out_id];
+      let target = this.modules[edge.module_id].value.html;
       if (mod !== undefined) {
         if (!mod.value.returns.includes(edge.out_ret)) {
           console.error("output return value does not exist")
         } else if (mod.data_edges.includes(edge)) {
           console.error("data edge already exists")
         } else {
+          GraphHTML.renderDataEdge(mod.value.html, target);
           mod.data_edges.push(edge)
           return true
         }
@@ -162,6 +168,7 @@ export class Graph {
         } else if (sensor.edges.includes(edge)) {
           console.error("data edge already exists")
         } else {
+          GraphHTML.renderDataEdge(sensor.value.html, target);
           sensor.edges.push(edge)
           return true
         }
