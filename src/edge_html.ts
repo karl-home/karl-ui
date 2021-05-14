@@ -172,14 +172,17 @@ export module EdgeHTML {
     edgeType: EdgeType,
     stateless?: boolean,
   ): void {
-    console.log('clickEdge')
-    _resetForm()
-    _setSourceElem(sourceButton)
-    _setTargetElem(targetButton)
-    if (edgeType == 'data') {
-      statelessCheckbox.checked = stateless;
+    if (sourceElem == sourceButton && targetElem == targetButton) {
+      _resetForm()
+    } else {
+      _resetForm()
+      _setSourceElem(sourceButton)
+      _setTargetElem(targetButton)
+      if (edgeType == 'data') {
+        statelessCheckbox.checked = stateless;
+      }
+      _renderDeleteButtons()
     }
-    _renderDeleteButtons()
   }
 
   function _setSourceElem(elem: HTMLButtonElement) {
