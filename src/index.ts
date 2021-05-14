@@ -1,6 +1,6 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 import './style.css';
-import Icon from './icon.png';
+// import Icon from './icon.png';
 
 function component() {
   const element = document.createElement('div');
@@ -10,10 +10,10 @@ function component() {
   element.classList.add('hello');
 
   // Add the image to our existing div.existing
-  const myIcon = new Image();
-  myIcon.src = Icon;
+  // const myIcon = new Image();
+  // myIcon.src = Icon;
 
-  element.appendChild(myIcon);
+  // element.appendChild(myIcon);
 
   return element;
 }
