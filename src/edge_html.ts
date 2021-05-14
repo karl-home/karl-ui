@@ -16,6 +16,13 @@ export module EdgeHTML {
   let statelessCheckbox: HTMLInputElement;
   let buttonContainer: HTMLDivElement;
 
+  function _removeButtonContainer() {
+    if (buttonContainer !== undefined) {
+      buttonContainer.remove()
+      buttonContainer = undefined;
+    }
+  }
+
   function _resetForm() {
     sourceName.innerText = '-'
     targetName.innerText = '-'
@@ -30,10 +37,7 @@ export module EdgeHTML {
       targetElem.style.backgroundColor = ''
       targetElem = undefined;
     }
-    if (buttonContainer !== undefined) {
-      buttonContainer.remove()
-    }
-    _renderAddButtons()
+    _removeButtonContainer()
   }
 
   function _renderDeleteButtons() {
@@ -89,9 +93,7 @@ export module EdgeHTML {
       _resetForm()
     }
 
-    if (buttonContainer !== undefined) {
-      buttonContainer.remove()
-    }
+    _removeButtonContainer()
     buttonContainer = document.createElement('div')
     buttonContainer.setAttribute('form-type', 'add')
     let form = document.getElementById('edge-form')
@@ -138,13 +140,13 @@ export module EdgeHTML {
     form.appendChild(target)
     form.appendChild(edgeType)
     form.appendChild(statelessP)
-    _renderAddButtons()
   }
 
-  function _setEdgeTypeAndStatelessVisibility() {
+  function _setEdgeTypeAndFormVisibility() {
     if (sourceElem === undefined || targetElem === undefined) {
       edgeTypeName.innerText = '-'
       statelessP.style.visibility = 'hidden'
+      _removeButtonContainer()
     } else {
       let sourceNodeTy = sourceElem.getAttribute('node-type')
       let targetNodeTy = targetElem.getAttribute('node-type')
@@ -160,6 +162,7 @@ export module EdgeHTML {
       } else {
         console.error(`bad state: target node type = ${targetNodeTy}`)
       }
+      _renderAddButtons()
     }
   }
 
@@ -195,7 +198,7 @@ export module EdgeHTML {
       sourceElem.style.backgroundColor = '#ffd700'
       sourceName.innerText = name
     }
-    _setEdgeTypeAndStatelessVisibility()
+    _setEdgeTypeAndFormVisibility()
   }
 
   function _setTargetElem(elem: HTMLButtonElement) {
@@ -214,21 +217,23 @@ export module EdgeHTML {
       targetElem.style.backgroundColor = '#ffd700'
       targetName.innerText = name
     }
-    _setEdgeTypeAndStatelessVisibility()
+    _setEdgeTypeAndFormVisibility()
   }
 
   export function clickSource(elem: HTMLButtonElement) {
-    if (buttonContainer.getAttribute('form-type') == 'delete') {
-      _resetForm()
-      _renderAddButtons()
+    if (buttonContainer !== undefined) {
+      if (buttonContainer.getAttribute('form-type') == 'delete') {
+        _resetForm()
+      }
     }
     _setSourceElem(elem)
   }
 
   export function clickTarget(elem: HTMLButtonElement) {
-    if (buttonContainer.getAttribute('form-type') == 'delete') {
-      _resetForm()
-      _renderAddButtons()
+    if (buttonContainer !== undefined) {
+      if (buttonContainer.getAttribute('form-type') == 'delete') {
+        _resetForm()
+      }
     }
     _setTargetElem(elem)
   }
