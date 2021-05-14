@@ -19,11 +19,11 @@
 }
 
 .sensor-header {
-  background-color: #2196f3;
+  background-color: #000;
 }
 
 .module-header {
-  background-color: red;
+  background-color: #888;
 }
 
 #canvas {
