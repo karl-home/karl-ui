@@ -54,6 +54,8 @@ export module GraphHTML {
     outgoingEdges: SVGLineElement[],
     incomingEdges: SVGLineElement[],
   ) {
+    // pos3 pos4 are the mouse's current position
+    // pos1 pos2 are the deltas
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     document.getElementById(elem.id).onmousedown = dragMouseDown;
 
@@ -75,16 +77,15 @@ export module GraphHTML {
       elem.style.left = (elem.offsetLeft - pos1) + "px";
 
       // re-render arrows to and from the dragged element
-      // I hope lists are passed by reference.
-      let x1 = elem.offsetLeft + elem.offsetWidth / 2;
-      let y1 = elem.offsetTop + elem.offsetHeight;
-      let x2 = elem.offsetLeft + elem.offsetWidth / 2;
-      let y2 = elem.offsetTop;
       outgoingEdges.forEach(function(line) {
+        let x1 = parseFloat(line.getAttribute('x1')) - pos1;
+        let y1 = parseFloat(line.getAttribute('y1')) - pos2;
         line.setAttribute('x1', x1.toString());
         line.setAttribute('y1', y1.toString());
       })
       incomingEdges.forEach(function(line) {
+        let x2 = parseFloat(line.getAttribute('x2')) - pos1;
+        let y2 = parseFloat(line.getAttribute('y2')) - pos2;
         line.setAttribute('x2', x2.toString());
         line.setAttribute('y2', y2.toString());
       })
@@ -103,13 +104,15 @@ export module GraphHTML {
     outputs: string[],
     outgoingEdges: SVGLineElement[],
     incomingEdges: SVGLineElement[],
+    outgoingButtons: HTMLButtonElement[],
+    incomingButtons: HTMLButtonElement[],
   ): HTMLDivElement {
     let node = document.createElement("div");
     node.id = id;
     node.className = "node " + ty;
     node.style.top = topNext.toString() + 'px';
     topNext += topDelta;
-    let header = document.createElement("p");
+    let header = document.createElement('span');
     inputs.forEach(function(val) {
       let button = document.createElement('button');
       button.className = 'hover-button'
@@ -118,8 +121,9 @@ export module GraphHTML {
       tooltip.appendChild(document.createTextNode(val))
       button.appendChild(tooltip)
       header.appendChild(button)
+      incomingButtons.push(button)
     })
-    let footer = document.createElement('p');
+    let footer = document.createElement('span');
     outputs.forEach(function(val) {
       let button = document.createElement('button');
       button.className = 'hover-button'
@@ -128,6 +132,7 @@ export module GraphHTML {
       tooltip.appendChild(document.createTextNode(val))
       button.appendChild(tooltip)
       footer.appendChild(button)
+      outgoingButtons.push(button)
     })
     let p = document.createElement("p");
     p.appendChild(document.createTextNode(id));
@@ -148,6 +153,8 @@ export module GraphHTML {
       inner.value.returns,
       inner.outgoing_edges,
       inner.incoming_edges,
+      inner.outgoing_buttons,
+      inner.incoming_buttons,
     )
   }
 
@@ -159,17 +166,21 @@ export module GraphHTML {
       inner.value.returns,
       inner.outgoing_edges,
       inner.incoming_edges,
+      inner.outgoing_buttons,
+      inner.incoming_buttons,
     )
   }
 
   export function renderDataEdge(
     source: HTMLElement,
+    sourceOffset: number,
     target: HTMLElement,
+    targetOffset: number,
     stateless: boolean,
   ): SVGLineElement {
-    let x1 = source.offsetLeft + source.offsetWidth / 2;
+    let x1 = source.offsetLeft + source.offsetWidth / 2 + sourceOffset;
     let y1 = source.offsetTop + source.offsetHeight;
-    let x2 = target.offsetLeft + target.offsetWidth / 2;
+    let x2 = target.offsetLeft + target.offsetWidth / 2 + targetOffset;
     let y2 = target.offsetTop;
     // https://dev.to/gavinsykes/appending-a-child-to-an-svg-using-pure-javascript-1h9g
     let line = document.createElementNS('http://www.w3.org/2000/svg', 'line');

@@ -45,6 +45,8 @@ export interface SensorInner {
   html: HTMLElement;
   outgoing_edges: SVGLineElement[];
   incoming_edges: SVGLineElement[];
+  outgoing_buttons: HTMLButtonElement[];
+  incoming_buttons: HTMLButtonElement[];
 }
 
 export interface ModuleInner {
@@ -55,6 +57,8 @@ export interface ModuleInner {
   html: HTMLElement;
   outgoing_edges: SVGLineElement[];
   incoming_edges: SVGLineElement[];
+  outgoing_buttons: HTMLButtonElement[];
+  incoming_buttons: HTMLButtonElement[];
 }
 
 export class Graph {
@@ -82,6 +86,8 @@ export class Graph {
         html: undefined,
         outgoing_edges: [],
         incoming_edges: [],
+        outgoing_buttons: [],
+        incoming_buttons: [],
       }
       inner.html = GraphHTML.renderSensor(sensor.id, inner);
       this.sensors[sensor.id] = inner;
@@ -101,6 +107,8 @@ export class Graph {
         html: undefined,
         outgoing_edges: [],
         incoming_edges: [],
+        outgoing_buttons: [],
+        incoming_buttons: [],
       }
       inner.html = GraphHTML.renderModule(mod.id, inner);
       this.modules[mod.id] = inner;
@@ -151,6 +159,11 @@ export class Graph {
   }
 
   add_data_edge(edge: DataEdge): boolean {
+    function offset(index: number, length: number): number {
+      const buttonWidth = 25;
+      return buttonWidth * ((index + 1) - length / 2.0 - 0.5);
+    }
+
     if (this.sensors.hasOwnProperty(edge.module_id)) {
       console.error("state edge input cannot be a sensor")
     } else if (!this.modules.hasOwnProperty(edge.module_id)) {
@@ -158,35 +171,47 @@ export class Graph {
     } else if (!this.modules[edge.module_id].value.params.includes(edge.module_param)) {
       console.error("input param does not exist")
     } else {
-      let mod = this.modules[edge.out_id];
-      let sensor = this.sensors[edge.out_id];
-      let target = this.modules[edge.module_id];
-      if (mod !== undefined) {
-        if (!mod.value.returns.includes(edge.out_ret)) {
-          console.error("output return value does not exist")
-        } else if (mod.data_edges.includes(edge)) {
+      var source: ModuleInner | SensorInner;
+      if (this.modules[edge.out_id] !== undefined) {
+        source = this.modules[edge.out_id]
+        if (source.data_edges.includes(edge)) {
           console.error("data edge already exists")
-        } else {
-          let html = GraphHTML.renderDataEdge(mod.html, target.html, edge.stateless);
-          mod.data_edges.push(edge)
-          mod.outgoing_edges.push(html);
-          target.incoming_edges.push(html);
-          return true
+          console.error(JSON.stringify(edge))
+          return false
         }
-      } else if (sensor !== undefined) {
-        if (!sensor.value.returns.includes(edge.out_ret)) {
-          console.error("output return value does not exist")
-        } else if (sensor.edges.includes(edge)) {
+        source.data_edges.push(edge)
+      } else if (this.sensors[edge.out_id] !== undefined) {
+        source = this.sensors[edge.out_id]
+        if (source.edges.includes(edge)) {
           console.error("data edge already exists")
-        } else {
-          let html = GraphHTML.renderDataEdge(sensor.html, target.html, edge.stateless);
-          sensor.edges.push(edge)
-          sensor.outgoing_edges.push(html);
-          target.incoming_edges.push(html);
-          return true
+          console.error(JSON.stringify(edge))
+          return false
         }
+        source.edges.push(edge)
       } else {
         console.error("output entity does not exist")
+        console.error(JSON.stringify(edge))
+        return false
+      }
+
+      let target = this.modules[edge.module_id];
+      let sourceReturns = source.value.returns;
+      let targetParams = target.value.params;
+      let sourceIndex = sourceReturns.indexOf(edge.out_ret);
+      let targetIndex = targetParams.indexOf(edge.module_param);
+      if (!sourceReturns.includes(edge.out_ret)) {
+        console.error("output return value does not exist")
+      } else {
+        let html = GraphHTML.renderDataEdge(
+          source.html,
+          offset(sourceIndex, sourceReturns.length),
+          target.html,
+          offset(targetIndex, targetParams.length),
+          edge.stateless,
+        );
+        source.outgoing_edges.push(html);
+        target.incoming_edges.push(html);
+        return true
       }
     }
     console.error(JSON.stringify(edge))
