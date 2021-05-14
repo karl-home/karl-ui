@@ -45,7 +45,14 @@ export module EdgeHTML {
 
     function deleteEdge(e: MouseEvent, g: Graph) {
       e.preventDefault()
-      console.log('deleting')
+      let stateless: boolean = statelessCheckbox.checked;
+      g.remove_data_edge({
+        stateless: stateless,
+        out_id: sourceElem.getAttribute('node-id'),
+        out_ret: sourceElem.getAttribute('name'),
+        module_id: targetElem.getAttribute('node-id'),
+        module_param: targetElem.getAttribute('name'),
+      })
       _resetForm()
     }
 

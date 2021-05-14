@@ -61,6 +61,14 @@ export interface ModuleInner {
   incoming_buttons: HTMLButtonElement[];
 }
 
+function dataEdgeEquals(e1: DataEdge, e2: DataEdge): boolean {
+  return e1.stateless == e2.stateless
+    && e1.out_id == e2.out_id
+    && e1.out_ret == e2.out_ret
+    && e1.module_id == e2.module_id
+    && e1.module_param == e2.module_param;
+}
+
 export class Graph {
   sensors: { [key: string]: SensorInner }
   modules: { [key: string]: ModuleInner }
@@ -172,22 +180,13 @@ export class Graph {
       console.error("input param does not exist")
     } else {
       var source: ModuleInner | SensorInner;
+      var sourceDataEdges: DataEdge[];
       if (this.modules[edge.out_id] !== undefined) {
         source = this.modules[edge.out_id]
-        if (source.data_edges.includes(edge)) {
-          console.error("data edge already exists")
-          console.error(JSON.stringify(edge))
-          return false
-        }
-        source.data_edges.push(edge)
+        sourceDataEdges = source.data_edges
       } else if (this.sensors[edge.out_id] !== undefined) {
         source = this.sensors[edge.out_id]
-        if (source.edges.includes(edge)) {
-          console.error("data edge already exists")
-          console.error(JSON.stringify(edge))
-          return false
-        }
-        source.edges.push(edge)
+        sourceDataEdges = source.edges
       } else {
         console.error("output entity does not exist")
         console.error(JSON.stringify(edge))
@@ -201,6 +200,8 @@ export class Graph {
       let targetIndex = targetParams.indexOf(edge.module_param);
       if (!sourceReturns.includes(edge.out_ret)) {
         console.error("output return value does not exist")
+      } else if (sourceDataEdges.includes(edge)) {
+        console.error("data edge already exists")
       } else {
         let html = GraphHTML.renderDataEdge(
           source.html,
@@ -211,8 +212,56 @@ export class Graph {
           offset(targetIndex, targetParams.length),
           edge.stateless,
         );
+        sourceDataEdges.push(edge)
         source.outgoing_edges.push(html);
         target.incoming_edges.push(html);
+        return true
+      }
+    }
+    console.error(JSON.stringify(edge))
+    return false
+  }
+
+  remove_data_edge(edge: DataEdge): boolean {
+    if (!this.modules.hasOwnProperty(edge.module_id)) {
+      console.error("input module does not exist")
+    } else {
+      var source: ModuleInner | SensorInner;
+      var sourceDataEdges: DataEdge[];
+      if (this.modules[edge.out_id] !== undefined) {
+        source = this.modules[edge.out_id]
+        sourceDataEdges = source.data_edges;
+      } else if (this.sensors[edge.out_id] !== undefined) {
+        source = this.sensors[edge.out_id]
+        sourceDataEdges = source.edges;
+      } else {
+        console.error("output entity does not exist")
+        console.error(JSON.stringify(edge))
+        return false
+      }
+
+      let sourceIndex = sourceDataEdges.findIndex(function(other) {
+        return dataEdgeEquals(edge, other)
+      })
+      if (sourceIndex == -1) {
+        console.error("data edge does not exist")
+        console.error(JSON.stringify(sourceDataEdges))
+      } else {
+        sourceDataEdges.splice(sourceIndex, 1)
+        let deleted = source.outgoing_edges.splice(sourceIndex, 1);
+        if (deleted.length > 0) {
+          let target = this.modules[edge.module_id];
+          let line = deleted[0]
+          let targetIndex = target.incoming_edges.indexOf(line)
+          if (targetIndex != -1) {
+            target.incoming_edges.splice(targetIndex, 1);
+            line.remove()
+          } else {
+            console.error('failed to delete SVG line from incoming edges')
+          }
+        } else {
+          console.error('failed to delete SVG line from outgoing edges')
+        }
         return true
       }
     }
