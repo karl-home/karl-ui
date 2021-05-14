@@ -1,31 +1,20 @@
 import { Graph } from './graph';
 
 export module EdgeHTML {
-  export type NodeType = 'module' | 'sensor';
+  // graph elements
+  let g: Graph = undefined;
+  let sourceElem: HTMLButtonElement = undefined;
+  let targetElem: HTMLButtonElement = undefined;
 
+  // form elements
   let sourceName: HTMLSpanElement;
   let targetName: HTMLSpanElement;
   let edgeTypeName: HTMLSpanElement;
   let statelessP: HTMLParagraphElement;
   let statelessCheckbox: HTMLInputElement;
+  let buttonContainer: HTMLDivElement;
 
-  function _addEdge(e: MouseEvent, g: Graph) {
-    e.preventDefault()
-    let edgeType = edgeTypeName.innerText
-    if (edgeType == 'data') {
-      let stateless: boolean = statelessCheckbox.checked;
-      g.add_data_edge({
-        stateless: stateless,
-        out_id: sourceElem.getAttribute('node-id'),
-        out_ret: sourceElem.getAttribute('name'),
-        module_id: targetElem.getAttribute('node-id'),
-        module_param: targetElem.getAttribute('name'),
-      })
-    } else {
-      console.error(`unhandled edge type: ${edgeType}`)
-    }
-
-    // clear the form
+  function _resetForm() {
     sourceName.innerText = '-'
     targetName.innerText = '-'
     edgeTypeName.innerText = '-'
@@ -35,9 +24,49 @@ export module EdgeHTML {
     targetElem.style.backgroundColor = ''
     sourceElem = undefined;
     targetElem = undefined;
+    if (buttonContainer !== undefined) {
+      buttonContainer.remove()
+    }
+    _renderAddButtons()
   }
 
-  export function renderInitialForm(g: Graph) {
+  function _renderAddButtons() {
+    function addEdge(e: MouseEvent, g: Graph) {
+      e.preventDefault()
+      let edgeType = edgeTypeName.innerText
+      if (edgeType == 'data') {
+        let stateless: boolean = statelessCheckbox.checked;
+        g.add_data_edge({
+          stateless: stateless,
+          out_id: sourceElem.getAttribute('node-id'),
+          out_ret: sourceElem.getAttribute('name'),
+          module_id: targetElem.getAttribute('node-id'),
+          module_param: targetElem.getAttribute('name'),
+        })
+      } else {
+        console.error(`unhandled edge type: ${edgeType}`)
+      }
+      _resetForm()
+    }
+
+    if (buttonContainer !== undefined) {
+      buttonContainer.remove()
+    }
+    buttonContainer = document.createElement('div')
+    let form = document.getElementById('edge-form')
+    let button = document.createElement('button')
+    button.appendChild(document.createTextNode('Add Edge'))
+    button.onclick = function(e) {
+      addEdge(e, g)
+    }
+    buttonContainer.appendChild(button)
+    form.appendChild(buttonContainer)
+  }
+
+  export function renderInitialForm(graph: Graph) {
+    g = graph
+
+    // Create all the form elements except the buttons
     let source = document.createElement('p')
     sourceName = document.createElement('span')
     sourceName.innerText = '-'
@@ -60,23 +89,15 @@ export module EdgeHTML {
     statelessP.appendChild(document.createTextNode('Stateless? '))
     statelessP.appendChild(statelessCheckbox)
     statelessP.style.visibility = 'hidden'
-    let button = document.createElement('button')
-    button.appendChild(document.createTextNode('Add Edge'))
-    button.onclick = function(e) {
-      _addEdge(e, g)
-    }
 
-    // Add all elements to form UI
+    // Add elements to form UI
     let form = document.getElementById('edge-form')
     form.appendChild(source)
     form.appendChild(target)
     form.appendChild(edgeType)
     form.appendChild(statelessP)
-    form.appendChild(button)
+    _renderAddButtons()
   }
-
-  let sourceElem: HTMLButtonElement = undefined;
-  let targetElem: HTMLButtonElement = undefined;
 
   function _setEdgeTypeAndStatelessVisibility() {
     if (sourceElem === undefined || targetElem === undefined) {
@@ -100,7 +121,10 @@ export module EdgeHTML {
     }
   }
 
-  export function clickSource(elem: HTMLButtonElement, name: string) {
+  export function clickSource(elem: HTMLButtonElement) {
+    let id = elem.getAttribute('node-id')
+    let val = elem.getAttribute('name')
+    let name = `${id} (${val})`
     if (sourceElem === elem) {
       sourceElem.style.backgroundColor = '';
       sourceElem = undefined
@@ -116,7 +140,10 @@ export module EdgeHTML {
     _setEdgeTypeAndStatelessVisibility()
   }
 
-  export function clickTarget(elem: HTMLButtonElement, name: string) {
+  export function clickTarget(elem: HTMLButtonElement) {
+    let id = elem.getAttribute('node-id')
+    let val = elem.getAttribute('name')
+    let name = `${id} (${val})`
     if (targetElem === elem) {
       targetElem.style.backgroundColor = '';
       targetElem = undefined

@@ -121,7 +121,7 @@ export module GraphHTML {
       button.setAttribute('node-type', ty)
       button.setAttribute('name', val)
       button.onclick = function(e) {
-        EdgeHTML.clickTarget(button, `${id} (${val})`)
+        EdgeHTML.clickTarget(button)
       };
       let tooltip = document.createElement('span');
       tooltip.className = 'tooltip tooltip-top'
@@ -138,7 +138,7 @@ export module GraphHTML {
       button.setAttribute('node-type', ty)
       button.setAttribute('name', val)
       button.onclick = function(e) {
-        EdgeHTML.clickSource(button, `${id} (${val})`)
+        EdgeHTML.clickSource(button)
       };
       let tooltip = document.createElement('span');
       tooltip.className = 'tooltip tooltip-bottom'
