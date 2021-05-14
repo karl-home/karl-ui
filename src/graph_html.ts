@@ -97,7 +97,8 @@ export module GraphHTML {
     }
 
     function closeDragElement(e: MouseEvent) {
-      if (!dragged && moduleInner !== undefined) {
+      let tagName = (e.target as HTMLElement).tagName
+      if (!dragged && moduleInner !== undefined && tagName != 'BUTTON') {
         ModuleHTML.clickModule(elem, moduleInner)
       }
       dragged = false;
