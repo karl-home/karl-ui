@@ -98,7 +98,7 @@ export module GraphHTML {
 
     function closeDragElement(e: MouseEvent) {
       if (!dragged && moduleInner !== undefined) {
-        ModuleHTML.renderViewForm(elem, moduleInner)
+        ModuleHTML.clickModule(elem, moduleInner)
       }
       dragged = false;
       document.onmouseup = null;

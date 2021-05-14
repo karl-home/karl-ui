@@ -167,6 +167,16 @@ export class Graph {
     return false
   }
 
+  remove_network_edges(module_id: ModuleID): boolean {
+    if (this.modules.hasOwnProperty(module_id)) {
+      this.modules[module_id].network_edges = []
+      return true
+    } else {
+      console.error(`output module does not exist: ${module_id}`)
+      return false
+    }
+  }
+
   add_data_edge(edge: DataEdge): boolean {
     function offset(index: number, length: number): number {
       const buttonWidth = 25;
@@ -268,6 +278,23 @@ export class Graph {
     }
     console.error(JSON.stringify(edge))
     return false
+  }
+
+  set_interval(module_id: ModuleID, interval: number): boolean {
+    if (this.modules.hasOwnProperty(module_id)) {
+      if (isNaN(interval)) {
+        delete this.modules[module_id].interval
+      } else if (interval > 0) {
+        this.modules[module_id].interval = interval
+      } else {
+        console.error(`positive interval required: ${interval}`)
+        return false
+      }
+      return true
+    } else {
+      console.error(`output module does not exist: ${module_id}`)
+      return false
+    }
   }
 
   render(): HTMLDivElement {
