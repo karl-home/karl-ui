@@ -185,16 +185,18 @@ export module GraphHTML {
   }
 
   export function renderDataEdge(
-    source: HTMLElement,
+    sourceNode: HTMLElement,
+    sourceButton: HTMLButtonElement,
     sourceOffset: number,
-    target: HTMLElement,
+    targetNode: HTMLElement,
+    targetButton: HTMLButtonElement,
     targetOffset: number,
     stateless: boolean,
   ): SVGLineElement {
-    let x1 = source.offsetLeft + source.offsetWidth / 2 + sourceOffset;
-    let y1 = source.offsetTop + source.offsetHeight;
-    let x2 = target.offsetLeft + target.offsetWidth / 2 + targetOffset;
-    let y2 = target.offsetTop;
+    let x1 = sourceNode.offsetLeft + sourceNode.offsetWidth / 2 + sourceOffset;
+    let y1 = sourceNode.offsetTop + sourceNode.offsetHeight;
+    let x2 = targetNode.offsetLeft + targetNode.offsetWidth / 2 + targetOffset;
+    let y2 = targetNode.offsetTop;
     // https://dev.to/gavinsykes/appending-a-child-to-an-svg-using-pure-javascript-1h9g
     let line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', x1.toString());
@@ -203,9 +205,12 @@ export module GraphHTML {
     line.setAttribute('y2', y2.toString());
     line.setAttribute('marker-end', 'url(#endarrow-data)');
     line.setAttribute('stroke', '#2196f3');
-    line.setAttribute('stroke-width', '2px');
+    line.setAttribute('stroke-width', '3px');
     if (!stateless) {
       line.setAttribute('stroke-dasharray', '4');
+    }
+    line.onclick = function(e) {
+      EdgeHTML.clickEdge(sourceButton, targetButton, 'data', stateless);
     }
     canvas.append(line);
     return line;

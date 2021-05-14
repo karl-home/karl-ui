@@ -204,8 +204,10 @@ export class Graph {
       } else {
         let html = GraphHTML.renderDataEdge(
           source.html,
+          source.outgoing_buttons[sourceIndex],
           offset(sourceIndex, sourceReturns.length),
           target.html,
+          target.incoming_buttons[targetIndex],
           offset(targetIndex, targetParams.length),
           edge.stateless,
         );

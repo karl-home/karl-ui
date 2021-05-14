@@ -1,6 +1,8 @@
 import { Graph } from './graph';
 
 export module EdgeHTML {
+  type EdgeType = 'data' | 'network' | 'state';
+
   // graph elements
   let g: Graph = undefined;
   let sourceElem: HTMLButtonElement = undefined;
@@ -20,19 +22,61 @@ export module EdgeHTML {
     edgeTypeName.innerText = '-'
     statelessP.style.visibility = 'hidden'
     statelessCheckbox.checked = true
-    sourceElem.style.backgroundColor = ''
-    targetElem.style.backgroundColor = ''
-    sourceElem = undefined;
-    targetElem = undefined;
+    if (sourceElem !== undefined) {
+      sourceElem.style.backgroundColor = ''
+      sourceElem = undefined;
+    }
+    if (targetElem !== undefined) {
+      targetElem.style.backgroundColor = ''
+      targetElem = undefined;
+    }
     if (buttonContainer !== undefined) {
       buttonContainer.remove()
     }
     _renderAddButtons()
   }
 
+  function _renderModifyButtons() {
+    function modifyEdge(e: MouseEvent, g: Graph) {
+      e.preventDefault()
+      console.log('modifying')
+      _resetForm()
+    }
+
+    function deleteEdge(e: MouseEvent, g: Graph) {
+      e.preventDefault()
+      console.log('deleting')
+      _resetForm()
+    }
+
+    if (buttonContainer !== undefined) {
+      buttonContainer.remove()
+    }
+    buttonContainer = document.createElement('div')
+    buttonContainer.setAttribute('form-type', 'modify')
+    let form = document.getElementById('edge-form')
+    let modifyButton = document.createElement('button')
+    modifyButton.appendChild(document.createTextNode('Modify Edge'))
+    modifyButton.onclick = function(e) {
+      modifyEdge(e, g)
+    }
+    let deleteButton = document.createElement('button')
+    deleteButton.appendChild(document.createTextNode('Delete'))
+    deleteButton.onclick = function(e) {
+      deleteEdge(e, g)
+    }
+    buttonContainer.appendChild(modifyButton)
+    buttonContainer.appendChild(deleteButton)
+    form.appendChild(buttonContainer)
+  }
+
   function _renderAddButtons() {
     function addEdge(e: MouseEvent, g: Graph) {
       e.preventDefault()
+      if (sourceElem === undefined || targetElem === undefined) {
+        console.error('need to select a source and target')
+        return
+      }
       let edgeType = edgeTypeName.innerText
       if (edgeType == 'data') {
         let stateless: boolean = statelessCheckbox.checked;
@@ -53,6 +97,7 @@ export module EdgeHTML {
       buttonContainer.remove()
     }
     buttonContainer = document.createElement('div')
+    buttonContainer.setAttribute('form-type', 'add')
     let form = document.getElementById('edge-form')
     let button = document.createElement('button')
     button.appendChild(document.createTextNode('Add Edge'))
@@ -121,7 +166,23 @@ export module EdgeHTML {
     }
   }
 
-  export function clickSource(elem: HTMLButtonElement) {
+  export function clickEdge(
+    sourceButton: HTMLButtonElement,
+    targetButton: HTMLButtonElement,
+    edgeType: EdgeType,
+    stateless?: boolean,
+  ): void {
+    console.log('clickEdge')
+    _resetForm()
+    _setSourceElem(sourceButton)
+    _setTargetElem(targetButton)
+    if (edgeType == 'data') {
+      statelessCheckbox.checked = stateless;
+    }
+    _renderModifyButtons()
+  }
+
+  function _setSourceElem(elem: HTMLButtonElement) {
     let id = elem.getAttribute('node-id')
     let val = elem.getAttribute('name')
     let name = `${id} (${val})`
@@ -140,7 +201,7 @@ export module EdgeHTML {
     _setEdgeTypeAndStatelessVisibility()
   }
 
-  export function clickTarget(elem: HTMLButtonElement) {
+  function _setTargetElem(elem: HTMLButtonElement) {
     let id = elem.getAttribute('node-id')
     let val = elem.getAttribute('name')
     let name = `${id} (${val})`
@@ -157,5 +218,21 @@ export module EdgeHTML {
       targetName.innerText = name
     }
     _setEdgeTypeAndStatelessVisibility()
+  }
+
+  export function clickSource(elem: HTMLButtonElement) {
+    if (buttonContainer.getAttribute('form-type') == 'modify') {
+      _resetForm()
+      _renderAddButtons()
+    }
+    _setSourceElem(elem)
+  }
+
+  export function clickTarget(elem: HTMLButtonElement) {
+    if (buttonContainer.getAttribute('form-type') == 'modify') {
+      _resetForm()
+      _renderAddButtons()
+    }
+    _setTargetElem(elem)
   }
 }
