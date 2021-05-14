@@ -10,7 +10,6 @@ export interface Sensor {
   id: SensorID;
   state_keys: string[];
   returns: string[];
-  html?: HTMLElement;
 }
 
 export interface Module {
@@ -18,7 +17,6 @@ export interface Module {
   params: string[];
   returns: string[];
   network: boolean;
-  html?: HTMLElement;
 }
 
 export interface StateEdge {
@@ -26,13 +24,11 @@ export interface StateEdge {
   module_ret: string;
   sensor_id: SensorID;
   sensor_key: string;
-  html?: HTMLElement;
 }
 
 export interface NetworkEdge {
   module_id: ModuleID;
   domain: string;
-  html?: HTMLElement;
 }
 
 export interface DataEdge {
@@ -41,7 +37,6 @@ export interface DataEdge {
   out_ret: string;
   module_id: ModuleID;
   module_param: string;
-  html?: HTMLElement;
 }
 
 export class Graph {
@@ -49,6 +44,9 @@ export class Graph {
     [key: string]: {
       value: Sensor;
       edges: DataEdge[];
+      html: HTMLElement;
+      outgoing_edges: SVGLineElement[];
+      incoming_edges: SVGLineElement[];
     }
   }
   modules: {
@@ -57,6 +55,9 @@ export class Graph {
       data_edges: DataEdge[];
       state_edges: StateEdge[];
       network_edges: NetworkEdge[];
+      html: HTMLElement;
+      outgoing_edges: SVGLineElement[];
+      incoming_edges: SVGLineElement[];
     }
   }
 
@@ -75,10 +76,14 @@ export class Graph {
     if (this._exists(sensor.id)) {
       return false
     } else {
-      sensor.html = GraphHTML.renderSensor(sensor.id);
+      let outgoing_edges: SVGLineElement[] = [];
+      let incoming_edges: SVGLineElement[] = [];
       this.sensors[sensor.id] = {
         value: sensor,
         edges: [],
+        html: GraphHTML.renderSensor(sensor.id, outgoing_edges, incoming_edges),
+        outgoing_edges: outgoing_edges,
+        incoming_edges: incoming_edges,
       }
       return true
     }
@@ -88,12 +93,16 @@ export class Graph {
     if (this._exists(mod.id)) {
       return false
     } else {
-      mod.html = GraphHTML.renderModule(mod.id);
+      let outgoing_edges: SVGLineElement[] = [];
+      let incoming_edges: SVGLineElement[] = [];
       this.modules[mod.id] = {
         value: mod,
         data_edges: [],
         state_edges: [],
         network_edges: [],
+        html: GraphHTML.renderModule(mod.id, outgoing_edges, incoming_edges),
+        outgoing_edges: outgoing_edges,
+        incoming_edges: incoming_edges,
       }
       return true
     }
@@ -115,8 +124,8 @@ export class Graph {
     } else if (this.modules[edge.module_id].state_edges.includes(edge)) {
       console.error("state edge already exists")
     } else {
-      let source = this.modules[edge.module_id].value.html;
-      let target = this.sensors[edge.sensor_id].value.html;
+      let source = this.modules[edge.module_id].html;
+      let target = this.sensors[edge.sensor_id].html;
       GraphHTML.renderStateEdge(source, target);
       this.modules[edge.module_id].state_edges.push(edge)
       return true
@@ -151,15 +160,17 @@ export class Graph {
     } else {
       let mod = this.modules[edge.out_id];
       let sensor = this.sensors[edge.out_id];
-      let target = this.modules[edge.module_id].value.html;
+      let target = this.modules[edge.module_id];
       if (mod !== undefined) {
         if (!mod.value.returns.includes(edge.out_ret)) {
           console.error("output return value does not exist")
         } else if (mod.data_edges.includes(edge)) {
           console.error("data edge already exists")
         } else {
-          GraphHTML.renderDataEdge(mod.value.html, target, edge.stateless);
+          let html = GraphHTML.renderDataEdge(mod.html, target.html, edge.stateless);
           mod.data_edges.push(edge)
+          mod.outgoing_edges.push(html);
+          target.incoming_edges.push(html);
           return true
         }
       } else if (sensor !== undefined) {
@@ -168,8 +179,10 @@ export class Graph {
         } else if (sensor.edges.includes(edge)) {
           console.error("data edge already exists")
         } else {
-          GraphHTML.renderDataEdge(sensor.value.html, target, edge.stateless);
+          let html = GraphHTML.renderDataEdge(sensor.html, target.html, edge.stateless);
           sensor.edges.push(edge)
+          sensor.outgoing_edges.push(html);
+          target.incoming_edges.push(html);
           return true
         }
       } else {

@@ -47,7 +47,11 @@ function _initArrows() {
 _initArrows();
 
 export module GraphHTML {
-  function _dragElement(elem: HTMLElement) {
+  function _dragElement(
+    elem: HTMLElement,
+    outgoingEdges: SVGLineElement[],
+    incomingEdges: SVGLineElement[],
+  ) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     document.getElementById(elem.id + "-header").onmousedown = dragMouseDown;
 
@@ -60,13 +64,28 @@ export module GraphHTML {
     }
 
     function elementDrag(e: MouseEvent) {
-       e.preventDefault();
-       pos1 = pos3 - e.clientX;
-       pos2 = pos4 - e.clientY;
-       pos3 = e.clientX;
-       pos4 = e.clientY;
-       elem.style.top = (elem.offsetTop - pos2) + "px";
-       elem.style.left = (elem.offsetLeft - pos1) + "px";
+      e.preventDefault();
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      elem.style.top = (elem.offsetTop - pos2) + "px";
+      elem.style.left = (elem.offsetLeft - pos1) + "px";
+
+      // re-render arrows to and from the dragged element
+      // I hope lists are passed by reference.
+      let x1 = elem.offsetLeft + elem.offsetWidth / 2;
+      let y1 = elem.offsetTop + elem.offsetHeight;
+      let x2 = elem.offsetLeft + elem.offsetWidth / 2;
+      let y2 = elem.offsetTop;
+      outgoingEdges.forEach(function(line) {
+        line.setAttribute('x1', x1.toString());
+        line.setAttribute('y1', y1.toString());
+      })
+      incomingEdges.forEach(function(line) {
+        line.setAttribute('x2', x2.toString());
+        line.setAttribute('y2', y2.toString());
+      })
     }
 
     function closeDragElement(e: MouseEvent) {
@@ -75,7 +94,12 @@ export module GraphHTML {
     }
   }
 
-  function _renderNode(id: string, ty: NodeType): HTMLDivElement {
+  function _renderNode(
+    id: string,
+    ty: NodeType,
+    outgoingEdges: SVGLineElement[],
+    incomingEdges: SVGLineElement[],
+  ): HTMLDivElement {
     let node = document.createElement("div");
     node.id = id;
     node.className = "node " + ty;
@@ -91,23 +115,31 @@ export module GraphHTML {
     node.appendChild(p);
     // modify the DOM
     graph.appendChild(node);
-    _dragElement(node);
+    _dragElement(node, outgoingEdges, incomingEdges);
     return node;
   }
 
-  export function renderModule(id: string): HTMLDivElement {
-    return _renderNode(id, 'module')
+  export function renderModule(
+    id: string,
+    outgoingEdges: SVGLineElement[],
+    incomingEdges: SVGLineElement[],
+  ): HTMLDivElement {
+    return _renderNode(id, 'module', outgoingEdges, incomingEdges)
   }
 
-  export function renderSensor(id: string): HTMLDivElement {
-    return _renderNode(id, 'sensor')
+  export function renderSensor(
+    id: string,
+    outgoingEdges: SVGLineElement[],
+    incomingEdges: SVGLineElement[],
+  ): HTMLDivElement {
+    return _renderNode(id, 'sensor', outgoingEdges, incomingEdges)
   }
 
   export function renderDataEdge(
     source: HTMLElement,
     target: HTMLElement,
     stateless: boolean,
-  ): void {
+  ): SVGLineElement {
     let x1 = source.offsetLeft + source.offsetWidth / 2;
     let y1 = source.offsetTop + source.offsetHeight;
     let x2 = target.offsetLeft + target.offsetWidth / 2;
@@ -125,6 +157,7 @@ export module GraphHTML {
       line.setAttribute('stroke-dasharray', '4');
     }
     canvas.append(line);
+    return line;
   }
 
   export function renderStateEdge(source: HTMLElement, target: HTMLElement) {
