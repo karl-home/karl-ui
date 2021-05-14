@@ -39,27 +39,27 @@ export interface DataEdge {
   module_param: string;
 }
 
+export interface SensorInner {
+  value: Sensor;
+  edges: DataEdge[];
+  html: HTMLElement;
+  outgoing_edges: SVGLineElement[];
+  incoming_edges: SVGLineElement[];
+}
+
+export interface ModuleInner {
+  value: Module;
+  data_edges: DataEdge[];
+  state_edges: StateEdge[];
+  network_edges: NetworkEdge[];
+  html: HTMLElement;
+  outgoing_edges: SVGLineElement[];
+  incoming_edges: SVGLineElement[];
+}
+
 export class Graph {
-  sensors: {
-    [key: string]: {
-      value: Sensor;
-      edges: DataEdge[];
-      html: HTMLElement;
-      outgoing_edges: SVGLineElement[];
-      incoming_edges: SVGLineElement[];
-    }
-  }
-  modules: {
-    [key: string]: {
-      value: Module;
-      data_edges: DataEdge[];
-      state_edges: StateEdge[];
-      network_edges: NetworkEdge[];
-      html: HTMLElement;
-      outgoing_edges: SVGLineElement[];
-      incoming_edges: SVGLineElement[];
-    }
-  }
+  sensors: { [key: string]: SensorInner }
+  modules: { [key: string]: ModuleInner }
 
   constructor() {
     this.sensors = {};
@@ -76,15 +76,15 @@ export class Graph {
     if (this._exists(sensor.id)) {
       return false
     } else {
-      let outgoing_edges: SVGLineElement[] = [];
-      let incoming_edges: SVGLineElement[] = [];
-      this.sensors[sensor.id] = {
+      let inner: SensorInner = {
         value: sensor,
         edges: [],
-        html: GraphHTML.renderSensor(sensor.id, outgoing_edges, incoming_edges),
-        outgoing_edges: outgoing_edges,
-        incoming_edges: incoming_edges,
+        html: undefined,
+        outgoing_edges: [],
+        incoming_edges: [],
       }
+      inner.html = GraphHTML.renderSensor(sensor.id, inner);
+      this.sensors[sensor.id] = inner;
       return true
     }
   }
@@ -93,17 +93,17 @@ export class Graph {
     if (this._exists(mod.id)) {
       return false
     } else {
-      let outgoing_edges: SVGLineElement[] = [];
-      let incoming_edges: SVGLineElement[] = [];
-      this.modules[mod.id] = {
+      let inner: ModuleInner = {
         value: mod,
         data_edges: [],
         state_edges: [],
         network_edges: [],
-        html: GraphHTML.renderModule(mod.id, outgoing_edges, incoming_edges),
-        outgoing_edges: outgoing_edges,
-        incoming_edges: incoming_edges,
+        html: undefined,
+        outgoing_edges: [],
+        incoming_edges: [],
       }
+      inner.html = GraphHTML.renderModule(mod.id, inner);
+      this.modules[mod.id] = inner;
       return true
     }
   }

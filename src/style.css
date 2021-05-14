@@ -9,21 +9,18 @@
   border: 1px solid #d3d3d3;
   background-color: #f1f1f1;
   left: 100px;
-  z-index: 100;
-}
-
-.node-header {
-  padding: 10px;
   cursor: move;
-  color: #fff;
+  min-width: 150px;
 }
 
-.sensor-header {
-  background-color: #000;
+.sensor {
+  background-color: #ffd700;
+  color: #000;
 }
 
-.module-header {
+.module {
   background-color: #888;
+  color: #fff;
 }
 
 #canvas {
@@ -33,4 +30,37 @@
   z-index: -1;
   width: 800px;
   height: 1000px;
+}
+
+.hover-button {
+  width: 25px;
+  height: 15px;
+  position: relative;
+  display: inline-block;
+}
+
+.hover-button .tooltip {
+  visibility: hidden;
+  width: 120px;
+  background-color: white;
+  border: 1px solid black;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  left: 50%;
+  margin-left: -60px;
+  z-index: 1;
+}
+
+.hover-button .tooltip-bottom {
+  top: 100%;
+}
+
+.hover-button .tooltip-top {
+  bottom: 100%;
+}
+
+.hover-button:hover .tooltip {
+  visibility: visible;
 }

@@ -1,7 +1,9 @@
+import { SensorInner, ModuleInner } from './graph';
+
 type NodeType = 'module' | 'sensor';
 
 let topNext = 100;
-const topDelta = 150;
+const topDelta = 200;
 const graph = document.getElementById('graph');
 const canvas = document.getElementById("canvas");
 const COLORS = {
@@ -53,7 +55,7 @@ export module GraphHTML {
     incomingEdges: SVGLineElement[],
   ) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    document.getElementById(elem.id + "-header").onmousedown = dragMouseDown;
+    document.getElementById(elem.id).onmousedown = dragMouseDown;
 
     function dragMouseDown(e: MouseEvent) {
       e.preventDefault();
@@ -97,6 +99,8 @@ export module GraphHTML {
   function _renderNode(
     id: string,
     ty: NodeType,
+    inputs: string[],
+    outputs: string[],
     outgoingEdges: SVGLineElement[],
     incomingEdges: SVGLineElement[],
   ): HTMLDivElement {
@@ -105,34 +109,57 @@ export module GraphHTML {
     node.className = "node " + ty;
     node.style.top = topNext.toString() + 'px';
     topNext += topDelta;
-    let header = document.createElement("div");
-    header.id = id + "-header";
-    header.className = "node-header " + ty + "-header";
-    header.appendChild(document.createTextNode("Click here to move"))
+    let header = document.createElement("p");
+    inputs.forEach(function(val) {
+      let button = document.createElement('button');
+      button.className = 'hover-button'
+      let tooltip = document.createElement('span');
+      tooltip.className = 'tooltip tooltip-top'
+      tooltip.appendChild(document.createTextNode(val))
+      button.appendChild(tooltip)
+      header.appendChild(button)
+    })
+    let footer = document.createElement('p');
+    outputs.forEach(function(val) {
+      let button = document.createElement('button');
+      button.className = 'hover-button'
+      let tooltip = document.createElement('span');
+      tooltip.className = 'tooltip tooltip-bottom'
+      tooltip.appendChild(document.createTextNode(val))
+      button.appendChild(tooltip)
+      footer.appendChild(button)
+    })
     let p = document.createElement("p");
     p.appendChild(document.createTextNode(id));
     node.appendChild(header);
     node.appendChild(p);
+    node.appendChild(footer);
     // modify the DOM
     graph.appendChild(node);
     _dragElement(node, outgoingEdges, incomingEdges);
     return node;
   }
 
-  export function renderModule(
-    id: string,
-    outgoingEdges: SVGLineElement[],
-    incomingEdges: SVGLineElement[],
-  ): HTMLDivElement {
-    return _renderNode(id, 'module', outgoingEdges, incomingEdges)
+  export function renderModule(id: string, inner: ModuleInner): HTMLDivElement {
+    return _renderNode(
+      id,
+      'module',
+      inner.value.params,
+      inner.value.returns,
+      inner.outgoing_edges,
+      inner.incoming_edges,
+    )
   }
 
-  export function renderSensor(
-    id: string,
-    outgoingEdges: SVGLineElement[],
-    incomingEdges: SVGLineElement[],
-  ): HTMLDivElement {
-    return _renderNode(id, 'sensor', outgoingEdges, incomingEdges)
+  export function renderSensor(id: string, inner: SensorInner): HTMLDivElement {
+    return _renderNode(
+      id,
+      'sensor',
+      inner.value.state_keys,
+      inner.value.returns,
+      inner.outgoing_edges,
+      inner.incoming_edges,
+    )
   }
 
   export function renderDataEdge(
