@@ -15,6 +15,8 @@
           <button id="button-C">C</button>
           <button id="button-D">D</button>
           <button id="button-E">E</button>
+          <button id="reset-button">Reset</button>
+          <button id="save-button">Save Graph</button>
         </div>
         <svg id="canvas"></svg>
         <div id="graph"></div>
@@ -33,19 +35,99 @@
         <form id="module-form"></form>
         <h1>Edge Modifier</h1>
         <form id="edge-form"></form>
-        <div class="button-container">
-          <button id="reset-button">Reset</button>
-        </div>
       </div>
       <div class="container" id="modules-container">
-        <h1>Global Repository</h1>
-        <form id="register-module-form"></form>
+        <h1>Internet Repository</h1>
+        <form id="register-module-form">
+          <p>
+            <label for="module-select">Global Module ID:</label>
+            <input type="text">
+          </p>
+          <p>
+            Description: This is a description of the module functionality.
+            For details about the parameters and return values, hover over
+            the buttons in the graph.
+          </p>
+          <p>
+            Parameters:
+            <ul>
+              <li>image - This is a description of module parameter or sensor state key.</li>
+            </ul>
+          </p>
+          <p>
+            Return Values:
+            <ul>
+              <li>box_count - This is a description of the module or sensor return value.</li>
+              <li>box - This is a description of the module or sensor return value.</li>
+              <li>count - This is a description of the module or sensor return value.</li>
+            </ul>
+          </p>
+          <button onclick=>Register Module</button>
+          <span id="register-module-error" class="error">Invalid module ID.</span>
+        </form>
+        <h1>Registered Modules</h1>
+        <form>
+          <ul>
+            <li>person_detection_1</li>
+            <li>differential_privacy</li>
+          </ul>
+        </form>
       </div>
       <div class="container" id="homecloud-container">
         <h1>Sensors</h1>
-        <form id="verify-sensor-form"></form>
+        <form id="verify-sensor-form">
+          <div class="modal">
+            <p>Sensor ID: <span>camera</span></p>
+            <p>Attestation: <span>QWERTY9876</span></p>
+            <div class="button-container">
+              <button>Confirm</button>
+              <button>Cancel</button>
+            </div>
+          </div>
+          <div class="modal">
+            <p>Sensor ID: <span>camera_1</span></p>
+            <p>Attestation: <span>QWERTY1234</span></p>
+            <div class="button-container">
+              <button>Confirm</button>
+              <button>Cancel</button>
+            </div>
+          </div>
+          <ul>
+            <li>bathroom_bulb</li>
+            <li>kitchen_bulb</li>
+            <li>mic</li>
+            <li>mic_1</li>
+          </ul>
+          <p><button>Refresh</button></p>
+        </form>
         <h1>Hosts</h1>
-        <form id="verify-host-form"></form>
+        <form id="verify-host-form">
+          <div class="modal">
+            <p>HostID: <span>RaspberryPi3</span></p>
+            <div class="button-container">
+              <button>Confirm</button>
+              <button>Cancel</button>
+            </div>
+          </div>
+          <table>
+            <tr>
+              <th>Host ID</th>
+              <th>Active Modules</th>
+              <th>Online</th>
+            </tr>
+            <tr>
+              <td>MyOldLaptop</td>
+              <td>8</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>GinasMacbookPro</td>
+              <td>0</td>
+              <td>No</td>
+            </tr>
+          </table>
+          <p><button>Refresh</button></p>
+        </form>
       </div>
     </div>
     <script src="bundle.js"></script>

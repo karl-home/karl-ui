@@ -206,7 +206,10 @@ export module EdgeHTML {
   function _setSourceElem(elem: HTMLButtonElement) {
     let id = elem.getAttribute('node-id')
     let val = elem.getAttribute('name')
-    let name = `${id} (${val})`
+    // TODO: insert source description
+    let description =
+      'This is a description of the module or sensor return value.'
+    let name = `${val} (${id}) - ${description}`
     if (sourceElem === elem) {
       sourceElem.style.backgroundColor = '';
       sourceElem = undefined
@@ -225,7 +228,10 @@ export module EdgeHTML {
   function _setTargetElem(elem: HTMLButtonElement) {
     let id = elem.getAttribute('node-id')
     let val = elem.getAttribute('name')
-    let name = `${id} (${val})`
+    // TODO: insert target description
+    let description =
+      'This is a description of module parameter or sensor state key.'
+    let name = `${val} (${id}) - ${description}`
     if (targetElem === elem) {
       targetElem.style.backgroundColor = '';
       targetElem = undefined

@@ -41,24 +41,25 @@
 
 .hover-button .tooltip {
   visibility: hidden;
-  width: 120px;
+  width: 250px;
   background-color: white;
   border: 1px solid black;
-  text-align: center;
-  padding: 5px 0;
+  text-align: left;
+  padding: 5px;
   border-radius: 6px;
   position: absolute;
-  left: 50%;
-  margin-left: -60px;
+  margin-left: -15px;
   z-index: 1;
 }
 
 .hover-button .tooltip-bottom {
   top: 100%;
+  margin-top: 5px;
 }
 
 .hover-button .tooltip-top {
   bottom: 100%;
+  margin-bottom: 5px;
 }
 
 .hover-button:hover .tooltip {
@@ -91,7 +92,7 @@
 .right .container {
   padding: 20px;
   /* 46px navbar + 20px padding top + 20px padding bottom */
-  height: calc(100% - 86px);
+  height: 100%;
 }
 
 .right #graph-container {
@@ -103,7 +104,7 @@
 }
 
 .right #homecloud-container {
-  background-color: #ffcce6;
+  background-color: #ff9966;
 }
 
 form {
@@ -128,16 +129,6 @@ line {
   position: absolute;
   top: 5px;
   left: 5px;
-}
-
-.button-container {
-  padding-top: 20px;
-  text-align: center;
-}
-
-.button-container button {
-  font-size: large;
-  font-weight: bold;
 }
 
 .navbar ul {
@@ -168,4 +159,30 @@ line {
 .navbar a.active {
   font-weight: bold;
   text-decoration: underline;
+}
+
+#homecloud-container div.button-container {
+  text-align: right;
+}
+
+#homecloud-container th, td {
+  padding: 5px;
+  text-align: left;
+}
+
+.modal {
+  padding: 8px;
+  background-color: #ddd;
+  border: 1px solid black;
+  border-radius: 6px;
+  margin-bottom: 5px;
+}
+
+.modal p {
+  margin: 2px;
+}
+
+.error {
+  color: red;
+  padding-left: 5px;
 }

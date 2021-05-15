@@ -148,7 +148,9 @@ export module GraphHTML {
       };
       let tooltip = document.createElement('span');
       tooltip.className = 'tooltip tooltip-top'
-      tooltip.appendChild(document.createTextNode(val))
+      // TODO: target description
+      tooltip.appendChild(document.createTextNode(val + ' - ' +
+        'This is a description of module parameter or sensor state key.'))
       button.appendChild(tooltip)
       header.appendChild(button)
       incomingButtons.push(button)
@@ -165,7 +167,9 @@ export module GraphHTML {
       };
       let tooltip = document.createElement('span');
       tooltip.className = 'tooltip tooltip-bottom'
-      tooltip.appendChild(document.createTextNode(val))
+      // TODO: source description
+      tooltip.appendChild(document.createTextNode(val + ' - ' +
+        'This is a description of the module or sensor return value.'))
       button.appendChild(tooltip)
       footer.appendChild(button)
       outgoingButtons.push(button)

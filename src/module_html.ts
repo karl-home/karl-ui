@@ -9,12 +9,14 @@ export module ModuleHTML {
   let moduleIDSpan: HTMLSpanElement;
   let networkSpan: HTMLSpanElement;
   let intervalSpan: HTMLSpanElement;
+  let descriptionSpan: HTMLSpanElement;
   let buttonContainer: HTMLDivElement = undefined;
 
   function _renderDefaultForm() {
     moduleIDSpan.innerText = '-'
     networkSpan.innerText = '-'
     intervalSpan.innerText = '-'
+    descriptionSpan.innerText = '-'
     if (buttonContainer !== undefined) {
       buttonContainer.remove()
       buttonContainer = undefined;
@@ -25,6 +27,11 @@ export module ModuleHTML {
     moduleIDSpan.innerText = inner.value.id
     networkSpan.innerText = ''
     intervalSpan.innerText = ''
+    // TODO: insert module descriptions
+    descriptionSpan.innerText =
+      'This is a description of the module functionality. For details ' +
+      'about the parameters and return values, hover over the buttons ' +
+      'in the graph.';
 
     let networkInput = document.createElement('textarea')
     networkInput.rows = 3
@@ -45,9 +52,9 @@ export module ModuleHTML {
       buttonContainer.remove()
     }
     buttonContainer = document.createElement('div')
-    let button = document.createElement('button')
-    button.innerText = 'Save'
-    button.onclick = function(e) {
+    let saveButton = document.createElement('button')
+    saveButton.innerText = 'Save'
+    saveButton.onclick = function(e) {
       e.preventDefault()
       g.remove_network_edges(inner.value.id)
       networkInput.value.split('\n').forEach(function(domain) {
@@ -58,7 +65,15 @@ export module ModuleHTML {
       g.set_interval(inner.value.id, parseInt(intervalInput.value))
       _renderViewForm(node, inner)
     }
-    buttonContainer.appendChild(button)
+    let deleteButton = document.createElement('button')
+    deleteButton.innerText = 'Delete'
+    deleteButton.onclick = function(e) {
+      e.preventDefault()
+      g.remove_module(inner.value.id)
+      _renderDefaultForm()
+    }
+    buttonContainer.appendChild(saveButton)
+    buttonContainer.appendChild(deleteButton)
     document.getElementById('module-form').appendChild(buttonContainer)
   }
 
@@ -72,6 +87,11 @@ export module ModuleHTML {
     } else {
       intervalSpan.innerText = '-'
     }
+    // TODO: insert module descriptions
+    descriptionSpan.innerText =
+      'This is a description of the module functionality. For details ' +
+      'about the parameters and return values, hover over the buttons ' +
+      'in the graph.';
 
     if (buttonContainer !== undefined) {
       buttonContainer.remove()
@@ -83,15 +103,14 @@ export module ModuleHTML {
       e.preventDefault()
       _renderEditForm(node, inner)
     }
-    let deleteButton = document.createElement('button')
-    deleteButton.innerText = 'Delete'
-    deleteButton.onclick = function(e) {
+    let spawnButton = document.createElement('button')
+    spawnButton.innerText = 'Spawn'
+    spawnButton.onclick = function(e) {
       e.preventDefault()
-      g.remove_module(inner.value.id)
-      _renderDefaultForm()
+      console.error("unimplemented: spawn")
     }
     buttonContainer.appendChild(editButton)
-    buttonContainer.appendChild(deleteButton)
+    buttonContainer.appendChild(spawnButton)
     document.getElementById('module-form').appendChild(buttonContainer)
   }
 
@@ -123,12 +142,17 @@ export module ModuleHTML {
     interval.appendChild(document.createTextNode('Interval (s): '))
     intervalSpan = document.createElement('span')
     interval.appendChild(intervalSpan);
+    let description = document.createElement('p')
+    description.appendChild(document.createTextNode('Description: '))
+    descriptionSpan = document.createElement('span')
+    description.appendChild(descriptionSpan)
 
     // Add the elements to the UI
     let form = document.getElementById('module-form')
     form.appendChild(moduleID)
     form.appendChild(network)
     form.appendChild(interval)
+    form.appendChild(description)
     _renderDefaultForm()
   }
 }
