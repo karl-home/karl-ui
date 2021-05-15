@@ -95,8 +95,15 @@ export module ModuleHTML {
       g.remove_module(inner.value.id)
       _renderDefaultForm()
     }
+    let cancelButton = document.createElement('button')
+    cancelButton.innerText = 'Cancel'
+    cancelButton.onclick = function(e) {
+      e.preventDefault()
+      _renderViewForm(node, inner)
+    }
     buttonContainer.appendChild(saveButton)
     buttonContainer.appendChild(deleteButton)
+    buttonContainer.appendChild(cancelButton)
     document.getElementById('module-form').appendChild(buttonContainer)
   }
 
