@@ -247,7 +247,31 @@ export module GraphHTML {
     return line;
   }
 
-  export function renderStateEdge(source: HTMLElement, target: HTMLElement) {
-
+  export function renderStateEdge(
+    sourceNode: HTMLElement,
+    sourceButton: HTMLButtonElement,
+    sourceOffset: number,
+    targetNode: HTMLElement,
+    targetButton: HTMLButtonElement,
+    targetOffset: number,
+  ) {
+    let x1 = sourceNode.offsetLeft + sourceNode.offsetWidth / 2 + sourceOffset;
+    let y1 = sourceNode.offsetTop + sourceNode.offsetHeight;
+    let x2 = targetNode.offsetLeft + targetNode.offsetWidth / 2 + targetOffset;
+    let y2 = targetNode.offsetTop;
+    // https://dev.to/gavinsykes/appending-a-child-to-an-svg-using-pure-javascript-1h9g
+    let line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1.toString());
+    line.setAttribute('y1', y1.toString());
+    line.setAttribute('x2', x2.toString());
+    line.setAttribute('y2', y2.toString());
+    line.setAttribute('marker-end', 'url(#endarrow-state)');
+    line.setAttribute('stroke', 'red');
+    line.setAttribute('stroke-width', '3px');
+    line.onclick = function(e) {
+      EdgeHTML.clickEdge(sourceButton, targetButton, 'state');
+    }
+    canvas.append(line);
+    return line;
   }
 }

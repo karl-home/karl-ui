@@ -87,8 +87,13 @@ export module EdgeHTML {
           module_id: targetElem.getAttribute('node-id'),
           module_param: targetElem.getAttribute('name'),
         })
-      } else {
-        console.error(`unhandled edge type: ${edgeType}`)
+      } else if (edgeType == 'state') {
+        g.add_state_edge({
+          module_id: sourceElem.getAttribute('node-id'),
+          module_ret: sourceElem.getAttribute('name'),
+          sensor_id: targetElem.getAttribute('node-id'),
+          sensor_key: targetElem.getAttribute('name'),
+        })
       }
       _resetForm()
     }

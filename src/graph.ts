@@ -70,6 +70,22 @@ function dataEdgeEquals(e1: DataEdge, e2: DataEdge): boolean {
     && e1.module_param == e2.module_param;
 }
 
+function stateEdgeEquals(e1: StateEdge, e2: StateEdge): boolean {
+  return e1.module_id == e2.module_id
+    && e1.module_ret == e2.module_ret
+    && e1.sensor_id == e2.sensor_id
+    && e1.sensor_key == e2.sensor_key;
+}
+
+function networkEdgeEquals(e1: NetworkEdge, e2: NetworkEdge): boolean {
+  return e1.module_id == e2.module_id && e1.domain == e2.domain
+}
+
+function buttonOffset(index: number, length: number): number {
+  const buttonWidth = 25;
+  return buttonWidth * ((index + 1) - length / 2.0 - 0.5);
+}
+
 export class Graph {
   sensors: { [key: string]: SensorInner }
   modules: { [key: string]: ModuleInner }
@@ -127,6 +143,10 @@ export class Graph {
   }
 
   add_state_edge(edge: StateEdge): boolean {
+    function eq(other: StateEdge): boolean {
+      return stateEdgeEquals(edge, other)
+    }
+
     if (this.sensors.hasOwnProperty(edge.module_id)) {
       console.error("state edge output cannot be a sensor")
     } else if (this.modules.hasOwnProperty(edge.sensor_id)) {
@@ -139,13 +159,27 @@ export class Graph {
       console.error("output return value does not exist")
     } else if (!this.sensors[edge.sensor_id].value.state_keys.includes(edge.sensor_key)) {
       console.error("input state key does not exist")
-    } else if (this.modules[edge.module_id].state_edges.includes(edge)) {
+    } else if (this.modules[edge.module_id].state_edges.findIndex(eq) != -1) {
       console.error("state edge already exists")
     } else {
-      let source = this.modules[edge.module_id].html;
-      let target = this.sensors[edge.sensor_id].html;
-      GraphHTML.renderStateEdge(source, target);
-      this.modules[edge.module_id].state_edges.push(edge)
+      let source = this.modules[edge.module_id];
+      let target = this.sensors[edge.sensor_id];
+
+      let sourceReturns = source.value.returns;
+      let targetKeys = target.value.state_keys;
+      let sourceIndex = sourceReturns.indexOf(edge.module_ret);
+      let targetIndex = targetKeys.indexOf(edge.sensor_key);
+      let html = GraphHTML.renderStateEdge(
+        source.html,
+        source.outgoing_buttons[sourceIndex],
+        buttonOffset(sourceIndex, sourceReturns.length),
+        target.html,
+        target.incoming_buttons[targetIndex],
+        buttonOffset(targetIndex, targetKeys.length),
+      );
+      source.state_edges.push(edge)
+      source.outgoing_edges.push(html);
+      target.incoming_edges.push(html);
       return true
     }
     console.error(JSON.stringify(edge))
@@ -153,11 +187,15 @@ export class Graph {
   }
 
   add_network_edge(edge: NetworkEdge): boolean {
+    function eq(other: NetworkEdge): boolean {
+      return networkEdgeEquals(edge, other)
+    }
+
     if (this.sensors.hasOwnProperty(edge.module_id)) {
       console.error("network edge output cannot be a sensor")
     } else if (!this.modules.hasOwnProperty(edge.module_id)) {
       console.error("output module does not exist")
-    } else if (this.modules[edge.module_id].network_edges.includes(edge)) {
+    } else if (this.modules[edge.module_id].network_edges.findIndex(eq) != -1) {
       console.error("network edge already exists")
     } else {
       // TODO
@@ -183,11 +221,6 @@ export class Graph {
   }
 
   add_data_edge(edge: DataEdge): boolean {
-    function offset(index: number, length: number): number {
-      const buttonWidth = 25;
-      return buttonWidth * ((index + 1) - length / 2.0 - 0.5);
-    }
-
     if (this.sensors.hasOwnProperty(edge.module_id)) {
       console.error("state edge input cannot be a sensor")
     } else if (!this.modules.hasOwnProperty(edge.module_id)) {
@@ -222,10 +255,10 @@ export class Graph {
         let html = GraphHTML.renderDataEdge(
           source.html,
           source.outgoing_buttons[sourceIndex],
-          offset(sourceIndex, sourceReturns.length),
+          buttonOffset(sourceIndex, sourceReturns.length),
           target.html,
           target.incoming_buttons[targetIndex],
-          offset(targetIndex, targetParams.length),
+          buttonOffset(targetIndex, targetParams.length),
           edge.stateless,
         );
         sourceDataEdges.push(edge)
