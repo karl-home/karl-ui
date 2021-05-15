@@ -23,7 +23,7 @@ export module EdgeHTML {
     }
   }
 
-  function _resetForm() {
+  export function resetForm() {
     sourceName.innerText = '-'
     targetName.innerText = '-'
     edgeTypeName.innerText = '-'
@@ -53,7 +53,7 @@ export module EdgeHTML {
           module_id: targetElem.getAttribute('node-id'),
           module_param: targetElem.getAttribute('name'),
         })
-        _resetForm()
+        resetForm()
       } else if (edgeType == 'state') {
         g.remove_state_edge({
           module_id: sourceElem.getAttribute('node-id'),
@@ -61,7 +61,7 @@ export module EdgeHTML {
           sensor_id: targetElem.getAttribute('node-id'),
           sensor_key: targetElem.getAttribute('name'),
         })
-        _resetForm()
+        resetForm()
       } else {
         console.error(`tried to delete unknown edge type: ${edgeType}`)
       }
@@ -108,7 +108,7 @@ export module EdgeHTML {
           sensor_key: targetElem.getAttribute('name'),
         })
       }
-      _resetForm()
+      resetForm()
     }
 
     _removeButtonContainer()
@@ -191,9 +191,9 @@ export module EdgeHTML {
     stateless?: boolean,
   ): void {
     if (sourceElem == sourceButton && targetElem == targetButton) {
-      _resetForm()
+      resetForm()
     } else {
-      _resetForm()
+      resetForm()
       _setSourceElem(sourceButton)
       _setTargetElem(targetButton)
       if (edgeType == 'data') {
@@ -244,7 +244,7 @@ export module EdgeHTML {
   export function clickSource(elem: HTMLButtonElement) {
     if (buttonContainer !== undefined) {
       if (buttonContainer.getAttribute('form-type') == 'delete') {
-        _resetForm()
+        resetForm()
       }
     }
     _setSourceElem(elem)
@@ -253,7 +253,7 @@ export module EdgeHTML {
   export function clickTarget(elem: HTMLButtonElement) {
     if (buttonContainer !== undefined) {
       if (buttonContainer.getAttribute('form-type') == 'delete') {
-        _resetForm()
+        resetForm()
       }
     }
     _setTargetElem(elem)

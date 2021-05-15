@@ -1,4 +1,5 @@
 import { GraphHTML } from './graph_html';
+import { EdgeHTML } from './edge_html';
 
 export const NETWORK_NODE_ID: string = "NET";
 
@@ -138,6 +139,50 @@ export class Graph {
       inner.html = GraphHTML.renderModule(mod.id, inner);
       GraphHTML.renderModuleProperties(inner)
       this.modules[mod.id] = inner;
+      return true
+    }
+  }
+
+  remove_module(module_id: ModuleID): boolean {
+    let mod = this.modules[module_id]
+    if (mod === undefined) {
+      console.error(`deleted module id does not exist: ${module_id}`)
+      return false
+    } else {
+      // remove all outgoing edges from the module.
+      // clone to ensure data_edges is not being mutated in two places.
+      mod.data_edges.map(edge => Object.assign({}, edge))
+        .forEach(edge => this.remove_data_edge(edge));
+      mod.state_edges.map(edge => Object.assign({}, edge))
+        .forEach(edge => this.remove_state_edge(edge));
+      // iterate through all sensors and modules to find incoming edges...
+      Object.values(this.sensors).forEach(inner => {
+        inner.edges.filter(edge => edge.module_id == module_id)
+          .map(edge => Object.assign({}, edge))
+          .forEach(edge => this.remove_data_edge(edge));
+      })
+      Object.values(this.modules).forEach(inner => {
+        inner.data_edges.filter(edge => edge.module_id == module_id)
+          .map(edge => Object.assign({}, edge))
+          .forEach(edge => this.remove_data_edge(edge));
+      })
+      // reset the edge modifier if any button is active
+      let activeButton = false
+      mod.incoming_buttons.forEach(button => {
+        if (button.style.backgroundColor) {
+          activeButton = true
+        }
+      })
+      mod.outgoing_buttons.forEach(button => {
+        if (button.style.backgroundColor) {
+          activeButton = true
+        }
+      })
+      if (activeButton) {
+        EdgeHTML.resetForm()
+      }
+      mod.html.remove()
+      delete this.modules[module_id]
       return true
     }
   }

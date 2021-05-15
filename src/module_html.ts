@@ -77,13 +77,21 @@ export module ModuleHTML {
       buttonContainer.remove()
     }
     buttonContainer = document.createElement('div')
-    let button = document.createElement('button')
-    button.innerText = 'Edit'
-    button.onclick = function(e) {
+    let editButton = document.createElement('button')
+    editButton.innerText = 'Edit'
+    editButton.onclick = function(e) {
       e.preventDefault()
       _renderEditForm(node, inner)
     }
-    buttonContainer.appendChild(button)
+    let deleteButton = document.createElement('button')
+    deleteButton.innerText = 'Delete'
+    deleteButton.onclick = function(e) {
+      e.preventDefault()
+      g.remove_module(inner.value.id)
+      _renderDefaultForm()
+    }
+    buttonContainer.appendChild(editButton)
+    buttonContainer.appendChild(deleteButton)
     document.getElementById('module-form').appendChild(buttonContainer)
   }
 
