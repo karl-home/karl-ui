@@ -6,25 +6,46 @@
   </head>
   <body>
     <div class="split left">
-      <div>
-        <button id="figure4">Figure 4</button>
-        <button id="figure5">Figure 5</button>
-        <button id="button-A">A</button>
-        <button id="button-B">B</button>
-        <button id="button-C">C</button>
-        <button id="button-D">D</button>
-        <button id="button-E">E</button>
+      <div class="container">
+        <div>
+          <button id="figure4">Figure 4</button>
+          <button id="figure5">Figure 5</button>
+          <button id="button-A">A</button>
+          <button id="button-B">B</button>
+          <button id="button-C">C</button>
+          <button id="button-D">D</button>
+          <button id="button-E">E</button>
+        </div>
+        <svg id="canvas"></svg>
+        <div id="graph"></div>
       </div>
-      <svg id="canvas"></svg>
-      <div id="graph"></div>
     </div>
     <div class="split right">
-      <h1>Edge Modifier</h1>
-      <form id="edge-form"></form>
-      <h1>Module Modifier</h1>
-      <form id="module-form"></form>
-      <div class="button-container">
-        <button id="reset-button">Reset</button>
+      <div class="navbar">
+        <ul>
+          <li><a name="graph">Graph</a></li>
+          <li><a name="modules">Modules</a></li>
+          <li><a name="homecloud">Home Cloud</a></li>
+        </ul>
+      </div>
+      <div class="container" id="graph-container">
+        <h1>Module Modifier</h1>
+        <form id="module-form"></form>
+        <h1>Edge Modifier</h1>
+        <form id="edge-form"></form>
+        <div class="button-container">
+          <button id="reset-button">Reset</button>
+        </div>
+      </div>
+      <div class="container" id="modules-container">
+        <h1>Global Repository</h1>
+        <form id="register-module-form"></form>
+      </div>
+      <div class="container" id="homecloud-container">
+        <h1>Sensors</h1>
+        <form id="verify-sensor-form"></form>
+        <h1>Hosts</h1>
+        <form id="verify-host-form"></form>
       </div>
     </div>
     <script src="bundle.js"></script>
