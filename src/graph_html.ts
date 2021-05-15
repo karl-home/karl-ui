@@ -254,7 +254,7 @@ export module GraphHTML {
     targetNode: HTMLElement,
     targetButton: HTMLButtonElement,
     targetOffset: number,
-  ) {
+  ): SVGLineElement {
     let x1 = sourceNode.offsetLeft + sourceNode.offsetWidth / 2 + sourceOffset;
     let y1 = sourceNode.offsetTop + sourceNode.offsetHeight;
     let x2 = targetNode.offsetLeft + targetNode.offsetWidth / 2 + targetOffset;

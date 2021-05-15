@@ -186,6 +186,43 @@ export class Graph {
     return false
   }
 
+  remove_state_edge(edge: StateEdge): boolean {
+    function eq(other: StateEdge): boolean {
+      return stateEdgeEquals(edge, other)
+    }
+
+    let source = this.modules[edge.module_id]
+    let target = this.sensors[edge.sensor_id]
+    if (source === undefined) {
+      console.error("output module does not exist")
+    } else if (target === undefined) {
+      console.error("input sensor does not exist")
+    } else {
+      let sourceIndex = source.state_edges.findIndex(eq);
+      if (sourceIndex == -1) {
+        console.error("state edge does not exist")
+      } else {
+        source.state_edges.splice(sourceIndex, 1)
+        let deleted = source.outgoing_edges.splice(sourceIndex, 1);
+        if (deleted.length > 0) {
+          let line = deleted[0]
+          let targetIndex = target.incoming_edges.indexOf(line)
+          if (targetIndex != -1) {
+            target.incoming_edges.splice(targetIndex, 1);
+            line.remove()
+          } else {
+            console.error('failed to delete SVG line from incoming edges')
+          }
+        } else {
+          console.error('failed to delete SVG line from outgoing edges')
+        }
+        return true
+      }
+    }
+    console.error(JSON.stringify(edge))
+    return false
+  }
+
   add_network_edge(edge: NetworkEdge): boolean {
     function eq(other: NetworkEdge): boolean {
       return networkEdgeEquals(edge, other)

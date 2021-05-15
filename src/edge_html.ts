@@ -43,15 +43,28 @@ export module EdgeHTML {
   function _renderDeleteButtons() {
     function deleteEdge(e: MouseEvent, g: Graph) {
       e.preventDefault()
-      let stateless: boolean = statelessCheckbox.checked;
-      g.remove_data_edge({
-        stateless: stateless,
-        out_id: sourceElem.getAttribute('node-id'),
-        out_ret: sourceElem.getAttribute('name'),
-        module_id: targetElem.getAttribute('node-id'),
-        module_param: targetElem.getAttribute('name'),
-      })
-      _resetForm()
+      let edgeType = edgeTypeName.innerText;
+      if (edgeType == 'data') {
+        let stateless: boolean = statelessCheckbox.checked;
+        g.remove_data_edge({
+          stateless: stateless,
+          out_id: sourceElem.getAttribute('node-id'),
+          out_ret: sourceElem.getAttribute('name'),
+          module_id: targetElem.getAttribute('node-id'),
+          module_param: targetElem.getAttribute('name'),
+        })
+        _resetForm()
+      } else if (edgeType == 'state') {
+        g.remove_state_edge({
+          module_id: sourceElem.getAttribute('node-id'),
+          module_ret: sourceElem.getAttribute('name'),
+          sensor_id: targetElem.getAttribute('node-id'),
+          sensor_key: targetElem.getAttribute('name'),
+        })
+        _resetForm()
+      } else {
+        console.error(`tried to delete unknown edge type: ${edgeType}`)
+      }
     }
 
     if (buttonContainer !== undefined) {
