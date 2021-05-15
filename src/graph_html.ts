@@ -76,7 +76,7 @@ export module GraphHTML {
     // pos1 pos2 are the deltas
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     var dragged = false;
-    document.getElementById(elem.id).onmousedown = dragMouseDown;
+    elem.onmousedown = dragMouseDown;
 
     function dragMouseDown(e: MouseEvent) {
       e.preventDefault();
@@ -129,14 +129,8 @@ export module GraphHTML {
     outputs: string[],
     outgoingButtons: HTMLButtonElement[],
     incomingButtons: HTMLButtonElement[],
-    idTag?: string,
   ): HTMLDivElement {
     let node = document.createElement("div");
-    if (idTag) {
-      node.id = `${id}-${idTag}`
-    } else {
-      node.id = id;
-    }
     let loc = _nextNodeLocation()
     node.className = "node " + ty;
     node.style.top = loc.top.toString() + 'px';
@@ -233,7 +227,6 @@ export module GraphHTML {
       inner.value.returns,
       inner.outgoing_buttons,
       inner.incoming_buttons,
-      'out',
     )
     let nodeIn = _renderNode(
       id,
@@ -242,7 +235,6 @@ export module GraphHTML {
       [],
       inner.outgoing_buttons,
       inner.incoming_buttons,
-      'in',
     )
     // only affect the correct edges when dragged
     _dragElement(nodeOut, inner.outgoing_edges, []);
