@@ -114,9 +114,14 @@ export module GraphHTML {
     outputs: string[],
     outgoingButtons: HTMLButtonElement[],
     incomingButtons: HTMLButtonElement[],
+    idTag?: string,
   ): HTMLDivElement {
     let node = document.createElement("div");
-    node.id = id;
+    if (idTag) {
+      node.id = `${id}-${idTag}`
+    } else {
+      node.id = id;
+    }
     node.className = "node " + ty;
     node.style.top = topNext.toString() + 'px';
     topNext += topDelta;
@@ -202,17 +207,32 @@ export module GraphHTML {
     return node
   }
 
-  export function renderSensor(id: string, inner: SensorInner): HTMLDivElement {
-    let node = _renderNode(
+  export function renderSensor(
+    id: string,
+    inner: SensorInner,
+  ): [HTMLDivElement, HTMLDivElement] {
+    let nodeOut = _renderNode(
       id,
       'sensor',
-      inner.value.state_keys,
+      [],
       inner.value.returns,
       inner.outgoing_buttons,
       inner.incoming_buttons,
+      'out',
     )
-    _dragElement(node, inner.outgoing_edges, inner.incoming_edges);
-    return node
+    let nodeIn = _renderNode(
+      id,
+      'sensor',
+      inner.value.state_keys,
+      [],
+      inner.outgoing_buttons,
+      inner.incoming_buttons,
+      'in',
+    )
+    // only affect the correct edges when dragged
+    _dragElement(nodeOut, inner.outgoing_edges, []);
+    _dragElement(nodeIn, [], inner.incoming_edges);
+    return [nodeOut, nodeIn]
   }
 
   export function renderDataEdge(

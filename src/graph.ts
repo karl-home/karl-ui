@@ -43,7 +43,8 @@ export interface DataEdge {
 export interface SensorInner {
   value: Sensor;
   edges: DataEdge[];
-  html: HTMLElement;
+  htmlOut: HTMLElement;
+  htmlIn: HTMLElement;
   outgoing_edges: SVGLineElement[];
   incoming_edges: SVGLineElement[];
   outgoing_buttons: HTMLButtonElement[];
@@ -109,13 +110,16 @@ export class Graph {
       let inner: SensorInner = {
         value: sensor,
         edges: [],
-        html: undefined,
+        htmlOut: undefined,
+        htmlIn: undefined,
         outgoing_edges: [],
         incoming_edges: [],
         outgoing_buttons: [],
         incoming_buttons: [],
       }
-      inner.html = GraphHTML.renderSensor(sensor.id, inner);
+      let html = GraphHTML.renderSensor(sensor.id, inner);
+      inner.htmlOut = html[0]
+      inner.htmlIn = html[1]
       this.sensors[sensor.id] = inner;
       return true
     }
@@ -218,7 +222,7 @@ export class Graph {
         source.html,
         source.outgoing_buttons[sourceIndex],
         buttonOffset(sourceIndex, sourceReturns.length),
-        target.html,
+        target.htmlIn,
         target.incoming_buttons[targetIndex],
         buttonOffset(targetIndex, targetKeys.length),
       );
@@ -311,12 +315,15 @@ export class Graph {
       console.error("input param does not exist")
     } else {
       var source: ModuleInner | SensorInner;
+      var sourceHTML: HTMLElement;
       var sourceDataEdges: DataEdge[];
       if (this.modules[edge.out_id] !== undefined) {
         source = this.modules[edge.out_id]
+        sourceHTML = source.html;
         sourceDataEdges = source.data_edges
       } else if (this.sensors[edge.out_id] !== undefined) {
         source = this.sensors[edge.out_id]
+        sourceHTML = source.htmlOut
         sourceDataEdges = source.edges
       } else {
         console.error("output entity does not exist")
@@ -335,7 +342,7 @@ export class Graph {
         console.error("data edge already exists")
       } else {
         let html = GraphHTML.renderDataEdge(
-          source.html,
+          sourceHTML,
           source.outgoing_buttons[sourceIndex],
           buttonOffset(sourceIndex, sourceReturns.length),
           target.html,
