@@ -4,8 +4,23 @@ import { ModuleHTML } from './module_html';
 
 type NodeType = 'module' | 'sensor';
 
-let topNext = 100;
-const topDelta = 200;
+const TOP_INITIAL = 100;
+const TOP_DELTA = 120;
+const LEFT_INITIAL = 30;
+const LEFT_DELTA = 170;
+const COLS = 4
+let nnodes = 0
+
+function _nextNodeLocation(): { top: number, left: number } {
+  let row = Math.floor(nnodes / COLS)
+  let col = nnodes - row * COLS
+  nnodes += 1
+  return {
+    top: TOP_INITIAL + row * TOP_DELTA,
+    left: LEFT_INITIAL + col * LEFT_DELTA,
+  }
+}
+
 const graph = document.getElementById('graph');
 const canvas = document.getElementById("canvas");
 const COLORS = {
@@ -122,9 +137,10 @@ export module GraphHTML {
     } else {
       node.id = id;
     }
+    let loc = _nextNodeLocation()
     node.className = "node " + ty;
-    node.style.top = topNext.toString() + 'px';
-    topNext += topDelta;
+    node.style.top = loc.top.toString() + 'px';
+    node.style.left = loc.left.toString() + 'px';
     let header = document.createElement('div');
     header.className = 'node-header'
     inputs.forEach(function(val) {
@@ -174,7 +190,6 @@ export module GraphHTML {
     // set the background-color of the header based on the network edges
     let header: HTMLElement =
       inner.html.getElementsByClassName('node-header')[0] as HTMLElement
-    console.log(inner.network_edges)
     if (inner.network_edges.length > 0) {
       header.style.backgroundColor = '#32CD32'
     } else {
