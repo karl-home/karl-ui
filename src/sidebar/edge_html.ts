@@ -1,4 +1,4 @@
-import { Graph } from './graph';
+import { Graph } from '../graph';
 
 export module EdgeHTML {
   type EdgeType = 'data' | 'network' | 'state';

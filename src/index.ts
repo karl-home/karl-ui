@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
-import './style.css';
+import './css/style.css';
 import { figure4, figure5, SENSORS, MODULES } from './examples';
 import { Graph } from './graph';
-import { EdgeHTML } from './edge_html';
-import { ModuleHTML } from './module_html';
+import { EdgeHTML } from './sidebar/edge_html';
+import { ModuleHTML } from './sidebar/module_html';
 
 const g = new Graph();
 

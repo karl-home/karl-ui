@@ -1,5 +1,5 @@
-import { GraphHTML } from './graph_html';
-import { EdgeHTML } from './edge_html';
+import { GraphHTML } from './main/graph_html';
+import { EdgeHTML } from './sidebar/edge_html';
 
 export const NETWORK_NODE_ID: string = "NET";
 

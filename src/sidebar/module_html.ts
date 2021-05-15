@@ -1,4 +1,4 @@
-import { ModuleInner, Graph } from './graph';
+import { ModuleInner, Graph } from '../graph';
 
 export module ModuleHTML {
   // graph elements

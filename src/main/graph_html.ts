@@ -1,6 +1,6 @@
-import { ModuleID, SensorInner, ModuleInner } from './graph';
-import { EdgeHTML } from './edge_html';
-import { ModuleHTML } from './module_html';
+import { ModuleID, SensorInner, ModuleInner } from '../graph';
+import { EdgeHTML } from '../sidebar/edge_html';
+import { ModuleHTML } from '../sidebar/module_html';
 
 type NodeType = 'module' | 'sensor';
 
@@ -203,7 +203,7 @@ export module GraphHTML {
     }
     if (inner.hasOwnProperty('interval')) {
       const img = new Image()
-      img.src = require('./clock.png')
+      img.src = require('../img/clock.png')
       img.className = 'icon'
       inner.html.appendChild(img)
     }
