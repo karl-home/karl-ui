@@ -125,6 +125,8 @@ export module GraphHTML {
   function _renderNode(
     id: string,
     ty: NodeType,
+    inputDescs: { [key: string] : string },
+    outputDescs: { [key: string] : string },
     inputs: string[],
     outputs: string[],
     outgoingButtons: HTMLButtonElement[],
@@ -139,18 +141,18 @@ export module GraphHTML {
     header.className = 'node-header'
     inputs.forEach(function(val) {
       let button = document.createElement('button');
+      let description = inputDescs[val] || ''
       button.className = 'hover-button'
       button.setAttribute('node-id', id)
       button.setAttribute('node-type', ty)
       button.setAttribute('name', val)
+      button.setAttribute('description', description)
       button.onclick = function(e) {
         EdgeHTML.clickTarget(button)
       };
       let tooltip = document.createElement('span');
       tooltip.className = 'tooltip tooltip-top'
-      // TODO: target description
-      tooltip.appendChild(document.createTextNode(val + ' - ' +
-        'This is a description of module parameter or sensor state key.'))
+      tooltip.appendChild(document.createTextNode(val + ' - ' + description))
       button.appendChild(tooltip)
       header.appendChild(button)
       incomingButtons.push(button)
@@ -158,18 +160,18 @@ export module GraphHTML {
     let footer = document.createElement('span');
     outputs.forEach(function(val) {
       let button = document.createElement('button');
+      let description = outputDescs[val]
       button.className = 'hover-button'
       button.setAttribute('node-id', id)
       button.setAttribute('node-type', ty)
       button.setAttribute('name', val)
+      button.setAttribute('description', description)
       button.onclick = function(e) {
         EdgeHTML.clickSource(button)
       };
       let tooltip = document.createElement('span');
       tooltip.className = 'tooltip tooltip-bottom'
-      // TODO: source description
-      tooltip.appendChild(document.createTextNode(val + ' - ' +
-        'This is a description of the module or sensor return value.'))
+      tooltip.appendChild(document.createTextNode(val + ' - ' + description))
       button.appendChild(tooltip)
       footer.appendChild(button)
       outgoingButtons.push(button)
@@ -211,6 +213,8 @@ export module GraphHTML {
     let node = _renderNode(
       id,
       'module',
+      inner.value.description.params,
+      inner.value.description.returns,
       inner.value.params,
       inner.value.returns,
       inner.outgoing_buttons,
@@ -227,6 +231,8 @@ export module GraphHTML {
     let nodeOut = _renderNode(
       id,
       'sensor',
+      {},
+      inner.value.description.returns,
       [],
       inner.value.returns,
       inner.outgoing_buttons,
@@ -235,6 +241,8 @@ export module GraphHTML {
     let nodeIn = _renderNode(
       id,
       'sensor',
+      inner.value.description.state_keys,
+      {},
       inner.value.state_keys,
       [],
       inner.outgoing_buttons,

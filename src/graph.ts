@@ -11,13 +11,23 @@ export interface Sensor {
   id: SensorID;
   state_keys: string[];
   returns: string[];
+  description: {
+    state_keys: { [key: string]: string },
+    returns: { [key: string]: string },
+  }
 }
 
 export interface Module {
   id: ModuleID;
-  params: string[];
-  returns: string[];
-  network: boolean;
+  params: string[],
+  returns: string[],
+  network: string[],
+  description: {
+    module: string,
+    params: { [key: string]: string };
+    returns: { [key: string] : string };
+    network: { [key: string] : string };
+  },
 }
 
 export interface StateEdge {

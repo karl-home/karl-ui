@@ -27,11 +27,7 @@ export module ModuleHTML {
     moduleIDSpan.innerText = inner.value.id
     networkSpan.innerText = ''
     intervalSpan.innerText = ''
-    // TODO: insert module descriptions
-    descriptionSpan.innerText =
-      'This is a description of the module functionality. For details ' +
-      'about the parameters and return values, hover over the buttons ' +
-      'in the graph.';
+    descriptionSpan.innerText = inner.value.description.module
 
     let networkInput = document.createElement('textarea')
     networkInput.rows = 3
@@ -87,11 +83,7 @@ export module ModuleHTML {
     } else {
       intervalSpan.innerText = '-'
     }
-    // TODO: insert module descriptions
-    descriptionSpan.innerText =
-      'This is a description of the module functionality. For details ' +
-      'about the parameters and return values, hover over the buttons ' +
-      'in the graph.';
+    descriptionSpan.innerText = inner.value.description.module
 
     if (buttonContainer !== undefined) {
       buttonContainer.remove()
