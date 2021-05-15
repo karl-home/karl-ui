@@ -15,17 +15,14 @@ function component() {
   return element;
 }
 
-const graph = document.getElementById("graph");
+let g = new Graph();
 document.getElementById("figure4").onclick = function() {
-  graph.innerHTML = "";
-  graph.appendChild(figure4().render());
+  figure4(g)
 };
 document.getElementById("figure5").onclick = function() {
-  graph.innerHTML = "";
-  graph.appendChild(figure5().render());
+  figure5(g)
 };
 
-let g = new Graph();
 EdgeHTML.renderInitialForm(g)
 ModuleHTML.renderInitialForm(g)
 document.getElementById("button-A").onclick = function() {

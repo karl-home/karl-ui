@@ -471,7 +471,7 @@ export class Graph {
     }
   }
 
-  render(): HTMLDivElement {
+  textRepr(): HTMLDivElement {
     const div = document.createElement("div");
 
     // Render sensors

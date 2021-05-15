@@ -10,6 +10,7 @@
 .node-header {
   width: 100%;
   padding: 0px;
+  min-height: 25px;
 }
 
 .sensor {

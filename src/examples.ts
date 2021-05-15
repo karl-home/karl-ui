@@ -67,8 +67,8 @@ export const MODULES: { [key: string]: Module } = {
   },
 };
 
-export function figure4(): Graph {
-  const g = new Graph();
+export function figure4(g: Graph) {
+  g.reset()
   g.add_sensor({ id: "mic", state_keys: ["response"], returns: ["sound"] })
   g.add_sensor({ id: "mic_1", state_keys: ["response"], returns: ["sound"] })
   g.add_sensor({ id: "kitchen_bulb", state_keys: ["on"], returns: [] })
@@ -85,7 +85,7 @@ export function figure4(): Graph {
   })
   g.add_data_edge({
     stateless: true,
-    out_id: "mic",
+    out_id: "mic_1",
     out_ret: "sound",
     module_id: "command_classifier",
     module_param: "sound",
@@ -126,11 +126,10 @@ export function figure4(): Graph {
     sensor_id: "bathroom_bulb",
     sensor_key: "on",
   })
-  return g
 }
 
-export function figure5(): Graph {
-  const g = new Graph();
+export function figure5(g: Graph) {
+  g.reset()
   g.add_sensor(SENSORS["camera"])
   g.add_module(MODULES["person_detection"])
   g.add_module(MODULES["differential_privacy"])
@@ -167,6 +166,7 @@ export function figure5(): Graph {
     module_id: "firmware_update",
     domain: "firmware.com",
   })
+  g.set_interval("firmware_update", 24*60*60)
   g.add_state_edge({
     module_id: "firmware_update",
     module_ret: "firmware",
@@ -185,5 +185,4 @@ export function figure5(): Graph {
     sensor_id: "camera",
     sensor_key: "livestream",
   })
-  return g
 }
