@@ -29,12 +29,32 @@ export module ModuleHTML {
     intervalSpan.innerText = ''
     descriptionSpan.innerText = inner.value.description.module
 
+    const currentDomains = inner.network_edges.map(edge => edge.domain)
+    const domains = Object.keys(inner.value.description.network).sort()
+    domains.forEach(
+      function(domain) {
+        let input = document.createElement('input')
+        let label = document.createElement('label')
+        input.type = 'checkbox'
+        input.name = domain
+        input.value = domain
+        if (currentDomains.includes(domain)) {
+          input.checked = true
+        }
+        label.setAttribute('for', domain)
+        label.innerText = domain
+        networkSpan.appendChild(input)
+        networkSpan.appendChild(label)
+        networkSpan.appendChild(document.createElement('br'))
+      });
     let networkInput = document.createElement('textarea')
-    networkInput.rows = 3
+    networkInput.rows = 1
     networkInput.className = 'network-input'
-    networkInput.placeholder = 'Enter one domain per line.'
-    networkInput.appendChild(document.createTextNode(
-      inner.network_edges.map(edge => edge.domain).join('\n')))
+    networkInput.placeholder = 'Extra domains: one per line.'
+    networkInput.appendChild(document.createTextNode(currentDomains
+      .filter(domain => !domains.includes(domain)).join('\n')))
+    // hide textarea unless we need to assign arbitrary domains
+    networkInput.style.display = 'none'
     networkSpan.appendChild(networkInput)
     let intervalInput = document.createElement('input')
     intervalInput.type = 'number'
@@ -53,11 +73,18 @@ export module ModuleHTML {
     saveButton.onclick = function(e) {
       e.preventDefault()
       g.remove_network_edges(inner.value.id)
-      networkInput.value.split('\n').forEach(function(domain) {
-        if (domain) {
+      networkInput.value.split('\n')
+        .filter(domain => domain)
+        .forEach(function(domain) {
           g.add_network_edge({ module_id: inner.value.id, domain: domain })
-        }
-      })
+        })
+      Array.from(document.getElementById('module-form').getElementsByTagName('input'))
+        .filter(input => input.type == 'checkbox')
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value)
+        .map(function(domain) {
+          g.add_network_edge({ module_id: inner.value.id, domain: domain })
+        });
       g.set_interval(inner.value.id, parseInt(intervalInput.value))
       _renderViewForm(node, inner)
     }
