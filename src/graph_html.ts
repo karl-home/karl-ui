@@ -309,4 +309,8 @@ export module GraphHTML {
     canvas.append(line);
     return line;
   }
+
+  export function reset() {
+    nnodes = 0
+  }
 }

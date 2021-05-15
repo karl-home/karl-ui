@@ -103,6 +103,14 @@ export class Graph {
       entity_id == NETWORK_NODE_ID
   }
 
+  reset() {
+    Object.keys(this.modules).forEach(
+      module_id => this.remove_module(module_id))
+    Object.keys(this.sensors).forEach(
+      sensor_id => this.remove_sensor(sensor_id))
+    GraphHTML.reset()
+  }
+
   add_sensor(sensor: Sensor): boolean {
     if (this._exists(sensor.id)) {
       return false
@@ -121,6 +129,43 @@ export class Graph {
       inner.htmlOut = html[0]
       inner.htmlIn = html[1]
       this.sensors[sensor.id] = inner;
+      return true
+    }
+  }
+
+  remove_sensor(sensor_id: SensorID): boolean {
+    let sensor = this.sensors[sensor_id]
+    if (sensor === undefined) {
+      console.error(`deleted sensor id does not exist: ${sensor_id}`)
+      return false
+    } else {
+      // remove all outgoing edges from the module.
+      sensor.edges.map(edge => Object.assign({}, edge))
+        .forEach(edge => this.remove_data_edge(edge));
+      // iterate through all modules to find incoming edges
+      Object.values(this.modules).forEach(inner => {
+        inner.state_edges.filter(edge => edge.sensor_id == sensor_id)
+          .map(edge => Object.assign({}, edge))
+          .forEach(edge => this.remove_state_edge(edge));
+      })
+      // reset the edge modifier if any button is active
+      let activeButton = false
+      sensor.incoming_buttons.forEach(button => {
+        if (button.style.backgroundColor) {
+          activeButton = true
+        }
+      })
+      sensor.outgoing_buttons.forEach(button => {
+        if (button.style.backgroundColor) {
+          activeButton = true
+        }
+      })
+      if (activeButton) {
+        EdgeHTML.resetForm()
+      }
+      sensor.htmlOut.remove()
+      sensor.htmlIn.remove()
+      delete this.sensors[sensor_id]
       return true
     }
   }

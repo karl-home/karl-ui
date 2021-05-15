@@ -55,3 +55,6 @@ document.getElementById("button-E").onclick = function() {
     module_param: "count",
   })
 };
+document.getElementById('reset-button').onclick = function() {
+  g.reset()
+}

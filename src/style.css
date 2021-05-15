@@ -107,3 +107,14 @@ line {
   top: 5px;
   left: 5px;
 }
+
+.button-container {
+  padding-top: 20px;
+  text-align: center;
+}
+
+.button-container button {
+  text-transform: uppercase;
+  font-size: large;
+  font-weight: bold;
+}
