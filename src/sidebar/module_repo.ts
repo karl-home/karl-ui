@@ -147,3 +147,41 @@ export module ModuleRepo {
     form.appendChild(genErrorText())
   }
 }
+
+export module ModuleList {
+  let moduleIds: string[] = []
+  let moduleList: HTMLUListElement = undefined
+
+  function renderModuleList() {
+    if (moduleList) {
+      moduleList.remove()
+    }
+    moduleList = document.createElement('ul')
+    moduleIds.forEach(function(moduleId) {
+      let li = document.createElement('li')
+      li.appendChild(document.createTextNode(moduleId))
+      moduleList.appendChild(li)
+    })
+    document.getElementById('registered-modules').appendChild(moduleList)
+  }
+
+  export function addModule(moduleId: string) {
+    if (!moduleIds.includes(moduleId)) {
+      moduleIds.push(moduleId)
+      moduleIds.sort()
+      renderModuleList()
+    } else {
+      console.error(`module is already registered ${moduleId}`)
+    }
+  }
+
+  export function removeModule(moduleId: string) {
+    let index = moduleIds.indexOf(moduleId)
+    if (index != -1) {
+      moduleIds.splice(index, 1)
+      renderModuleList()
+    } else {
+      console.error(`error removing module that does not exist: ${moduleId}`)
+    }
+  }
+}

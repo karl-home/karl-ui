@@ -1,5 +1,6 @@
 import { GraphHTML } from './main/graph_html';
 import { EdgeHTML } from './sidebar/edge_html';
+import { ModuleList } from './sidebar/module_repo';
 
 export const NETWORK_NODE_ID: string = "NET";
 
@@ -207,6 +208,7 @@ export class Graph {
     }
     inner.html = GraphHTML.renderModule(mod.id, inner);
     GraphHTML.renderModuleProperties(inner)
+    ModuleList.addModule(mod.id)
     this.modules[mod.id] = inner;
   }
 
@@ -250,6 +252,7 @@ export class Graph {
       }
       mod.html.remove()
       delete this.modules[module_id]
+      ModuleList.removeModule(module_id)
       return true
     }
   }
