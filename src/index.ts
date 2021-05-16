@@ -4,6 +4,7 @@ import { figure4, figure5, SENSORS, MODULES } from './examples';
 import { Graph } from './graph';
 import { EdgeHTML } from './sidebar/edge_html';
 import { ModuleHTML } from './sidebar/module_html';
+import { ModuleRepo } from './sidebar/module_repo';
 
 const g = new Graph();
 
@@ -40,6 +41,7 @@ function initializeNavbar() {
 function initializeSidebar() {
   EdgeHTML.renderInitialForm(g)
   ModuleHTML.renderInitialForm(g)
+  ModuleRepo.renderInitialForm(g)
   document.getElementById('reset-button').onclick = function() {
     g.reset()
   }

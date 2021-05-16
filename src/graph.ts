@@ -123,6 +123,7 @@ export class Graph {
 
   add_sensor(sensor: Sensor): boolean {
     if (this._exists(sensor.id)) {
+      console.error('sensor id already exists')
       return false
     } else {
       let inner: SensorInner = {
@@ -182,6 +183,7 @@ export class Graph {
 
   add_module(mod: Module): boolean {
     if (this._exists(mod.id)) {
+      console.error('module id already exists')
       return false
     } else {
       let inner: ModuleInner = {
