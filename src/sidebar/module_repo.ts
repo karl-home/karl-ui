@@ -71,6 +71,7 @@ export module ModuleRepo {
   function clickRegisterModule(e: Event) {
     e.preventDefault()
     g.add_module(mod)
+    resetForm()
   }
 
   export function renderInitialForm(graph: Graph) {
