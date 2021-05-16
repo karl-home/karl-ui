@@ -113,6 +113,16 @@ export class Graph {
       entity_id == NETWORK_NODE_ID
   }
 
+  _genEntityID(global_entity_id: string): string {
+    let entity_id = global_entity_id
+    let counter = 1
+    while (this._exists(entity_id)) {
+      entity_id = global_entity_id + '_' + counter.toString()
+      counter += 1
+    }
+    return entity_id
+  }
+
   reset() {
     Object.keys(this.modules).forEach(
       module_id => this.remove_module(module_id))
@@ -181,27 +191,23 @@ export class Graph {
     }
   }
 
-  add_module(mod: Module): boolean {
-    if (this._exists(mod.id)) {
-      console.error('module id already exists')
-      return false
-    } else {
-      let inner: ModuleInner = {
-        value: mod,
-        data_edges: [],
-        state_edges: [],
-        network_edges: [],
-        html: undefined,
-        outgoing_edges: [],
-        incoming_edges: [],
-        outgoing_buttons: [],
-        incoming_buttons: [],
-      }
-      inner.html = GraphHTML.renderModule(mod.id, inner);
-      GraphHTML.renderModuleProperties(inner)
-      this.modules[mod.id] = inner;
-      return true
+  add_module(mod: Module): void {
+    mod = Object.assign({}, mod)
+    mod.id = this._genEntityID(mod.id)
+    let inner: ModuleInner = {
+      value: mod,
+      data_edges: [],
+      state_edges: [],
+      network_edges: [],
+      html: undefined,
+      outgoing_edges: [],
+      incoming_edges: [],
+      outgoing_buttons: [],
+      incoming_buttons: [],
     }
+    inner.html = GraphHTML.renderModule(mod.id, inner);
+    GraphHTML.renderModuleProperties(inner)
+    this.modules[mod.id] = inner;
   }
 
   remove_module(module_id: ModuleID): boolean {
