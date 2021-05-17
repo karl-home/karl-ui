@@ -44,30 +44,26 @@
       </div>
       <div class="container" id="homecloud-container">
         <h1>Sensors</h1>
-        <form id="verify-sensor-form">
-          <div class="modal">
-            <p>Sensor ID: <span>camera</span></p>
-            <p>Attestation: <span>QWERTY9876</span></p>
-            <div class="button-container">
-              <button>Confirm</button>
-              <button>Cancel</button>
+        <form id="sensor-form">
+          <div id="sensor-modals">
+            <div class="modal">
+              <p>Sensor ID: <span>camera</span></p>
+              <p>Attestation: <span>QWERTY9876</span></p>
+              <div class="button-container">
+                <button>Confirm</button>
+                <button>Cancel</button>
+              </div>
+            </div>
+            <div class="modal">
+              <p>Sensor ID: <span>camera_1</span></p>
+              <p>Attestation: <span>QWERTY1234</span></p>
+              <div class="button-container">
+                <button>Confirm</button>
+                <button>Cancel</button>
+              </div>
             </div>
           </div>
-          <div class="modal">
-            <p>Sensor ID: <span>camera_1</span></p>
-            <p>Attestation: <span>QWERTY1234</span></p>
-            <div class="button-container">
-              <button>Confirm</button>
-              <button>Cancel</button>
-            </div>
-          </div>
-          <ul>
-            <li>bathroom_bulb</li>
-            <li>kitchen_bulb</li>
-            <li>mic</li>
-            <li>mic_1</li>
-          </ul>
-          <p><button>Refresh</button></p>
+          <div id="sensor-list"></div>
         </form>
         <h1>Hosts</h1>
         <form id="verify-host-form">
@@ -95,7 +91,6 @@
               <td>No</td>
             </tr>
           </table>
-          <p><button>Refresh</button></p>
         </form>
       </div>
     </div>

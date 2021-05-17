@@ -1,6 +1,7 @@
 import { GraphHTML } from './main/graph_html';
 import { EdgeHTML } from './sidebar/edge_html';
 import { ModuleList } from './sidebar/module_repo';
+import { SensorList } from './sidebar/sensor_html';
 import { MockNetwork } from './network';
 
 export const NETWORK_NODE_ID: string = "NET";
@@ -168,6 +169,7 @@ export class Graph {
       inner.htmlOut = html[0]
       inner.htmlIn = html[1]
       this.sensors[sensor.id] = inner;
+      SensorList.addSensor(sensor.id)
       return true
     }
   }
@@ -205,6 +207,7 @@ export class Graph {
       sensor.htmlOut.remove()
       sensor.htmlIn.remove()
       delete this.sensors[sensor_id]
+      SensorList.removeSensor(sensor_id)
       return true
     }
   }
