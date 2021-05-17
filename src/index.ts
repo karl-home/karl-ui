@@ -5,6 +5,7 @@ import { Graph } from './graph';
 import { EdgeHTML } from './sidebar/edge_html';
 import { ModuleHTML } from './sidebar/module_html';
 import { ModuleRepo } from './sidebar/module_repo';
+import { SensorModals } from './sidebar/sensor_html';
 import { MockNetwork, _sensorWithId } from './network';
 
 const g = new Graph();
@@ -43,6 +44,7 @@ function initializeSidebar() {
   EdgeHTML.renderInitialForm(g)
   ModuleHTML.renderInitialForm(g)
   ModuleRepo.renderInitialForm(g)
+  SensorModals.renderInitialForm(g)
   document.getElementById('reset-button').onclick = function() {
     g.reset()
   }

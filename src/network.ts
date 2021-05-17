@@ -1,4 +1,4 @@
-import { Sensor, Module } from './graph'
+import { Sensor, Module, GraphFormat } from './graph'
 
 const SENSORS: { [key: string]: Sensor } = {
   mic: {
@@ -217,23 +217,38 @@ export module MockNetwork {
     return MODULES[module_id]
   }
 
-  export function getSensors(): {
-    confirmed: Sensor[],
-    unconfirmed: { sensor: Sensor, attestation: string }[],
-  } {
-    return {
-      confirmed: [_sensorWithId('bulb', 'garage_bulb')],
-      unconfirmed: [
-        {
-          sensor: _sensorWithId('camera', 'camera_2'),
-          attestation: 'QWERTY9876',
-        },
-        {
-          sensor: _sensorWithId('camera', 'camera_3'),
-          attestation: 'QWERTY1234',
-        }
-      ]
-    }
+  export function getGraph(): GraphFormat {
+    console.error('unimplemented: get graph from mock network')
+    return undefined
+  }
+
+  export function confirmSensor(sensorId: string) {
+    console.error('unimplemented: confirm sensor in mock network')
+  }
+
+  export function confirmHost(hostId: string) {
+    console.error('unimplemented: confirm host in mock network')
+  }
+
+  export function cancelSensor(sensorId: string) {
+    console.error('unimplemented: cancel sensor in mock network')
+  }
+
+  export function cancelHost(hostId: string) {
+    console.error('unimplemented: cancel host in mock network')
+  }
+
+  export function getSensors(): { sensor: Sensor, attestation: string }[] {
+    return [
+      {
+        sensor: _sensorWithId('camera', 'camera_2'),
+        attestation: 'QWERTY9876',
+      },
+      {
+        sensor: _sensorWithId('camera', 'camera_3'),
+        attestation: 'QWERTY1234',
+      }
+    ]
   }
 
   export function getHosts(): { confirmed: Host[], unconfirmed: string[] } {
