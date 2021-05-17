@@ -214,7 +214,16 @@ export module MockNetwork {
 
   export function getGraph(): GraphFormat {
     console.error('unimplemented: get graph from mock network')
-    return undefined
+    return {
+      sensors: [],
+      moduleIds: [],
+      edges: {
+        data: [],
+        state: [],
+        network: [],
+        interval: [],
+      }
+    }
   }
 
   export function confirmSensor(sensorId: string) {

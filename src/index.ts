@@ -88,6 +88,11 @@ function initializeExampleButtons() {
   };
 }
 
+function initializeGraph() {
+  g.setGraphFormat(MockNetwork.getGraph())
+}
+
 initializeNavbar()
 initializeSidebar()
 initializeExampleButtons()
+initializeGraph()
