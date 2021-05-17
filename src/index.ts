@@ -50,6 +50,10 @@ function initializeSidebar() {
   document.getElementById('reset-button').onclick = function() {
     g.reset()
   }
+  document.getElementById('reset-button').onclick = function() {
+    let format = g.getGraphFormat()
+    MockNetwork.saveGraph(format)
+  }
 }
 
 function initializeExampleButtons() {

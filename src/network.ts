@@ -226,30 +226,43 @@ export module MockNetwork {
     }
   }
 
+  export function saveGraph(format: GraphFormat) {
+    console.error('unimplemented: save graph to mock network')
+    console.log(format)
+  }
+
+  export function spawnModule(moduleId: string) {
+    console.error(`unimplemented: spawn module ${moduleId}`)
+  }
+
   export function confirmSensor(sensorId: string) {
-    console.error('unimplemented: confirm sensor in mock network')
+    console.error(`unimplemented: confirm sensor in mock network ${sensorId}`)
   }
 
   export function confirmHost(hostId: string) {
-    console.error('unimplemented: confirm host in mock network')
+    console.error(`unimplemented: confirm host in mock network ${hostId}`)
   }
 
   export function cancelSensor(sensorId: string) {
-    console.error('unimplemented: cancel sensor in mock network')
+    console.error(`unimplemented: cancel sensor in mock network ${sensorId}`)
   }
 
   export function cancelHost(hostId: string) {
-    console.error('unimplemented: cancel host in mock network')
+    console.error(`unimplemented: cancel host in mock network ${hostId}`)
   }
 
   export function getSensors(): { sensor: Sensor, attestation: string }[] {
     return [
       {
-        sensor: _sensorWithId('camera', 'camera_2'),
+        sensor: _sensorWithId('mic', 'mic_2'),
         attestation: 'QWERTY9876',
       },
       {
-        sensor: _sensorWithId('camera', 'camera_3'),
+        sensor: _sensorWithId('camera', 'camera_2'),
+        attestation: 'QWERTY1234',
+      },
+      {
+        sensor: _sensorWithId('bulb', 'bulb'),
         attestation: 'QWERTY1234',
       }
     ]
