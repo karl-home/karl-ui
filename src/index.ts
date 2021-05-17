@@ -1,10 +1,11 @@
 import * as _ from 'lodash';
 import './css/style.css';
-import { figure4, figure5, SENSORS, MODULES } from './examples';
+import { figure4, figure5 } from './examples';
 import { Graph } from './graph';
 import { EdgeHTML } from './sidebar/edge_html';
 import { ModuleHTML } from './sidebar/module_html';
 import { ModuleRepo } from './sidebar/module_repo';
+import { MockNetwork, _sensorWithId } from './network';
 
 const g = new Graph();
 
@@ -55,13 +56,13 @@ function initializeExampleButtons() {
     figure5(g)
   };
   document.getElementById("button-A").onclick = function() {
-    g.add_sensor(SENSORS["camera"])
+    g.add_sensor(_sensorWithId('camera', 'camera'))
   };
   document.getElementById("button-B").onclick = function() {
-    g.add_module(MODULES["person_detection"])
+    g.add_module(MockNetwork.checkModuleRepo('person_detection'))
   };
   document.getElementById("button-C").onclick = function() {
-    g.add_module(MODULES["differential_privacy"])
+    g.add_module(MockNetwork.checkModuleRepo('differential_privacy'))
   };
   document.getElementById("button-D").onclick = function() {
     g.add_data_edge({

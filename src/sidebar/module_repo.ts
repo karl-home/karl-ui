@@ -1,5 +1,5 @@
 import { Module, Graph } from '../graph';
-import { Network } from '../network';
+import { MockNetwork } from '../network';
 
 export module ModuleRepo {
   let g: Graph = undefined;
@@ -53,7 +53,7 @@ export module ModuleRepo {
   function onInputKey(e: Event) {
     let moduleId = moduleIdInput.value
     if (moduleId) {
-      mod = Network.checkModuleRepo(moduleId)
+      mod = MockNetwork.checkModuleRepo(moduleId)
       if (mod) {
         populateForm(mod)
         container.style.display = ''
