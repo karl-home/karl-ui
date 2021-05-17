@@ -1,6 +1,7 @@
 import { GraphHTML } from './main/graph_html';
 import { EdgeHTML } from './sidebar/edge_html';
 import { ModuleList } from './sidebar/module_repo';
+import { MockNetwork } from './network';
 
 export const NETWORK_NODE_ID: string = "NET";
 
@@ -49,6 +50,22 @@ export interface DataEdge {
   out_ret: string;
   module_id: ModuleID;
   module_param: string;
+}
+
+export interface Interval {
+  module_id: ModuleID,
+  duration_s: number,
+}
+
+export interface GraphFormat {
+  sensors: Sensor[],
+  moduleIds: ModuleID[],
+  edges: {
+    data: DataEdge[],
+    state: StateEdge[],
+    network: NetworkEdge[],
+    interval: Interval[],
+  }
 }
 
 export interface SensorInner {
@@ -473,21 +490,21 @@ export class Graph {
     return false
   }
 
-  set_interval(module_id: ModuleID, interval: number): boolean {
-    if (this.modules.hasOwnProperty(module_id)) {
-      let mod = this.modules[module_id];
-      if (isNaN(interval)) {
+  set_interval(interval: Interval): boolean {
+    if (this.modules.hasOwnProperty(interval.module_id)) {
+      let mod = this.modules[interval.module_id];
+      if (isNaN(interval.duration_s)) {
         delete mod.interval
-      } else if (interval > 0) {
-        mod.interval = interval
+      } else if (interval.duration_s > 0) {
+        mod.interval = interval.duration_s
       } else {
-        console.error(`positive interval required: ${interval}`)
+        console.error(`positive interval required: ${interval.duration_s}`)
         return false
       }
       GraphHTML.renderModuleProperties(mod)
       return true
     } else {
-      console.error(`output module does not exist: ${module_id}`)
+      console.error(`output module does not exist: ${interval.module_id}`)
       return false
     }
   }
@@ -543,5 +560,71 @@ export class Graph {
     div.appendChild(edges);
 
     return div;
+  }
+
+  getGraphFormat(): GraphFormat {
+    let format: GraphFormat = {
+      sensors: [],
+      moduleIds: [],
+      edges: {
+        data: [],
+        state: [],
+        network: [],
+        interval: [],
+      },
+    };
+    format.sensors = Object.keys(this.sensors).sort()
+      .map(id => Object.assign({}, this.sensors[id].value));
+    format.moduleIds = Object.keys(this.modules).sort();
+    format.edges.data = Object.values(this.modules)
+      .map(inner => inner.data_edges)
+      .concat(Object.values(this.sensors).map(inner => inner.edges))
+      .reduce((a, b) => a.concat(b), [])
+      .sort((a, b) => {
+        return a.out_id.localeCompare(b.out_id)
+          || a.out_ret.localeCompare(b.out_ret)
+          || a.module_id.localeCompare(b.module_id)
+          || a.module_param.localeCompare(b.module_param);
+      })
+    format.edges.state = Object.values(this.modules)
+      .map(inner => inner.state_edges)
+      .reduce((a, b) => a.concat(b), [])
+      .sort((a, b) => {
+        return a.module_id.localeCompare(b.module_id)
+          || a.module_ret.localeCompare(b.module_ret)
+          || a.sensor_id.localeCompare(b.sensor_id)
+          || a.sensor_key.localeCompare(b.sensor_key);
+      })
+    format.edges.network = Object.values(this.modules)
+      .map(inner => inner.network_edges)
+      .reduce((a, b) => a.concat(b), [])
+      .sort((a, b) => {
+        return a.module_id.localeCompare(b.module_id)
+          || a.domain.localeCompare(b.domain);
+      })
+    format.edges.interval = Object.values(this.modules)
+      .filter(inner => inner.hasOwnProperty('interval'))
+      .map(inner => {
+        return {
+          module_id: inner.value.id,
+          duration_s: inner.interval,
+        }
+      })
+      .sort((a, b) => a.module_id.localeCompare(b.module_id))
+    return format;
+  }
+
+  setGraphFormat(f: GraphFormat) {
+    // TODO: only apply the delta
+    this.reset()
+    f.sensors.forEach(sensor => this.add_sensor(sensor))
+    f.moduleIds.forEach(id => {
+      let mod = MockNetwork.checkModuleRepo(id)
+      this.add_module(mod)
+    })
+    f.edges.data.forEach(edge => this.add_data_edge(edge))
+    f.edges.state.forEach(edge => this.add_state_edge(edge))
+    f.edges.network.forEach(edge => this.add_network_edge(edge))
+    f.edges.interval.forEach(interval => this.set_interval(interval))
   }
 }

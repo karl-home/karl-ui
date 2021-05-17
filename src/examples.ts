@@ -1,122 +1,103 @@
-import { Sensor, Graph } from './graph';
+import { Sensor, Graph, GraphFormat } from './graph';
+import { DataEdge, StateEdge, NetworkEdge, Interval } from './graph';
 import { MockNetwork, _sensorWithId } from './network';
 
+function dataEdge(
+  stateless: boolean,
+  out_id: string,
+  out_ret: string,
+  module_id: string,
+  module_param: string,
+): DataEdge {
+  return {
+    stateless: stateless,
+    out_id: out_id,
+    out_ret: out_ret,
+    module_id: module_id,
+    module_param: module_param,
+  }
+}
+
+function stateEdge(
+  module_id: string,
+  module_ret: string,
+  sensor_id: string,
+  sensor_key: string,
+): StateEdge {
+  return {
+    module_id: module_id,
+    module_ret: module_ret,
+    sensor_id: sensor_id,
+    sensor_key: sensor_key,
+  }
+}
+
+function networkEdge(module_id: string, domain: string): NetworkEdge {
+  return { module_id: module_id, domain: domain }
+}
+
+function interval(module_id: string, duration_s: number): Interval {
+  return { module_id: module_id, duration_s: duration_s }
+}
+
 export function figure4(g: Graph) {
-  g.reset()
-  g.add_sensor(_sensorWithId('mic', 'mic'))
-  g.add_sensor(_sensorWithId('mic', 'mic_1'))
-  g.add_sensor(_sensorWithId('bulb', 'kitchen_bulb'))
-  g.add_sensor(_sensorWithId('bulb', 'bathroom_bulb'))
-  g.add_module(MockNetwork.checkModuleRepo('command_classifier'))
-  g.add_module(MockNetwork.checkModuleRepo('search'))
-  g.add_module(MockNetwork.checkModuleRepo('light_switch'))
-  g.add_data_edge({
-    stateless: true,
-    out_id: "mic",
-    out_ret: "sound",
-    module_id: "command_classifier",
-    module_param: "sound",
-  })
-  g.add_data_edge({
-    stateless: true,
-    out_id: "mic_1",
-    out_ret: "sound",
-    module_id: "command_classifier",
-    module_param: "sound",
-  })
-  g.add_data_edge({
-    stateless: true,
-    out_id: "command_classifier",
-    out_ret: "query_intent",
-    module_id: "search",
-    module_param: "query_intent",
-  })
-  g.add_data_edge({
-    stateless: true,
-    out_id: "command_classifier",
-    out_ret: "light_intent",
-    module_id: "light_switch",
-    module_param: "light_intent",
-  })
-  g.add_network_edge({
-    module_id: "search",
-    domain: "google.com",
-  })
-  g.add_state_edge({
-    module_id: "search",
-    module_ret: "response",
-    sensor_id: "mic",
-    sensor_key: "response",
-  })
-  g.add_state_edge({
-    module_id: "light_switch",
-    module_ret: "state",
-    sensor_id: "kitchen_bulb",
-    sensor_key: "on",
-  })
-  g.add_state_edge({
-    module_id: "light_switch",
-    module_ret: "state",
-    sensor_id: "bathroom_bulb",
-    sensor_key: "on",
+  g.setGraphFormat({
+    sensors: [
+      _sensorWithId('mic', 'mic'),
+      _sensorWithId('mic', 'mic_1'),
+      _sensorWithId('bulb', 'kitchen_bulb'),
+      _sensorWithId('bulb', 'bathroom_bulb'),
+    ],
+    moduleIds: ['command_classifier', 'light_switch', 'search'],
+    edges: {
+      data: [
+        dataEdge(true, 'command_classifier', 'light_intent', 'light_switch', 'light_intent'),
+        dataEdge(true, 'command_classifier', 'query_intent', 'search', 'query_intent'),
+        dataEdge(true, 'mic', 'sound', 'command_classifier', 'sound'),
+        dataEdge(true, 'mic_1', 'sound', 'command_classifier', 'sound'),
+      ],
+      state: [
+        stateEdge('light_switch', 'state', 'bathroom_bulb', 'on'),
+        stateEdge('light_switch', 'state', 'kitchen_bulb', 'on'),
+        stateEdge('search', 'response', 'mic', 'response'),
+      ],
+      network: [
+        networkEdge('search', 'google.com'),
+      ],
+      interval: [],
+    },
   })
 }
 
 export function figure5(g: Graph) {
-  g.reset()
-  g.add_sensor(_sensorWithId('camera', 'camera'))
-  g.add_module(MockNetwork.checkModuleRepo('person_detection'))
-  g.add_module(MockNetwork.checkModuleRepo('differential_privacy'))
-  g.add_module(MockNetwork.checkModuleRepo('firmware_update'))
-  g.add_module(MockNetwork.checkModuleRepo('targz'))
-  g.add_module(MockNetwork.checkModuleRepo('true'))
-  g.add_module(MockNetwork.checkModuleRepo('false'))
-  g.add_data_edge({
-    stateless: true,
-    out_id: "camera",
-    out_ret: "motion",
-    module_id: "person_detection",
-    module_param: "image",
-  })
-  g.add_data_edge({
-    stateless: true,
-    out_id: "person_detection",
-    out_ret: "count",
-    module_id: "differential_privacy",
-    module_param: "count",
-  })
-  g.add_data_edge({
-    stateless: false,
-    out_id: "camera",
-    out_ret: "streaming",
-    module_id: "targz",
-    module_param: "bytes",
-  })
-  g.add_network_edge({
-    module_id: "differential_privacy",
-    domain: "metrics.com",
-  })
-  g.add_network_edge({
-    module_id: "firmware_update",
-    domain: "firmware.com",
-  })
-  g.set_interval("firmware_update", 24*60*60)
-  g.add_state_edge({
-    module_id: "firmware_update",
-    module_ret: "firmware",
-    sensor_id: "camera",
-    sensor_key: "firmware",
-  })
-  g.add_state_edge({
-    module_id: "true",
-    module_ret: "true",
-    sensor_id: "camera",
-    sensor_key: "livestream",
-  })
-  g.add_state_edge({
-    module_id: "false",
-    module_ret: "false",
-    sensor_id: "camera",
-    sensor_key: "livestream",
+  g.setGraphFormat({
+    sensors: [_sensorWithId('camera', 'camera')],
+    moduleIds: [
+      'person_detection',
+      'differential_privacy',
+      'firmware_update',
+      'targz',
+      'true',
+      'false',
+    ],
+    edges: {
+      data: [
+        dataEdge(true, 'camera', 'motion', 'person_detection', 'image'),
+        dataEdge(true, 'person_detection', 'count', 'differential_privacy', 'count'),
+        dataEdge(false, 'camera', 'streaming', 'targz', 'bytes'),
+      ],
+      state: [
+        stateEdge('firmware_update', 'firmware', 'camera', 'firmware'),
+        stateEdge('true', 'true', 'camera', 'livestream'),
+        stateEdge('false', 'false', 'camera', 'livestream'),
+      ],
+      network: [
+        networkEdge('differential_privacy', 'metrics.com'),
+        networkEdge('firmware_update', 'firmware.com'),
+      ],
+      interval: [
+        interval('firmware_update', 24*60*60),
+      ],
+    },
   })
 }

@@ -85,7 +85,10 @@ export module ModuleHTML {
         .map(function(domain) {
           g.add_network_edge({ module_id: inner.value.id, domain: domain })
         });
-      g.set_interval(inner.value.id, parseInt(intervalInput.value))
+      g.set_interval({
+        module_id: inner.value.id,
+        duration_s: parseInt(intervalInput.value),
+      })
       _renderViewForm(node, inner)
     }
     let deleteButton = document.createElement('button')
