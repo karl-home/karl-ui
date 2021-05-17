@@ -1,4 +1,5 @@
 import { Sensor, Module, GraphFormat } from './graph'
+import { Host } from './sidebar/host_html'
 
 const SENSORS: { [key: string]: Sensor } = {
   mic: {
@@ -194,12 +195,6 @@ const MODULES: { [key: string]: Module } = {
     }
   },
 };
-
-interface Host {
-  id: string,
-  activeModules: number,
-  online: boolean,
-}
 
 export function _sensorWithId(old_id: string, new_id: string): Sensor {
   let sensor = SENSORS[old_id];
