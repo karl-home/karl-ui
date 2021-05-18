@@ -50,6 +50,12 @@ function initializeSidebar() {
   document.getElementById('reset-button').onclick = function() {
     g.reset()
   }
+  document.getElementById('refresh-button').onclick = function() {
+    g.reset()
+    Network.getGraph(function(f: GraphFormat) {
+      g.setGraphFormat(f)
+    })
+  }
   document.getElementById('save-button').onclick = function() {
     let format = g.getGraphFormat()
     Network.saveGraph(format)
