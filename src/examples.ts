@@ -48,7 +48,11 @@ export function figure4(g: Graph) {
       _sensorWithId('bulb', 'kitchen_bulb'),
       _sensorWithId('bulb', 'bathroom_bulb'),
     ],
-    moduleIds: ['command_classifier', 'light_switch', 'search'],
+    moduleIds: [
+      { local: 'command_classifier', global: 'command_classifier' },
+      { local: 'light_switch', global: 'light_switch' },
+      { local: 'search', global: 'search' },
+    ],
     edges: {
       data: [
         dataEdge(true, 'command_classifier', 'light_intent', 'light_switch', 'light_intent'),
@@ -73,12 +77,12 @@ export function figure5(g: Graph) {
   g.setGraphFormat({
     sensors: [_sensorWithId('camera', 'camera')],
     moduleIds: [
-      'person_detection',
-      'differential_privacy',
-      'firmware_update',
-      'targz',
-      'true',
-      'false',
+      { local: 'person_detection', global: 'person_detection' },
+      { local: 'differential_privacy', global: 'differential_privacy' },
+      { local: 'firmware_update', global: 'firmware_update' },
+      { local: 'targz', global: 'targz' },
+      { local: 'true', global: 'true' },
+      { local: 'false', global: 'false' },
     ],
     edges: {
       data: [

@@ -21,7 +21,7 @@ export interface Sensor {
 }
 
 export interface Module {
-  id: ModuleID;
+  globalId: ModuleID;
   params: string[],
   returns: string[],
   network: string[],
@@ -60,7 +60,10 @@ export interface Interval {
 
 export interface GraphFormat {
   sensors: Sensor[],
-  moduleIds: ModuleID[],
+  moduleIds: {
+    local: ModuleID
+    global: ModuleID,
+  }[],
   edges: {
     data: DataEdge[],
     state: StateEdge[],
@@ -81,6 +84,7 @@ export interface SensorInner {
 }
 
 export interface ModuleInner {
+  id: ModuleID;
   value: Module;
   data_edges: DataEdge[];
   state_edges: StateEdge[];
@@ -213,9 +217,13 @@ export class Graph {
   }
 
   add_module(mod: Module): void {
-    mod = Object.assign({}, mod)
-    mod.id = this._genEntityID(mod.id)
+    let id = this._genEntityID(mod.globalId)
+    this.addModuleWithId(mod, id)
+  }
+
+  addModuleWithId(mod: Module, id: string): void {
     let inner: ModuleInner = {
+      id: id,
       value: mod,
       data_edges: [],
       state_edges: [],
@@ -226,10 +234,10 @@ export class Graph {
       outgoing_buttons: [],
       incoming_buttons: [],
     }
-    inner.html = GraphHTML.renderModule(mod.id, inner);
+    inner.html = GraphHTML.renderModule(id, inner);
     GraphHTML.renderModuleProperties(inner)
-    ModuleList.addModule(mod.id)
-    this.modules[mod.id] = inner;
+    ModuleList.addModule(id)
+    this.modules[id] = inner;
   }
 
   remove_module(module_id: ModuleID): boolean {
@@ -578,7 +586,13 @@ export class Graph {
     };
     format.sensors = Object.keys(this.sensors).sort()
       .map(id => Object.assign({}, this.sensors[id].value));
-    format.moduleIds = Object.keys(this.modules).sort();
+    format.moduleIds = Object.keys(this.modules).sort()
+      .map(localId => {
+        return {
+          local: localId,
+          global: this.modules[localId].value.globalId,
+        }
+      });
     format.edges.data = Object.values(this.modules)
       .map(inner => inner.data_edges)
       .concat(Object.values(this.sensors).map(inner => inner.edges))
@@ -609,7 +623,7 @@ export class Graph {
       .filter(inner => inner.hasOwnProperty('interval'))
       .map(inner => {
         return {
-          module_id: inner.value.id,
+          module_id: inner.id,
           duration_s: inner.interval,
         }
       })
@@ -622,8 +636,8 @@ export class Graph {
     this.reset()
     f.sensors.forEach(sensor => this.add_sensor(sensor))
     f.moduleIds.forEach(id => {
-      let mod = MockNetwork.checkModuleRepo(id)
-      this.add_module(mod)
+      let mod = MockNetwork.checkModuleRepo(id.global)
+      this.addModuleWithId(mod, id.local)
     })
     f.edges.data.forEach(edge => this.add_data_edge(edge))
     f.edges.state.forEach(edge => this.add_state_edge(edge))

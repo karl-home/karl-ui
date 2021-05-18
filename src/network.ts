@@ -45,7 +45,7 @@ const SENSORS: { [key: string]: Sensor } = {
 
 const MODULES: { [key: string]: Module } = {
   command_classifier: {
-    id: 'command_classifier',
+    globalId: 'command_classifier',
     params: ['sound'],
     returns: ['query_intent', 'light_intent'],
     network: [],
@@ -63,7 +63,7 @@ const MODULES: { [key: string]: Module } = {
     }
   },
   search: {
-    id: 'search',
+    globalId: 'search',
     params: ['query_intent'],
     returns: ['response'],
     network: ['google.com'],
@@ -81,7 +81,7 @@ const MODULES: { [key: string]: Module } = {
     },
   },
   light_switch: {
-    id: 'light_switch',
+    globalId: 'light_switch',
     params: ['light_intent'],
     returns: ['state'],
     network: [],
@@ -97,7 +97,7 @@ const MODULES: { [key: string]: Module } = {
     }
   },
   firmware_update: {
-    id: 'firmware_update',
+    globalId: 'firmware_update',
     params: [],
     returns: ['firmware'],
     network: ['firmware.com'],
@@ -114,7 +114,7 @@ const MODULES: { [key: string]: Module } = {
     }
   },
   person_detection: {
-    id: 'person_detection',
+    globalId: 'person_detection',
     params: ['image'],
     returns: ['box_count', 'box', 'count'],
     network: ['metrics.com'],
@@ -134,7 +134,7 @@ const MODULES: { [key: string]: Module } = {
     }
   },
   differential_privacy: {
-    id: 'differential_privacy',
+    globalId: 'differential_privacy',
     params: ['count'],
     returns: [],
     network: ['metrics.com'],
@@ -150,7 +150,7 @@ const MODULES: { [key: string]: Module } = {
     }
   },
   targz: {
-    id: 'targz',
+    globalId: 'targz',
     params: ['bytes'],
     returns: ['video'],
     network: [],
@@ -167,7 +167,7 @@ const MODULES: { [key: string]: Module } = {
     }
   },
   true: {
-    id: 'true',
+    globalId: 'true',
     params: [],
     returns: ['true'],
     network: [],
@@ -181,7 +181,7 @@ const MODULES: { [key: string]: Module } = {
     }
   },
   false: {
-    id: 'false',
+    globalId: 'false',
     params: [],
     returns: ['false'],
     network: [],

@@ -25,7 +25,7 @@ export module ModuleHTML {
   }
 
   function _renderEditForm(node: HTMLDivElement, inner: ModuleInner) {
-    moduleIDSpan.innerText = inner.value.id
+    moduleIDSpan.innerText = inner.id
     networkSpan.innerText = ''
     intervalSpan.innerText = ''
     descriptionSpan.innerText = inner.value.description.module
@@ -73,21 +73,21 @@ export module ModuleHTML {
     saveButton.innerText = 'Save'
     saveButton.onclick = function(e) {
       e.preventDefault()
-      g.remove_network_edges(inner.value.id)
+      g.remove_network_edges(inner.id)
       networkInput.value.split('\n')
         .filter(domain => domain)
         .forEach(function(domain) {
-          g.add_network_edge({ module_id: inner.value.id, domain: domain })
+          g.add_network_edge({ module_id: inner.id, domain: domain })
         })
       Array.from(document.getElementById('module-form').getElementsByTagName('input'))
         .filter(input => input.type == 'checkbox')
         .filter(checkbox => checkbox.checked)
         .map(checkbox => checkbox.value)
         .map(function(domain) {
-          g.add_network_edge({ module_id: inner.value.id, domain: domain })
+          g.add_network_edge({ module_id: inner.id, domain: domain })
         });
       g.set_interval({
-        module_id: inner.value.id,
+        module_id: inner.id,
         duration_s: parseInt(intervalInput.value),
       })
       _renderViewForm(node, inner)
@@ -96,7 +96,7 @@ export module ModuleHTML {
     deleteButton.innerText = 'Delete'
     deleteButton.onclick = function(e) {
       e.preventDefault()
-      g.remove_module(inner.value.id)
+      g.remove_module(inner.id)
       _renderDefaultForm()
     }
     let cancelButton = document.createElement('button')
@@ -114,7 +114,7 @@ export module ModuleHTML {
   function _renderViewForm(node: HTMLDivElement, inner: ModuleInner) {
     activeModule = { node: node, inner: inner }
     activeModule.node.style.outline = '3px solid #ffd700'
-    moduleIDSpan.innerText = inner.value.id
+    moduleIDSpan.innerText = inner.id
     networkSpan.innerText = inner.network_edges.map(edge => edge.domain).join('\n')
     if (inner.hasOwnProperty('interval')) {
       intervalSpan.innerText = inner.interval.toString()
@@ -137,7 +137,7 @@ export module ModuleHTML {
     spawnButton.innerText = 'Spawn'
     spawnButton.onclick = function(e) {
       e.preventDefault()
-      MockNetwork.spawnModule(inner.value.id)
+      MockNetwork.spawnModule(inner.id)
     }
     buttonContainer.appendChild(editButton)
     buttonContainer.appendChild(spawnButton)
@@ -147,7 +147,7 @@ export module ModuleHTML {
   export function clickModule(node: HTMLDivElement, inner: ModuleInner) {
     if (activeModule !== undefined) {
       activeModule.node.style.outline = ''
-      if (activeModule.inner.value.id == inner.value.id) {
+      if (activeModule.inner.id == inner.id) {
         activeModule = undefined
         _renderDefaultForm()
         return
