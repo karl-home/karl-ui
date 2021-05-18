@@ -63,6 +63,8 @@ export interface GraphFormat {
   moduleIds: {
     local: ModuleID
     global: ModuleID,
+    params: string[],
+    returns: string[],
   }[],
   edges: {
     data: DataEdge[],
@@ -588,9 +590,12 @@ export class Graph {
       .map(id => Object.assign({}, this.sensors[id].value));
     format.moduleIds = Object.keys(this.modules).sort()
       .map(localId => {
+        let mod = this.modules[localId].value
         return {
           local: localId,
-          global: this.modules[localId].value.globalId,
+          global: mod.globalId,
+          params: mod.params,
+          returns: mod.returns,
         }
       });
     format.edges.data = Object.values(this.modules)

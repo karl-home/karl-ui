@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 import './css/style.css';
 import { figure4, figure5 } from './examples';
-import { Graph } from './graph';
+import { Graph, GraphFormat } from './graph';
 import { EdgeHTML } from './sidebar/edge_html';
 import { ModuleHTML } from './sidebar/module_html';
 import { ModuleRepo } from './sidebar/module_repo';
 import { SensorModals } from './sidebar/sensor_html';
 import { HostModals } from './sidebar/host_html';
-import { MockNetwork, _sensorWithId } from './network';
+import { Network, _sensorWithId } from './network';
 
 const g = new Graph();
 
@@ -52,7 +52,7 @@ function initializeSidebar() {
   }
   document.getElementById('save-button').onclick = function() {
     let format = g.getGraphFormat()
-    MockNetwork.saveGraph(format)
+    Network.saveGraph(format)
   }
 }
 
@@ -67,10 +67,10 @@ function initializeExampleButtons() {
     g.add_sensor(_sensorWithId('camera', 'camera'))
   };
   document.getElementById("button-B").onclick = function() {
-    g.add_module(MockNetwork.checkModuleRepo('person_detection'))
+    g.add_module(Network.checkModuleRepo('person_detection'))
   };
   document.getElementById("button-C").onclick = function() {
-    g.add_module(MockNetwork.checkModuleRepo('differential_privacy'))
+    g.add_module(Network.checkModuleRepo('differential_privacy'))
   };
   document.getElementById("button-D").onclick = function() {
     g.add_data_edge({
@@ -93,7 +93,9 @@ function initializeExampleButtons() {
 }
 
 function initializeGraph() {
-  g.setGraphFormat(MockNetwork.getGraph())
+  Network.getGraph(function(f: GraphFormat) {
+    g.setGraphFormat(f)
+  })
 }
 
 initializeNavbar()

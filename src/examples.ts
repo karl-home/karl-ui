@@ -1,4 +1,4 @@
-import { Sensor, Graph, GraphFormat } from './graph';
+import { Sensor, Graph, GraphFormat, ModuleID } from './graph';
 import { DataEdge, StateEdge, NetworkEdge, Interval } from './graph';
 import { MockNetwork, _sensorWithId } from './network';
 
@@ -40,6 +40,21 @@ function interval(module_id: string, duration_s: number): Interval {
   return { module_id: module_id, duration_s: duration_s }
 }
 
+function _module(module_id: string): {
+  local: ModuleID
+  global: ModuleID,
+  params: string[],
+  returns: string[],
+} {
+  let mod = MockNetwork.checkModuleRepo(module_id)
+  return {
+    local: module_id,
+    global: module_id,
+    params: mod.params,
+    returns: mod.returns,
+  }
+}
+
 export function figure4(g: Graph) {
   g.setGraphFormat({
     sensors: [
@@ -49,9 +64,9 @@ export function figure4(g: Graph) {
       _sensorWithId('bulb', 'bathroom_bulb'),
     ],
     moduleIds: [
-      { local: 'command_classifier', global: 'command_classifier' },
-      { local: 'light_switch', global: 'light_switch' },
-      { local: 'search', global: 'search' },
+      _module('command_classifier'),
+      _module('light_switch'),
+      _module('search'),
     ],
     edges: {
       data: [
@@ -77,12 +92,12 @@ export function figure5(g: Graph) {
   g.setGraphFormat({
     sensors: [_sensorWithId('camera', 'camera')],
     moduleIds: [
-      { local: 'person_detection', global: 'person_detection' },
-      { local: 'differential_privacy', global: 'differential_privacy' },
-      { local: 'firmware_update', global: 'firmware_update' },
-      { local: 'targz', global: 'targz' },
-      { local: 'true', global: 'true' },
-      { local: 'false', global: 'false' },
+      _module('person_detection'),
+      _module('differential_privacy'),
+      _module('firmware_update'),
+      _module('targz'),
+      _module('true'),
+      _module('false'),
     ],
     edges: {
       data: [
