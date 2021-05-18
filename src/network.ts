@@ -1,12 +1,14 @@
 import { Sensor, Module, GraphFormat } from './graph'
 import { Host } from './sidebar/host_html'
 
+interface ControllerSensor {
+  id: string,
+  stateKeys: [string, string][],
+  returns: [string, string][],
+}
+
 interface ControllerGraphFormat {
-  sensors: {
-    id: string,
-    stateKeys: [string, string][],
-    returns: [string, string][],
-  }[],
+  sensors: ControllerSensor[],
   moduleIds: {
     localId: string,
     globalId: string,
@@ -526,14 +528,88 @@ export module Network {
   }
 
   export function confirmSensor(sensorId: string) {
-    console.error(`unimplemented: confirm sensor in mock network ${sensorId}`)
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', '/sensor/confirm/' + sensorId)
+    xhr.send()
+    xhr.onreadystatechange = function(e) {
+      if (this.readyState == 4) {
+        if (this.status != 200) {
+          console.error({
+            responseURL: this.responseURL,
+            status: this.status,
+            statusText: this.statusText,
+          })
+        }
+      }
+    }
   }
 
   export function cancelSensor(sensorId: string) {
-    console.error(`unimplemented: cancel sensor in mock network ${sensorId}`)
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', '/sensor/cancel/' + sensorId)
+    xhr.send()
+    xhr.onreadystatechange = function(e) {
+      if (this.readyState == 4) {
+        if (this.status != 200) {
+          console.error({
+            responseURL: this.responseURL,
+            status: this.status,
+            statusText: this.statusText,
+          })
+        }
+      }
+    }
   }
 
-  export function getSensors(): { sensor: Sensor, attestation: string }[] {
+  export function getSensors(callback: (
+    sensors: { sensor: Sensor, attestation: string }[],
+  ) => void) {
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', '/sensors')
+    xhr.send()
+    xhr.onreadystatechange = function(e) {
+      if (this.readyState == 4) {
+        if (this.status == 200) {
+          let res: {
+            sensor: ControllerSensor,
+            attestation: string,
+          }[] = JSON.parse(this.responseText)
+          console.log(res)
+          callback(res.map(function(val) {
+            return {
+              sensor: {
+                id: val.sensor.id,
+                state_keys: val.sensor.stateKeys.map(x => x[0]),
+                returns: val.sensor.returns.map(x => x[0]),
+                description: {
+                  state_keys: val.sensor.stateKeys.reduce(function(
+                    map: { [key: string]: string },
+                    key_desc: [string, string],
+                  ) {
+                    map[key_desc[0]] = key_desc[1];
+                    return map;
+                  }, {}),
+                  returns: val.sensor.returns.reduce(function(
+                    map: { [key: string]: string },
+                    ret_desc: [string, string],
+                  ) {
+                    map[ret_desc[0]] = ret_desc[1];
+                    return map;
+                  }, {}),
+                }
+              },
+              attestation: val.attestation,
+            }
+          }))
+        } else {
+          console.error({
+            responseURL: this.responseURL,
+            status: this.status,
+            statusText: this.statusText,
+          })
+        }
+      }
+    }
     return [
       {
         sensor: _sensorWithId('mic', 'mic_2'),

@@ -1,5 +1,5 @@
 import { Sensor, Graph } from '../graph';
-import { MockNetwork } from '../network';
+import { Network } from '../network';
 
 export module SensorModals {
   let g: Graph;
@@ -18,7 +18,7 @@ export module SensorModals {
   function confirmSensor(sensorId: string) {
     if (sensors.hasOwnProperty(sensorId)) {
       sensors[sensorId].html.remove()
-      MockNetwork.confirmSensor(sensorId)
+      Network.confirmSensor(sensorId)
       g.add_sensor(sensors[sensorId].sensor)
       delete sensors[sensorId]
     } else {
@@ -29,7 +29,7 @@ export module SensorModals {
   function cancelSensor(sensorId: string) {
     if (sensors.hasOwnProperty(sensorId)) {
       sensors[sensorId].html.remove()
-      MockNetwork.cancelSensor(sensorId)
+      Network.cancelSensor(sensorId)
       delete sensors[sensorId]
     } else {
       console.error(`failed to confirm missing sensor: ${sensorId}`)
@@ -74,13 +74,15 @@ export module SensorModals {
   function refreshModals() {
     clearModals()
     let container = document.getElementById('sensor-modals')
-    MockNetwork.getSensors().forEach(function(val) {
-      let modal = genSensorModal(val.sensor, val.attestation)
-      container.appendChild(modal)
-      sensors[val.sensor.id] = {
-        sensor: val.sensor,
-        html: modal,
-      }
+    Network.getSensors(function(vals) {
+      vals.forEach(function(val) {
+        let modal = genSensorModal(val.sensor, val.attestation)
+        container.appendChild(modal)
+        sensors[val.sensor.id] = {
+          sensor: val.sensor,
+          html: modal,
+        }
+      })
     })
   }
 
