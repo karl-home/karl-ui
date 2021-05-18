@@ -510,7 +510,7 @@ export module Network {
     xhr.send(JSON.stringify(g))
     xhr.onreadystatechange = function(e) {
       if (this.readyState == 4) {
-        if (this.status == 200) {
+        if (this.status != 200) {
           console.error({
             responseURL: this.responseURL,
             status: this.status,
@@ -529,16 +529,8 @@ export module Network {
     console.error(`unimplemented: confirm sensor in mock network ${sensorId}`)
   }
 
-  export function confirmHost(hostId: string) {
-    console.error(`unimplemented: confirm host in mock network ${hostId}`)
-  }
-
   export function cancelSensor(sensorId: string) {
     console.error(`unimplemented: cancel sensor in mock network ${sensorId}`)
-  }
-
-  export function cancelHost(hostId: string) {
-    console.error(`unimplemented: cancel host in mock network ${hostId}`)
   }
 
   export function getSensors(): { sensor: Sensor, attestation: string }[] {
@@ -558,21 +550,63 @@ export module Network {
     ]
   }
 
-  export function getHosts(): { confirmed: Host[], unconfirmed: string[] } {
-    return {
-      confirmed: [
-        {
-          id: 'MyOldLaptop',
-          activeModules: 8,
-          online: true,
-        },
-        {
-          id: 'GinasMacbookPro',
-          activeModules: 0,
-          online: false,
+  export function confirmHost(hostId: string) {
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', '/host/confirm/' + hostId)
+    xhr.send()
+    xhr.onreadystatechange = function(e) {
+      if (this.readyState == 4) {
+        if (this.status != 200) {
+          console.error({
+            responseURL: this.responseURL,
+            status: this.status,
+            statusText: this.statusText,
+          })
         }
-      ],
-      unconfirmed: ['RaspberryPi3'],
+      }
+    }
+  }
+
+  export function cancelHost(hostId: string) {
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', '/host/cancel/' + hostId)
+    xhr.send()
+    xhr.onreadystatechange = function(e) {
+      if (this.readyState == 4) {
+        if (this.status != 200) {
+          console.error({
+            responseURL: this.responseURL,
+            status: this.status,
+            statusText: this.statusText,
+          })
+        }
+      }
+    }
+  }
+
+  export function getHosts(callback: (
+    confirmed: Host[],
+    unconfirmed: string[],
+  ) => void) {
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', '/hosts')
+    xhr.send()
+    xhr.onreadystatechange = function(e) {
+      if (this.readyState == 4) {
+        if (this.status == 200) {
+          let res: {
+            confirmed: Host[],
+            unconfirmed: string[]
+          } = JSON.parse(this.responseText)
+          callback(res.confirmed, res.unconfirmed)
+        } else {
+          console.error({
+            responseURL: this.responseURL,
+            status: this.status,
+            statusText: this.statusText,
+          })
+        }
+      }
     }
   }
 }

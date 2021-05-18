@@ -1,4 +1,4 @@
-import { MockNetwork } from '../network';
+import { Network } from '../network';
 
 export interface Host {
   id: string,
@@ -26,7 +26,7 @@ export module HostModals {
     function confirmHost(hostId: string) {
       if (unconfirmed.hasOwnProperty(hostId)) {
         unconfirmed[hostId].html.remove()
-        MockNetwork.confirmHost(hostId)
+        Network.confirmHost(hostId)
         confirmed.push({
           id: hostId,
           activeModules: 0,
@@ -42,7 +42,7 @@ export module HostModals {
     function cancelHost(hostId: string) {
       if (unconfirmed.hasOwnProperty(hostId)) {
         unconfirmed[hostId].html.remove()
-        MockNetwork.cancelHost(hostId)
+        Network.cancelHost(hostId)
         delete unconfirmed[hostId]
       } else {
         console.error(`failed to confirm missing host: ${hostId}`)
@@ -127,10 +127,11 @@ export module HostModals {
 
   export function renderInitialForm() {
     function refresh() {
-      let res = MockNetwork.getHosts();
-      renderModals(res.unconfirmed)
-      confirmed = res.confirmed
-      renderTable()
+      Network.getHosts(function(conf: Host[], unconf: string[]) {
+        renderModals(unconf)
+        confirmed = conf
+        renderTable()
+      });
     }
     refresh()
     let buttonContainer = document.createElement('p')
