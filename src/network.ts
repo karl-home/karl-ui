@@ -437,11 +437,13 @@ export module Network {
           id: sensor.id,
           stateKeys: sensor.state_keys
             .map(function(key: string): [string, string] {
-              return [key, sensor.description.state_keys[key]];
+              // return [key, sensor.description.state_keys[key]];
+              return [key, "-"];
             }),
           returns: sensor.returns
             .map(function(key: string): [string, string] {
-              return [key, sensor.description.returns[key]];
+              // return [key, sensor.description.returns[key]];
+              return [key, "-"];
             }),
         }
       })
