@@ -364,7 +364,7 @@ export module Network {
                 out: sensor.returns,
               }
             } else if (index < sensors.length + moduleIds.length) {
-              let mod = g.moduleIds[index]
+              let mod = g.moduleIds[index - sensors.length]
               return {
                 id: mod.localId,
                 in: mod.params,
