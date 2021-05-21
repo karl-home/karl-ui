@@ -103,7 +103,7 @@ export function figure5(g: Graph) {
       data: [
         dataEdge(true, 'camera', 'motion', 'person_detection', 'image'),
         dataEdge(true, 'person_detection', 'count', 'differential_privacy', 'count'),
-        dataEdge(false, 'camera', 'streaming', 'targz', 'bytes'),
+        dataEdge(false, 'camera', 'streaming', 'targz', 'files'),
       ],
       state: [
         stateEdge('firmware_update', 'firmware', 'camera', 'firmware'),

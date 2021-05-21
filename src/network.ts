@@ -48,7 +48,7 @@ const SENSORS: { [key: string]: Sensor } = {
   },
   camera: {
     id: 'camera',
-    state_keys: ['livestream', 'firmware'],
+    state_keys: ['firmware', 'livestream'],
     returns: ['motion', 'streaming'],
     description: {
       state_keys: {
@@ -136,7 +136,7 @@ const MODULES: { [key: string]: Module } = {
   person_detection: {
     globalId: 'person_detection',
     params: ['image'],
-    returns: ['box_count', 'box', 'count'],
+    returns: ['box', 'all_count', 'count'],
     network: ['metrics.com'],
     description: {
       module: 'Detects a person in an image.',
@@ -144,8 +144,8 @@ const MODULES: { [key: string]: Module } = {
         'image': 'an image in a standard format e.g., PNG, JPEG',
       },
       returns: {
-        'box_count': 'both box and count',
         'box': 'the original image, with boxes around detected persons',
+        'all_count': 'number of detected objects',
         'count': 'number of detected persons',
       },
       network: {
@@ -171,14 +171,14 @@ const MODULES: { [key: string]: Module } = {
   },
   targz: {
     globalId: 'targz',
-    params: ['bytes'],
+    params: ['files'],
     returns: ['video'],
     network: [],
     description: {
       module: 'Combine video files from the past hour into a single ' +
         'compressed video file.',
       params: {
-        'bytes': 'video files to compress',
+        'files': 'video files to compress',
       },
       returns: {
         'video': 'compressed video file in targz format',
