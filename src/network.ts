@@ -398,7 +398,7 @@ export module Network {
                   module_id: mod.id,
                   module_ret: mod.out[arr[1]],
                   sensor_id: sensor.id,
-                  sensor_key: sensor.out[arr[3]],
+                  sensor_key: sensor.in[arr[3]],
                 }
               }),
               network: g.networkEdges.map(function(arr) {
@@ -497,7 +497,7 @@ export module Network {
           mod[0],
           mod[2].indexOf(edge.module_ret),
           sensor[0],
-          sensor[2].indexOf(edge.sensor_key),
+          sensor[1].indexOf(edge.sensor_key),
         ]
       }),
       networkEdges: format.edges.network.map(function(edge) {
