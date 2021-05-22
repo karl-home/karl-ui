@@ -22,8 +22,8 @@ interface ControllerGraphFormat {
 };
 
 const SENSORS: { [key: string]: Sensor } = {
-  mic: {
-    id: 'mic',
+  microphone: {
+    id: 'microphone',
     state_keys: ['response'],
     returns: ['sound'],
     description: {
@@ -67,7 +67,7 @@ const MODULES: { [key: string]: Module } = {
   command_classifier: {
     globalId: 'command_classifier',
     params: ['sound'],
-    returns: ['query_intent', 'light_intent'],
+    returns: ['search', 'light'],
     network: [],
     description: {
       module: 'Classifies an audio command as a web query or a command ' +
@@ -76,8 +76,25 @@ const MODULES: { [key: string]: Module } = {
         'sound': 'single-channel audio file',
       },
       returns: {
-        'query_intent': 'JSON { query: <query> }, where <query> is a text query',
-        'light_intent': 'JSON { state: <state> }, where <state> is on or off',
+        'search': 'JSON { query: <query> }, where <query> is a text query',
+        'light': 'JSON { state: <state> }, where <state> is on or off',
+      },
+      network: {},
+    }
+  },
+  command_classifier_search: {
+    globalId: 'command_classifier_search',
+    params: ['sound'],
+    returns: ['search'],
+    network: [],
+    description: {
+      module: 'Classifies an audio command as a web query or a command ' +
+        'to turn a light bulb on or off. Otherwise does not ouput an intent.',
+      params: {
+        'sound': 'single-channel audio file',
+      },
+      returns: {
+        'search': 'JSON { query: <query> }, where <query> is a text query',
       },
       network: {},
     }
@@ -274,7 +291,7 @@ export module MockNetwork {
   export function getSensors(): { sensor: Sensor, attestation: string }[] {
     return [
       {
-        sensor: _sensorWithId('mic', 'mic_2'),
+        sensor: _sensorWithId('microphone', 'microphone_2'),
         attestation: 'QWERTY9876',
       },
       {
