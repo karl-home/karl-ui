@@ -92,6 +92,7 @@ export module SensorModals {
     let buttonContainer = document.createElement('p')
     let button = document.createElement('button')
     button.innerText = 'Refresh'
+    button.id = 'sensor-refresh-button'
     button.onclick = function(e) {
       e.preventDefault()
       refreshModals()

@@ -52,6 +52,8 @@ function initializeSidebar() {
   }
   document.getElementById('refresh-button').onclick = function() {
     g.reset()
+    document.getElementById('host-refresh-button').click()
+    document.getElementById('sensor-refresh-button').click()
     Network.getGraph(function(f: GraphFormat) {
       g.setGraphFormat(f)
     })

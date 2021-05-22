@@ -136,6 +136,7 @@ export module HostModals {
     refresh()
     let buttonContainer = document.createElement('p')
     let button = document.createElement('button')
+    button.id = 'host-refresh-button'
     button.innerText = 'Refresh'
     button.onclick = function(e) {
       e.preventDefault()
