@@ -249,9 +249,8 @@ export module MockNetwork {
     return MODULES[module_id]
   }
 
-  export function getGraph(): GraphFormat {
-    console.error('unimplemented: get graph from mock network')
-    return {
+  export function getGraph(callback: (format: GraphFormat) => void) {
+    callback({
       sensors: [],
       moduleIds: [],
       edges: {
@@ -260,7 +259,7 @@ export module MockNetwork {
         network: [],
         interval: [],
       }
-    }
+    })
   }
 
   export function saveGraph(format: GraphFormat) {
@@ -276,20 +275,14 @@ export module MockNetwork {
     console.error(`unimplemented: confirm sensor in mock network ${sensorId}`)
   }
 
-  export function confirmHost(hostId: string) {
-    console.error(`unimplemented: confirm host in mock network ${hostId}`)
-  }
-
   export function cancelSensor(sensorId: string) {
     console.error(`unimplemented: cancel sensor in mock network ${sensorId}`)
   }
 
-  export function cancelHost(hostId: string) {
-    console.error(`unimplemented: cancel host in mock network ${hostId}`)
-  }
-
-  export function getSensors(): { sensor: Sensor, attestation: string }[] {
-    return [
+  export function getSensors(callback: (
+    sensors: { sensor: Sensor, attestation: string }[],
+  ) => void) {
+    callback([
       {
         sensor: _sensorWithId('microphone', 'microphone_2'),
         attestation: 'QWERTY9876',
@@ -302,12 +295,23 @@ export module MockNetwork {
         sensor: _sensorWithId('bulb', 'bulb'),
         attestation: 'QWERTY1234',
       }
-    ]
+    ])
   }
 
-  export function getHosts(): { confirmed: Host[], unconfirmed: string[] } {
-    return {
-      confirmed: [
+  export function confirmHost(hostId: string) {
+    console.error(`unimplemented: confirm host in mock network ${hostId}`)
+  }
+
+  export function cancelHost(hostId: string) {
+    console.error(`unimplemented: cancel host in mock network ${hostId}`)
+  }
+
+  export function getHosts(callback: (
+    confirmed: Host[],
+    unconfirmed: string[],
+  ) => void) {
+    callback(
+      [
         {
           id: 'MyOldLaptop',
           activeModules: 8,
@@ -319,8 +323,8 @@ export module MockNetwork {
           online: false,
         }
       ],
-      unconfirmed: ['RaspberryPi3'],
-    }
+      ['RaspberryPi3'],
+    )
   }
 }
 
@@ -330,7 +334,6 @@ export module Network {
   }
 
   export function getGraph(callback: (format: GraphFormat) => void) {
-    console.log('getGraph')
     const xhr = new XMLHttpRequest()
     xhr.open('GET', '/graph')
     xhr.send()
@@ -446,8 +449,6 @@ export module Network {
   }
 
   export function saveGraph(format: GraphFormat) {
-    // TODO: parse graph
-    console.log('saveGraph')
     const sensors = format.sensors
       .map(function(sensor) {
         return {
@@ -629,20 +630,6 @@ export module Network {
         }
       }
     }
-    return [
-      {
-        sensor: _sensorWithId('mic', 'mic_2'),
-        attestation: 'QWERTY9876',
-      },
-      {
-        sensor: _sensorWithId('camera', 'camera_2'),
-        attestation: 'QWERTY1234',
-      },
-      {
-        sensor: _sensorWithId('bulb', 'bulb'),
-        attestation: 'QWERTY1234',
-      }
-    ]
   }
 
   export function confirmHost(hostId: string) {

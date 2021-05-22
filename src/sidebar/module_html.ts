@@ -1,5 +1,5 @@
 import { ModuleInner, Graph } from '../graph';
-import { MockNetwork } from '../network';
+import { Network } from '../network';
 
 export module ModuleHTML {
   // graph elements
@@ -137,7 +137,7 @@ export module ModuleHTML {
     spawnButton.innerText = 'Spawn'
     spawnButton.onclick = function(e) {
       e.preventDefault()
-      MockNetwork.spawnModule(inner.id)
+      Network.spawnModule(inner.id)
     }
     buttonContainer.appendChild(editButton)
     buttonContainer.appendChild(spawnButton)

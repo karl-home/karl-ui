@@ -2,7 +2,7 @@ import { GraphHTML } from './main/graph_html';
 import { EdgeHTML } from './sidebar/edge_html';
 import { ModuleList } from './sidebar/module_repo';
 import { SensorList } from './sidebar/sensor_html';
-import { MockNetwork } from './network';
+import { Network } from './network';
 
 export const NETWORK_NODE_ID: string = "NET";
 
@@ -641,7 +641,7 @@ export class Graph {
     this.reset()
     f.sensors.forEach(sensor => this.add_sensor(sensor))
     f.moduleIds.forEach(id => {
-      let mod = MockNetwork.checkModuleRepo(id.global)
+      let mod = Network.checkModuleRepo(id.global)
       this.addModuleWithId(mod, id.local)
     })
     f.edges.data.forEach(edge => this.add_data_edge(edge))

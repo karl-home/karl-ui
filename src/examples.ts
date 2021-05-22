@@ -1,6 +1,6 @@
 import { Sensor, Graph, GraphFormat, ModuleID } from './graph';
 import { DataEdge, StateEdge, NetworkEdge, Interval } from './graph';
-import { MockNetwork, _sensorWithId } from './network';
+import { Network, _sensorWithId } from './network';
 
 function dataEdge(
   stateless: boolean,
@@ -46,7 +46,7 @@ function _module(module_id: string): {
   params: string[],
   returns: string[],
 } {
-  let mod = MockNetwork.checkModuleRepo(module_id)
+  let mod = Network.checkModuleRepo(module_id)
   return {
     local: module_id,
     global: module_id,
