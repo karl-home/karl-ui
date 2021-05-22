@@ -544,7 +544,20 @@ export module Network {
   }
 
   export function spawnModule(moduleId: string) {
-    console.error(`unimplemented: spawn module ${moduleId}`)
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', '/module/' + moduleId)
+    xhr.send()
+    xhr.onreadystatechange = function(e) {
+      if (this.readyState == 4) {
+        if (this.status != 200) {
+          console.error({
+            responseURL: this.responseURL,
+            status: this.status,
+            statusText: this.statusText,
+          })
+        }
+      }
+    }
   }
 
   export function confirmSensor(sensorId: string) {
