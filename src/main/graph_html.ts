@@ -93,8 +93,12 @@ export module GraphHTML {
       pos2 = pos4 - e.clientY;
       pos3 = e.clientX;
       pos4 = e.clientY;
-      elem.style.top = (elem.offsetTop - pos2) + "px";
-      elem.style.left = (elem.offsetLeft - pos1) + "px";
+      let x = parseFloat(elem.getAttribute('left')) - pos1;
+      let y = parseFloat(elem.getAttribute('top')) - pos2;
+      elem.setAttribute('left', x.toString());
+      elem.setAttribute('top', y.toString());
+      elem.style.left = x + 'px';
+      elem.style.top = y + 'px';
 
       // re-render arrows to and from the dragged element
       outgoingEdges.forEach(function(line) {
@@ -112,6 +116,7 @@ export module GraphHTML {
     }
 
     function closeDragElement(e: MouseEvent) {
+      e.preventDefault()
       let tagName = (e.target as HTMLElement).tagName
       if (!dragged && moduleInner !== undefined && tagName != 'BUTTON') {
         ModuleHTML.clickModule(elem, moduleInner)
@@ -137,6 +142,8 @@ export module GraphHTML {
     node.className = "node " + ty;
     node.style.top = loc.top.toString() + 'px';
     node.style.left = loc.left.toString() + 'px';
+    node.setAttribute('top', loc.top.toString())
+    node.setAttribute('left', loc.left.toString())
     let header = document.createElement('div');
     header.className = 'node-header'
     inputs.forEach(function(val) {
