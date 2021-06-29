@@ -11,13 +11,19 @@ const LEFT_DELTA = 170;
 const COLS = 4
 let nnodes = 0
 
+let vCoordUnconnectedNode = {
+  coord: -30,
+};
+export { vCoordUnconnectedNode }
+
 function _nextNodeLocation(): { top: number, left: number } {
   let row = Math.floor(nnodes / COLS)
   let col = nnodes - row * COLS
   nnodes += 1
+  vCoordUnconnectedNode.coord = vCoordUnconnectedNode.coord + 100
   return {
-    top: TOP_INITIAL + row * TOP_DELTA,
-    left: LEFT_INITIAL + col * LEFT_DELTA,
+    top: vCoordUnconnectedNode.coord,
+    left: 900,
   }
 }
 
@@ -127,6 +133,8 @@ export module GraphHTML {
     }
   }
 
+  //if top == -1, then go with _nextNodeLocation(), otherwise use
+  //given height
   function _renderNode(
     id: string,
     ty: NodeType,
@@ -136,14 +144,23 @@ export module GraphHTML {
     outputs: string[],
     outgoingButtons: HTMLButtonElement[],
     incomingButtons: HTMLButtonElement[],
+    top: number,
+    left: number
   ): HTMLDivElement {
     let node = document.createElement("div");
-    let loc = _nextNodeLocation()
     node.className = "node " + ty;
-    node.style.top = loc.top.toString() + 'px';
-    node.style.left = loc.left.toString() + 'px';
-    node.setAttribute('top', loc.top.toString())
-    node.setAttribute('left', loc.left.toString())
+    if(top == -1){
+      let loc = _nextNodeLocation()
+      node.style.top = loc.top.toString() + 'px';
+      node.setAttribute('top', loc.top.toString())
+      node.style.left = loc.left.toString() + 'px';
+      node.setAttribute('left', loc.left.toString())
+    } else {
+      node.style.top = top.toString() + 'px';
+      node.setAttribute('top', top.toString())
+      node.style.left = left.toString() + 'px';
+      node.setAttribute('left', left.toString())
+    }
     let header = document.createElement('div');
     header.className = 'node-header'
     inputs.forEach(function(val) {
@@ -216,7 +233,7 @@ export module GraphHTML {
     }
   }
 
-  export function renderModule(id: string, inner: ModuleInner): HTMLDivElement {
+  export function renderModule(id: string, inner: ModuleInner, top: number, left: number): HTMLDivElement {
     let node = _renderNode(
       id,
       'module',
@@ -226,14 +243,21 @@ export module GraphHTML {
       inner.value.returns,
       inner.outgoing_buttons,
       inner.incoming_buttons,
+      top,
+      left
     )
     _dragElement(node, inner.outgoing_edges, inner.incoming_edges, inner);
     return node
   }
 
+  //set outTop, inTop to -1 if don't have values for them
   export function renderSensor(
     id: string,
     inner: SensorInner,
+    outTop: number,
+    inTop: number,
+    outLeft: number,
+    inLeft: number
   ): [HTMLDivElement, HTMLDivElement] {
     let nodeOut = _renderNode(
       id,
@@ -244,6 +268,8 @@ export module GraphHTML {
       inner.value.returns,
       inner.outgoing_buttons,
       inner.incoming_buttons,
+      outTop,
+      outLeft
     )
     let nodeIn = _renderNode(
       id,
@@ -254,6 +280,8 @@ export module GraphHTML {
       [],
       inner.outgoing_buttons,
       inner.incoming_buttons,
+      inTop,
+      inLeft
     )
     // only affect the correct edges when dragged
     _dragElement(nodeOut, inner.outgoing_edges, []);
