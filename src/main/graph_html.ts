@@ -8,22 +8,23 @@ const TOP_INITIAL = 100;
 const TOP_DELTA = 120;
 const LEFT_INITIAL = 30;
 const LEFT_DELTA = 170;
+const UNCONNECTED_LEFT = 30;
+const UNCONNECTED_TOP_INITIAL = 50;
+const UNCONNECTED_VERTICAL_DELTA = 100;
 const COLS = 4
 let nnodes = 0
 
 let vCoordUnconnectedNode = {
-  coord: -30,
+  coord: UNCONNECTED_TOP_INITIAL,
 };
 export { vCoordUnconnectedNode }
 
 function _nextNodeLocation(): { top: number, left: number } {
-  let row = Math.floor(nnodes / COLS)
-  let col = nnodes - row * COLS
   nnodes += 1
-  vCoordUnconnectedNode.coord = vCoordUnconnectedNode.coord + 100
+  vCoordUnconnectedNode.coord = vCoordUnconnectedNode.coord + UNCONNECTED_VERTICAL_DELTA
   return {
     top: vCoordUnconnectedNode.coord,
-    left: 900,
+    left: UNCONNECTED_LEFT,
   }
 }
 
@@ -144,12 +145,12 @@ export module GraphHTML {
     outputs: string[],
     outgoingButtons: HTMLButtonElement[],
     incomingButtons: HTMLButtonElement[],
-    top: number,
-    left: number
+    top?: number,
+    left?: number
   ): HTMLDivElement {
     let node = document.createElement("div");
     node.className = "node " + ty;
-    if(top == -1){
+    if(typeof top == 'undefined'){
       let loc = _nextNodeLocation()
       node.style.top = loc.top.toString() + 'px';
       node.setAttribute('top', loc.top.toString())
@@ -233,56 +234,100 @@ export module GraphHTML {
     }
   }
 
-  export function renderModule(id: string, inner: ModuleInner, top: number, left: number): HTMLDivElement {
-    let node = _renderNode(
-      id,
-      'module',
-      inner.value.description.params,
-      inner.value.description.returns,
-      inner.value.params,
-      inner.value.returns,
-      inner.outgoing_buttons,
-      inner.incoming_buttons,
-      top,
-      left
-    )
+  export function renderModule(id: string, inner: ModuleInner, top?: number, left?: number): HTMLDivElement {
+    let node
+    if(typeof top != 'undefined'){
+      node = _renderNode(
+        id,
+        'module',
+        inner.value.description.params,
+        inner.value.description.returns,
+        inner.value.params,
+        inner.value.returns,
+        inner.outgoing_buttons,
+        inner.incoming_buttons,
+        top,
+        left
+      )
+    } else {
+      node = _renderNode(
+        id,
+        'module',
+        inner.value.description.params,
+        inner.value.description.returns,
+        inner.value.params,
+        inner.value.returns,
+        inner.outgoing_buttons,
+        inner.incoming_buttons,
+      )
+    }
     _dragElement(node, inner.outgoing_edges, inner.incoming_edges, inner);
     return node
   }
 
-  //set outTop, inTop to -1 if don't have values for them
   export function renderSensor(
     id: string,
     inner: SensorInner,
-    outTop: number,
-    inTop: number,
-    outLeft: number,
-    inLeft: number
+    outTop?: number,
+    inTop?: number,
+    outLeft?: number,
+    inLeft?: number
   ): [HTMLDivElement, HTMLDivElement] {
-    let nodeOut = _renderNode(
-      id,
-      'sensor',
-      {},
-      inner.value.description.returns,
-      [],
-      inner.value.returns,
-      inner.outgoing_buttons,
-      inner.incoming_buttons,
-      outTop,
-      outLeft
-    )
-    let nodeIn = _renderNode(
-      id,
-      'sensor',
-      inner.value.description.state_keys,
-      {},
-      inner.value.state_keys,
-      [],
-      inner.outgoing_buttons,
-      inner.incoming_buttons,
-      inTop,
-      inLeft
-    )
+    let nodeOut
+    let nodeIn
+    if(typeof outTop != 'undefined'){
+      nodeOut = _renderNode(
+        id,
+        'sensor',
+        {},
+        inner.value.description.returns,
+        [],
+        inner.value.returns,
+        inner.outgoing_buttons,
+        inner.incoming_buttons,
+        outTop,
+        outLeft
+      )
+    } else {
+      nodeOut = _renderNode(
+        id,
+        'sensor',
+        {},
+        inner.value.description.returns,
+        [],
+        inner.value.returns,
+        inner.outgoing_buttons,
+        inner.incoming_buttons,
+      )
+      
+    }
+    if(typeof inTop != 'undefined'){
+      nodeIn = _renderNode(
+        id,
+        'sensor',
+        inner.value.description.state_keys,
+        {},
+        inner.value.state_keys,
+        [],
+        inner.outgoing_buttons,
+        inner.incoming_buttons,
+        inTop,
+        inLeft
+      )
+    } else {
+      nodeIn = _renderNode(
+        id,
+        'sensor',
+        inner.value.description.state_keys,
+        {},
+        inner.value.state_keys,
+        [],
+        inner.outgoing_buttons,
+        inner.incoming_buttons,
+      )
+    }
+
+    
     // only affect the correct edges when dragged
     _dragElement(nodeOut, inner.outgoing_edges, []);
     _dragElement(nodeIn, [], inner.incoming_edges);
