@@ -158,7 +158,7 @@ export class Graph {
     GraphHTML.reset()
   }
 
-  add_sensor(sensor: Sensor, outTop: number, inTop: number, outLeft: number, inLeft: number): boolean {
+  add_sensor(sensor: Sensor, outTop?: number, inTop?: number, outLeft?: number, inLeft?: number): boolean {
     if (this._exists(sensor.id)) {
       console.error('sensor id already exists')
       return false
@@ -172,6 +172,9 @@ export class Graph {
         incoming_edges: [],
         outgoing_buttons: [],
         incoming_buttons: [],
+      }
+      if(typeof outTop == 'undefined' && typeof inTop == 'undefined'){
+
       }
       let html = GraphHTML.renderSensor(sensor.id, inner, outTop, inTop, outLeft, inLeft);
       inner.htmlOut = html[0]
@@ -222,10 +225,10 @@ export class Graph {
 
   add_module(mod: Module): void {
     let id = this._genEntityID(mod.globalId)
-    this.addModuleWithId(mod, id, -1, -1)
+    this.addModuleWithId(mod, id)
   }
 
-  addModuleWithId(mod: Module, id: string, top: number, left: number): void {
+  addModuleWithId(mod: Module, id: string, top?: number, left?: number): void {
     let inner: ModuleInner = {
       id: id,
       value: mod,
@@ -238,7 +241,11 @@ export class Graph {
       outgoing_buttons: [],
       incoming_buttons: [],
     }
-    inner.html = GraphHTML.renderModule(id, inner, top, left);
+    if(typeof top == undefined){
+      inner.html = GraphHTML.renderModule(id, inner)
+    } else {
+      inner.html = GraphHTML.renderModule(id, inner, top, left);
+    }
     GraphHTML.renderModuleProperties(inner)
     ModuleList.addModule(id)
     this.modules[id] = inner;
@@ -641,7 +648,6 @@ export class Graph {
 
   adjacencyMatrix = new Array()
   nodeIDToIndex = new Map()
-  indexToNodeID = new Map()
   nodeDepth: number[]
   levelOrder: number[]
   counterMap = new Map() //helper map for levelOrder
@@ -653,41 +659,23 @@ export class Graph {
   setGraphFormat(f: GraphFormat) {
     // TODO: only apply the delta
     this.reset()
+    vCoordUnconnectedNode.coord = -30
     this.numNodes = f.sensors.length * 2 + f.moduleIds.length
 
-    //mapping each node to an index to use in adj mat, getNodeDepth
+    //mapping each node to an index
     for(let i = 0; i < f.sensors.length; i++){
       this.nodeIDToIndex.set(f.sensors[i].id + 'OUT', 2 * i)
       this.nodeIDToIndex.set(f.sensors[i].id + 'IN', 2 * i + 1)
-      this.indexToNodeID.set(2 * i, f.sensors[i].id + 'OUT')
-      this.indexToNodeID.set(2 * i + 1, f.sensors[i].id + 'IN')
+
     }
 
     for(let i = 0; i < f.moduleIds.length; i++){
       this.nodeIDToIndex.set(f.moduleIds[i].local, i + f.sensors.length * 2)
-      this.indexToNodeID.set(i + f.sensors.length * 2, f.moduleIds[i].local)
 
     }
 
     //build adjacency matrix
-    for(let i = 0; i < this.numNodes; i++){
-      this.adjacencyMatrix[i] = new Array()
-      for(let j = 0; j < this.numNodes; j++){
-        this.adjacencyMatrix[i][j] = 0
-      }
-    }
-    
-    for(let i = 0; i < f.edges.data.length; i++){
-      if(this.nodeIDToIndex.get(f.edges.data[i].out_id + "OUT") == undefined){
-        this.adjacencyMatrix[this.nodeIDToIndex.get(f.edges.data[i].out_id)][this.nodeIDToIndex.get(f.edges.data[i].module_id)] = 1
-      } else {
-        this.adjacencyMatrix[this.nodeIDToIndex.get(f.edges.data[i].out_id + "OUT")][this.nodeIDToIndex.get(f.edges.data[i].module_id)] = 1
-      }
-    }
-
-    for(let i = 0; i < f.edges.state.length; i++){
-      this.adjacencyMatrix[this.nodeIDToIndex.get(f.edges.state[i].module_id)][this.nodeIDToIndex.get(f.edges.state[i].sensor_id + "IN")] = 1
-    }
+    this.buildAdjacencyMatrix(f)
 
     this.nodeDepth = new Array()
     for(let i = 0; i < this.numNodes; i++){
@@ -695,6 +683,11 @@ export class Graph {
     }
     for(let i = 0; i < this.numNodes; i++){
       this.getNodeDepth(i)
+    }
+    for(let i = 0; i < this.numNodes; i++){
+      if(this.nodeDepth[i] == -1){
+        this.nodeDepth[i] = undefined
+      }
     }
 
     this.counterMap = new Map()
@@ -716,8 +709,6 @@ export class Graph {
       }
     }
 
-    console.log(this.levelOrder)
-
     let numAtDepth = new Map()
     for(let i = 0; i < this.numNodes; i++){
       if(numAtDepth.get(this.nodeDepth[i]) == undefined){
@@ -732,8 +723,6 @@ export class Graph {
       nodeHorizontal[i] = this.MAX_WIDTH / (numAtDepth.get(this.nodeDepth[i]) + 1) * this.levelOrder[i]
     }
 
-    vCoordUnconnectedNode.coord = 0
-
     for(let i = 0; i < f.sensors.length; i++){
       this.add_sensor(f.sensors[i], this.nodeDepth[2 * i], this.nodeDepth[2*i+1], nodeHorizontal[2 * i], nodeHorizontal[2*i + 1])
     }
@@ -746,6 +735,27 @@ export class Graph {
     f.edges.state.forEach(edge => this.add_state_edge(edge))
     f.edges.network.forEach(edge => this.add_network_edge(edge))
     f.edges.interval.forEach(interval => this.set_interval(interval))
+  }
+
+  buildAdjacencyMatrix(f: GraphFormat){
+    for(let i = 0; i < this.numNodes; i++){
+      this.adjacencyMatrix[i] = new Array()
+      for(let j = 0; j < this.numNodes; j++){
+        this.adjacencyMatrix[i][j] = 0
+      }
+    }
+    
+    for(let i = 0; i < f.edges.data.length; i++){
+      if(this.nodeIDToIndex.get(f.edges.data[i].out_id + "OUT") == undefined){
+        this.adjacencyMatrix[this.nodeIDToIndex.get(f.edges.data[i].out_id)][this.nodeIDToIndex.get(f.edges.data[i].module_id)] = 1
+      } else {
+        this.adjacencyMatrix[this.nodeIDToIndex.get(f.edges.data[i].out_id + "OUT")][this.nodeIDToIndex.get(f.edges.data[i].module_id)] = 1
+      }
+    }
+
+    for(let i = 0; i < f.edges.state.length; i++){
+      this.adjacencyMatrix[this.nodeIDToIndex.get(f.edges.state[i].module_id)][this.nodeIDToIndex.get(f.edges.state[i].sensor_id + "IN")] = 1
+    }
   }
 
   getNodeDepth(nodeIndex: number){
@@ -784,8 +794,6 @@ export class Graph {
       let dq = queue.shift()
       if(this.levelOrder[dq] == 0){
         this.levelOrder[dq] = this.counterMap.get(this.nodeDepth[dq])
-        console.log(this.indexToNodeID.get(dq))
-        console.log(this.levelOrder)
         this.counterMap.set(this.nodeDepth[dq], this.counterMap.get(this.nodeDepth[dq]) + 1)
         let children = this.findNodeChildren(dq)
         children.forEach(element => {
