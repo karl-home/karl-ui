@@ -19,7 +19,7 @@ export module SensorModals {
     if (sensors.hasOwnProperty(sensorId)) {
       sensors[sensorId].html.remove()
       Network.confirmSensor(sensorId)
-      g.add_sensor(sensors[sensorId].sensor, -1, -1, 1, -1)
+      g.add_sensor(sensors[sensorId].sensor)
       delete sensors[sensorId]
     } else {
       console.error(`failed to confirm missing sensor: ${sensorId}`)
