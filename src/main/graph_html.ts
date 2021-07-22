@@ -134,7 +134,7 @@ export module GraphHTML {
     }
   }
 
-  //if top == -1, then go with _nextNodeLocation(), otherwise use
+  //if top == null, then go with _nextNodeLocation(), otherwise use
   //given height
   function _renderNode(
     id: string,
@@ -150,7 +150,7 @@ export module GraphHTML {
   ): HTMLDivElement {
     let node = document.createElement("div");
     node.className = "node " + ty;
-    if(typeof top == 'undefined'){
+    if(top == null){
       let loc = _nextNodeLocation()
       node.style.top = loc.top.toString() + 'px';
       node.setAttribute('top', loc.top.toString())
