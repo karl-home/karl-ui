@@ -5,7 +5,6 @@ import { SensorList } from './sidebar/sensor_html';
 import { Network } from './network';
 import { vCoordUnconnectedNode } from './main/graph_html';
 import { GraphCoord } from './graphCoord';
-import { find } from 'lodash';
 
 export const NETWORK_NODE_ID: string = "NET";
 
@@ -174,9 +173,6 @@ export class Graph {
         outgoing_buttons: [],
         incoming_buttons: [],
       }
-      if(typeof outTop == 'undefined' && typeof inTop == 'undefined'){
-
-      }
       let html = GraphHTML.renderSensor(sensor.id, inner, outTop, inTop, outLeft, inLeft);
       inner.htmlOut = html[0]
       inner.htmlIn = html[1]
@@ -242,7 +238,7 @@ export class Graph {
       outgoing_buttons: [],
       incoming_buttons: [],
     }
-    if(typeof top == undefined){
+    if(top == null){
       inner.html = GraphHTML.renderModule(id, inner)
     } else {
       inner.html = GraphHTML.renderModule(id, inner, top, left);
@@ -645,15 +641,6 @@ export class Graph {
       .sort((a, b) => a.module_id.localeCompare(b.module_id))
     return format;
   }
-
-  adjacencyMatrix = new Array()
-  nodeIDToIndex = new Map()
-  levelOrder: number[]
-  counterMap = new Map() //helper map for levelOrder
-  numNodes = 0
-  STEP_SIZE = 170
-  INITIAL_HEIGHT = 100
-  MAX_WIDTH = 800
 
   setGraphFormat(f: GraphFormat) {
     // TODO: only apply the delta
