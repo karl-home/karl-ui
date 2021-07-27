@@ -3,6 +3,8 @@ import { EdgeHTML } from './sidebar/edge_html';
 import { ModuleList } from './sidebar/module_repo';
 import { SensorList } from './sidebar/sensor_html';
 import { Network } from './network';
+import { vCoordUnconnectedNode } from './main/graph_html';
+import { GraphCoord } from './graphCoord';
 
 export const NETWORK_NODE_ID: string = "NET";
 
@@ -156,7 +158,7 @@ export class Graph {
     GraphHTML.reset()
   }
 
-  add_sensor(sensor: Sensor): boolean {
+  add_sensor(sensor: Sensor, outTop?: number, inTop?: number, outLeft?: number, inLeft?: number): boolean {
     if (this._exists(sensor.id)) {
       console.error('sensor id already exists')
       return false
@@ -171,7 +173,7 @@ export class Graph {
         outgoing_buttons: [],
         incoming_buttons: [],
       }
-      let html = GraphHTML.renderSensor(sensor.id, inner);
+      let html = GraphHTML.renderSensor(sensor.id, inner, outTop, inTop, outLeft, inLeft);
       inner.htmlOut = html[0]
       inner.htmlIn = html[1]
       this.sensors[sensor.id] = inner;
@@ -223,7 +225,7 @@ export class Graph {
     this.addModuleWithId(mod, id)
   }
 
-  addModuleWithId(mod: Module, id: string): void {
+  addModuleWithId(mod: Module, id: string, top?: number, left?: number): void {
     let inner: ModuleInner = {
       id: id,
       value: mod,
@@ -236,7 +238,11 @@ export class Graph {
       outgoing_buttons: [],
       incoming_buttons: [],
     }
-    inner.html = GraphHTML.renderModule(id, inner);
+    if(top == null){
+      inner.html = GraphHTML.renderModule(id, inner)
+    } else {
+      inner.html = GraphHTML.renderModule(id, inner, top, left);
+    }
     GraphHTML.renderModuleProperties(inner)
     ModuleList.addModule(id)
     this.modules[id] = inner;
@@ -639,11 +645,18 @@ export class Graph {
   setGraphFormat(f: GraphFormat) {
     // TODO: only apply the delta
     this.reset()
-    f.sensors.forEach(sensor => this.add_sensor(sensor))
-    f.moduleIds.forEach(id => {
-      let mod = Network.checkModuleRepo(id.global)
-      this.addModuleWithId(mod, id.local)
-    })
+    vCoordUnconnectedNode.coord = -30
+    let graphCoord = new GraphCoord()
+    let [nodeDepth, nodeHorizontal] = graphCoord.findCoords(f)
+
+    for(let i = 0; i < f.sensors.length; i++){
+      this.add_sensor(f.sensors[i], nodeDepth[2 * i], nodeDepth[2*i+1], nodeHorizontal[2 * i], nodeHorizontal[2*i + 1])
+    }
+    for(let i = 0; i < f.moduleIds.length; i++){
+      let mod = Network.checkModuleRepo(f.moduleIds[i].global)
+      this.addModuleWithId(mod, f.moduleIds[i].local, nodeDepth[f.sensors.length * 2 + i], nodeHorizontal[f.sensors.length * 2 + i])
+    }
+
     f.edges.data.forEach(edge => this.add_data_edge(edge))
     f.edges.state.forEach(edge => this.add_state_edge(edge))
     f.edges.network.forEach(edge => this.add_network_edge(edge))
