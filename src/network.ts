@@ -704,4 +704,45 @@ export module Network {
       }
     }
   }
+
+  export function listTags(callback: (tags: string[]) => void) {
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', '/tags')
+    xhr.send()
+    xhr.onreadystatechange = function(e) {
+      if (this.readyState == 4) {
+        if (this.status == 200) {
+          callback(JSON.parse(this.responseText))
+        } else {
+          console.error({
+            responseURL: this.responseURL,
+            status: this.status,
+            statusText: this.statusText,
+          })
+        }
+      }
+    }
+  }
+
+  export function readTag(
+    tag: string,
+    callback: (result: { timestamps: string[], data: Uint8Array[] }) => void,
+  ) {
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', '/tags/' + tag)
+    xhr.send()
+    xhr.onreadystatechange = function(e) {
+      if (this.readyState == 4) {
+        if (this.status == 200) {
+          callback(JSON.parse(this.responseText))
+        } else {
+          console.error({
+            responseURL: this.responseURL,
+            status: this.status,
+            statusText: this.statusText,
+          })
+        }
+      }
+    }
+  }
 }

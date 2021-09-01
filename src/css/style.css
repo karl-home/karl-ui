@@ -7,6 +7,10 @@
   min-width: 150px;
 }
 
+select {
+  min-width: 150px;
+}
+
 .node-header {
   width: 100%;
   padding: 0px;

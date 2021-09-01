@@ -299,7 +299,7 @@ export module GraphHTML {
         inner.outgoing_buttons,
         inner.incoming_buttons,
       )
-      
+
     }
     if(typeof inTop != 'undefined'){
       nodeIn = _renderNode(
@@ -327,7 +327,7 @@ export module GraphHTML {
       )
     }
 
-    
+
     // only affect the correct edges when dragged
     _dragElement(nodeOut, inner.outgoing_edges, []);
     _dragElement(nodeIn, [], inner.incoming_edges);

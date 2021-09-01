@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import './css/style.css';
 import { Examples } from './examples';
+import { DataCanvas } from './data_canvas';
 import { Graph, GraphFormat } from './graph';
 import { EdgeHTML } from './sidebar/edge_html';
 import { ModuleHTML } from './sidebar/module_html';
@@ -16,6 +17,10 @@ function initializeNavbar() {
   let navbarElems = Array.from(navbar.getElementsByTagName('A'))
     .map(elem => (elem as HTMLElement));
   let navbarNames = navbarElems.map(elem => elem.getAttribute('name'));
+  const mainCanvas = document.getElementById('main-container');
+  const dataCanvas = document.getElementById('data-container');
+  mainCanvas.style.display = ''
+  dataCanvas.style.display = 'none'
   navbarElems.forEach(function(elem) {
     elem.onclick = function() {
       // set active class
@@ -25,17 +30,27 @@ function initializeNavbar() {
         }
       })
       elem.classList.add('active')
+      let activeField = elem.getAttribute('name')
 
       // set container display
       navbarNames.forEach(function(field) {
         let id = field + '-container'
         let container = document.getElementById(id)
-        if (field != elem.getAttribute('name')) {
+        if (field != activeField) {
           container.style.display = 'none'
         } else {
           container.style.display = ''
         }
       })
+
+      // set main or data canvas
+      if (activeField == 'homecloud') {
+        mainCanvas.style.display = 'none'
+        dataCanvas.style.display = ''
+      } else {
+        mainCanvas.style.display = ''
+        dataCanvas.style.display = 'none'
+      }
     }
   })
   navbarElems[0].click()
@@ -82,13 +97,14 @@ function initializeExampleButtons() {
   };
 }
 
-function initializeGraph() {
+function initializeCanvas() {
   Network.getGraph(function(f: GraphFormat) {
     g.setGraphFormat(f)
   })
+  DataCanvas.initialize()
 }
 
 initializeNavbar()
 initializeSidebar()
 initializeExampleButtons()
-initializeGraph()
+initializeCanvas()
