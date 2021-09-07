@@ -40,6 +40,7 @@ function initializeNavbar() {
   })
   navbarElems[0].click()
 }
+
 function initializeLegend() {
   var modal = document.getElementById("simpleModal");
   var modalBtn = document.getElementById("modalBtn");
@@ -102,7 +103,7 @@ function initializeGraph() {
 }
 
 initializeNavbar()
+initializeLegend()
 initializeSidebar()
 initializeExampleButtons()
 initializeGraph()
-initializeLegend()
