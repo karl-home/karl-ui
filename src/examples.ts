@@ -55,7 +55,121 @@ function _module(module_id: string): {
   }
 }
 
+function _moduleWithID(module_id: string, new_id: string): {
+  local: ModuleID
+  global: ModuleID,
+  params: string[],
+  returns: string[],
+} {
+  let mod = Network.checkModuleRepo(module_id)
+  return {
+    local: new_id,
+    global: module_id,
+    params: mod.params,
+    returns: mod.returns,
+  }
+}
+
 export module Examples {
+  export function pipeline_i(g: Graph) {
+    g.setGraphFormat({
+      sensors: [
+        _sensorWithId('camera', 'camera')
+      ],
+      moduleIds: [
+        _module('set_true'),
+      ],
+      edges: {
+        data: [],
+        state: [
+          stateEdge('set_true', 'true', 'camera', 'livestream'),
+        ],
+        network: [],
+        interval: [],
+      },
+    })
+  }
+
+  export function pipeline_ii(g: Graph) {
+    g.setGraphFormat({
+      sensors: [
+        _sensorWithId('speaker', 'speaker'),
+      ],
+      moduleIds: [
+        _module('picovoice'),
+        _module('weather'),
+      ],
+      edges: {
+        data: [
+          dataEdge(true, 'picovoice', 'weather_intent', 'weather', 'weather_intent'),
+          dataEdge(true, 'speaker', 'speech_command', 'picovoice', 'speech'),
+        ],
+        state: [
+          stateEdge('weather', 'weather', 'speaker', 'playback'),
+        ],
+        network: [
+          networkEdge('weather', 'weather.com'),
+        ],
+        interval: [],
+      },
+    })
+  }
+
+  export function pipeline_iii(g: Graph) {
+    g.setGraphFormat({
+      sensors: [
+        _sensorWithId('light', 'light'),
+        _sensorWithId('speaker', 'speaker'),
+      ],
+      moduleIds: [
+        _module('picovoice'),
+        _module('light_switch'),
+      ],
+      edges: {
+        data: [
+          dataEdge(true, 'picovoice', 'light_intent', 'light_switch', 'light_intent'),
+          dataEdge(true, 'speaker', 'speech_command', 'picovoice', 'speech'),
+        ],
+        state: [
+          stateEdge('light_switch', 'state', 'light', 'state'),
+        ],
+        network: [
+        ],
+        interval: [
+        ],
+      },
+    })
+  }
+
+  export function pipeline_iv(g: Graph) {
+    g.setGraphFormat({
+      sensors: [
+        _sensorWithId('occupancy_sensor', 'occupancy_sensor'),
+        _sensorWithId('camera', 'camera')
+      ],
+      moduleIds: [
+        _module('boolean'),
+        _module('person_detection'),
+        _module('statistics'),
+      ],
+      edges: {
+        data: [
+          dataEdge(true, 'camera', 'motion', 'person_detection', 'image'),
+          dataEdge(true, 'person_detection', 'training_data', 'boolean', 'value'),
+          dataEdge(false, 'occupancy_sensor', 'at_home', 'boolean', 'condition'),
+          dataEdge(true, 'boolean', 'predicate', 'statistics', 'data'),
+        ],
+        state: [
+        ],
+        network: [
+          networkEdge('statistics', 'statistics.com'),
+        ],
+        interval: [
+        ],
+      },
+    })
+  }
+
   export function figure4(g: Graph) {
     g.setGraphFormat({
       sensors: [

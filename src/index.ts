@@ -80,6 +80,18 @@ function initializeSidebar() {
 }
 
 function initializeExampleButtons() {
+  document.getElementById("pipeline-i").onclick = function() {
+    Examples.pipeline_i(g)
+  };
+  document.getElementById("pipeline-ii").onclick = function() {
+    Examples.pipeline_ii(g)
+  };
+  document.getElementById("pipeline-iii").onclick = function() {
+    Examples.pipeline_iii(g)
+  };
+  document.getElementById("pipeline-iv").onclick = function() {
+    Examples.pipeline_iv(g)
+  };
   document.getElementById("figure4").onclick = function() {
     Examples.figure4(g)
   };
