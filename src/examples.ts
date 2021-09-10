@@ -96,13 +96,13 @@ export module Examples {
         _sensorWithId('speaker', 'speaker'),
       ],
       moduleIds: [
-        _module('picovoice'),
+        _module('picovoice_weather'),
         _module('weather'),
       ],
       edges: {
         data: [
-          dataEdge(true, 'picovoice', 'weather_intent', 'weather', 'weather_intent'),
-          dataEdge(true, 'speaker', 'speech_command', 'picovoice', 'speech'),
+          dataEdge(true, 'picovoice_weather', 'weather_intent', 'weather', 'weather_intent'),
+          dataEdge(true, 'speaker', 'speech_command', 'picovoice_weather', 'speech'),
         ],
         state: [
           stateEdge('weather', 'weather', 'speaker', 'playback'),
@@ -122,13 +122,13 @@ export module Examples {
         _sensorWithId('speaker', 'speaker'),
       ],
       moduleIds: [
-        _module('picovoice'),
+        _module('picovoice_light'),
         _module('light_switch'),
       ],
       edges: {
         data: [
-          dataEdge(true, 'picovoice', 'light_intent', 'light_switch', 'light_intent'),
-          dataEdge(true, 'speaker', 'speech_command', 'picovoice', 'speech'),
+          dataEdge(true, 'picovoice_light', 'light_intent', 'light_switch', 'light_intent'),
+          dataEdge(true, 'speaker', 'speech_command', 'picovoice_light', 'speech'),
         ],
         state: [
           stateEdge('light_switch', 'state', 'light', 'state'),

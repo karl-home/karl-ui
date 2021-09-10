@@ -122,8 +122,25 @@ const MODULES: { [key: string]: Module } = {
       network: {},
     }
   },
-  picovoice: {
-    globalId: 'command_classifier',
+  picovoice_weather: {
+    globalId: 'picovoice_weather',
+    params: ['speech'],
+    returns: ['weather_intent', 'light_intent'],
+    network: [],
+    description: {
+      module: '',
+      params: {
+        'speech': '',
+      },
+      returns: {
+        'weather_intent': '',
+        'light_intent': '',
+      },
+      network: {},
+    }
+  },
+  picovoice_light: {
+    globalId: 'picovoice_light',
     params: ['speech'],
     returns: ['weather_intent', 'light_intent'],
     network: [],
