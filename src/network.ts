@@ -19,6 +19,7 @@ interface ControllerGraphFormat {
   stateEdges: [number, number, number, number][],
   networkEdges: [number, string][],
   intervals: [number, number][],
+  pipelines: [string, boolean][],
   contexts: [string, string][],
 };
 
@@ -521,7 +522,7 @@ export module Network {
 
   export function getGraph(callback: (
     format: GraphFormat,
-    pipelines: [string, boolean][],  // TODO: use
+    pipelines: [string, boolean][],
     contexts: [string, string][],
   ) => void) {
     const xhr = new XMLHttpRequest()
@@ -625,11 +626,7 @@ export module Network {
               }),
             }
           };
-          let pipelines: [string, boolean][] = [
-            ["pipeline1", true],
-            ["pipeline2", false]
-          ]
-          callback(format, pipelines, g.contexts)
+          callback(format, g.pipelines, g.contexts)
         } else {
           console.error(this)
           console.error({
@@ -642,7 +639,11 @@ export module Network {
     }
   }
 
-  export function saveGraph(format: GraphFormat, contexts: [string, string][]) {
+  export function saveGraph(
+    format: GraphFormat,
+    pipelines: [string, boolean][],
+    contexts: [string, string][],
+  ) {
     const sensors = format.sensors
       .map(function(sensor) {
         return {
@@ -718,6 +719,7 @@ export module Network {
       intervals: format.edges.interval.map(function(edge) {
         return [entityMap[edge.module_id][0], edge.duration_s]
       }),
+      pipelines: pipelines,
       contexts: contexts,
     }
 

@@ -12,14 +12,8 @@ export module PipelineHTML {
   }
 
   // Return an array of the indexes of each pipeline that is checked
-  export function getAllowedPipelines(): number[] {
-    let allowed: number[] = []
-    inputs.forEach(function(value, index) {
-      if (value.checked) {
-        allowed.push(index)
-      }
-    })
-    return allowed
+  export function getAllowedPipelines(): [string, boolean][] {
+    return inputs.map(value => ["", value.checked]);
   }
 
   export function setPipelines(pipelines: [string, boolean][]) {

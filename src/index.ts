@@ -90,8 +90,9 @@ function initializeSidebar() {
   }
   document.getElementById('save-button').onclick = function() {
     let format = g.getGraphFormat()
+    let pipelines = PipelineHTML.getAllowedPipelines()
     let contexts = ContextHTML.getSecurityContexts()
-    Network.saveGraph(format, contexts)
+    Network.saveGraph(format, pipelines, contexts)
   }
 }
 
