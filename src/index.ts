@@ -5,6 +5,7 @@ import { DataCanvas } from './data_canvas';
 import { Graph, GraphFormat } from './graph';
 import { EdgeHTML } from './sidebar/edge_html';
 import { ContextHTML } from './sidebar/context_html';
+import { PipelineHTML } from './sidebar/pipeline_html';
 import { ModuleHTML } from './sidebar/module_html';
 import { ModuleRepo } from './sidebar/module_repo';
 import { SensorModals } from './sidebar/sensor_html';
@@ -57,10 +58,24 @@ function initializeNavbar() {
   navbarElems[0].click()
 }
 
+// Query the controller for the graph and set the canvas and privacy policies
+function getGraph() {
+  Network.getGraph(function(
+    f: GraphFormat,
+    pipelines: [string, boolean][],
+    contexts: [string, string][],
+  ) {
+    g.setGraphFormat(f)
+    PipelineHTML.setPipelines(pipelines)
+    ContextHTML.setSecurityContexts(contexts)
+  })
+}
+
 function initializeSidebar() {
   EdgeHTML.renderInitialForm(g)
   ModuleHTML.renderInitialForm(g)
   ContextHTML.renderInitialForm(g)
+  PipelineHTML.renderInitialForm(g)
   ModuleRepo.renderInitialForm(g)
   SensorModals.renderInitialForm(g)
   HostModals.renderInitialForm()
@@ -71,10 +86,7 @@ function initializeSidebar() {
     g.reset()
     document.getElementById('host-refresh-button').click()
     document.getElementById('sensor-refresh-button').click()
-    Network.getGraph(function(f: GraphFormat, contexts: [string, string][]) {
-      g.setGraphFormat(f)
-      ContextHTML.setSecurityContexts(contexts)
-    })
+    getGraph();
   }
   document.getElementById('save-button').onclick = function() {
     let format = g.getGraphFormat()
@@ -120,10 +132,7 @@ function initializeExampleButtons() {
 }
 
 function initializeCanvas() {
-  Network.getGraph(function(f: GraphFormat, contexts: [string, string][]) {
-    g.setGraphFormat(f)
-    ContextHTML.setSecurityContexts(contexts)
-  })
+  getGraph();
   DataCanvas.initialize()
 }
 

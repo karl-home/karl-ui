@@ -8,7 +8,7 @@ export module ContextHTML {
     g = graph
 
     // Create all the form elements
-    textarea.setAttribute('rows', '10');
+    textarea.setAttribute('rows', '5');
     textarea.setAttribute('cols', '42');
     textarea.setAttribute('placeholder', 'Ex:\n'
       + 'light.state PUBLIC\n'

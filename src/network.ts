@@ -521,6 +521,7 @@ export module Network {
 
   export function getGraph(callback: (
     format: GraphFormat,
+    pipelines: [string, boolean][],  // TODO: use
     contexts: [string, string][],
   ) => void) {
     const xhr = new XMLHttpRequest()
@@ -624,7 +625,11 @@ export module Network {
               }),
             }
           };
-          callback(format, g.contexts)
+          let pipelines: [string, boolean][] = [
+            ["pipeline1", true],
+            ["pipeline2", false]
+          ]
+          callback(format, pipelines, g.contexts)
         } else {
           console.error(this)
           console.error({
