@@ -4,6 +4,7 @@ import { Examples } from './examples';
 import { DataCanvas } from './data_canvas';
 import { Graph, GraphFormat } from './graph';
 import { EdgeHTML } from './sidebar/edge_html';
+import { ContextHTML } from './sidebar/context_html';
 import { ModuleHTML } from './sidebar/module_html';
 import { ModuleRepo } from './sidebar/module_repo';
 import { SensorModals } from './sidebar/sensor_html';
@@ -59,6 +60,7 @@ function initializeNavbar() {
 function initializeSidebar() {
   EdgeHTML.renderInitialForm(g)
   ModuleHTML.renderInitialForm(g)
+  ContextHTML.renderInitialForm(g)
   ModuleRepo.renderInitialForm(g)
   SensorModals.renderInitialForm(g)
   HostModals.renderInitialForm()
