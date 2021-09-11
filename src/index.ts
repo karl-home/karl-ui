@@ -4,8 +4,7 @@ import { Examples } from './examples';
 import { DataCanvas } from './data_canvas';
 import { Graph, GraphFormat } from './graph';
 import { EdgeHTML } from './sidebar/edge_html';
-import { ContextHTML } from './sidebar/context_html';
-import { PipelineHTML } from './sidebar/pipeline_html';
+import { ContextHTML, PipelineHTML } from './sidebar/policy_html';
 import { ModuleHTML } from './sidebar/module_html';
 import { ModuleRepo } from './sidebar/module_repo';
 import { SensorModals } from './sidebar/sensor_html';
@@ -60,12 +59,16 @@ function initializeNavbar() {
 
 // Query the controller for the graph and set the canvas and privacy policies
 function getGraph() {
-  Network.getGraph(function(
-    f: GraphFormat,
+  Network.getGraph(function(f: GraphFormat) {
+    g.setGraphFormat(f)
+  })
+}
+
+function getPolicies() {
+  Network.getPolicies(function(
     pipelines: [string, boolean][],
     contexts: [string, string][],
   ) {
-    g.setGraphFormat(f)
     PipelineHTML.setPipelines(pipelines)
     ContextHTML.setSecurityContexts(contexts)
   })
@@ -90,9 +93,15 @@ function initializeSidebar() {
   }
   document.getElementById('save-button').onclick = function() {
     let format = g.getGraphFormat()
+    Network.saveGraph(format)
+  }
+  document.getElementById('save-policies-button').onclick = function() {
     let pipelines = PipelineHTML.getAllowedPipelines()
     let contexts = ContextHTML.getSecurityContexts()
-    Network.saveGraph(format, pipelines, contexts)
+    Network.savePolicies(pipelines, contexts)
+  }
+  document.getElementById('refresh-policies-button').onclick = function() {
+    getPolicies();
   }
 }
 
@@ -134,6 +143,7 @@ function initializeExampleButtons() {
 
 function initializeCanvas() {
   getGraph();
+  getPolicies();
   DataCanvas.initialize()
 }
 

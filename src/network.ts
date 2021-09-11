@@ -19,6 +19,9 @@ interface ControllerGraphFormat {
   stateEdges: [number, number, number, number][],
   networkEdges: [number, string][],
   intervals: [number, number][],
+};
+
+interface ControllerPolicyFormat {
   pipelines: [string, boolean][],
   contexts: [string, string][],
 };
@@ -520,11 +523,33 @@ export module Network {
     return MODULES[module_id]
   }
 
-  export function getGraph(callback: (
-    format: GraphFormat,
+  export function getPolicies(callback: (
     pipelines: [string, boolean][],
     contexts: [string, string][],
   ) => void) {
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', '/policy')
+    xhr.send()
+    xhr.onreadystatechange = function(e) {
+      if (this.readyState == 4) {
+        if (this.status == 200) {
+          console.log(this.responseText)
+          // see endpoint.rs for format
+          let policy: ControllerPolicyFormat = JSON.parse(this.responseText)
+          callback(policy.pipelines, policy.contexts)
+        } else {
+          console.error(this)
+          console.error({
+            responseURL: this.responseURL,
+            status: this.status,
+            statusText: this.statusText,
+          })
+        }
+      }
+    }
+  }
+
+  export function getGraph(callback: (format: GraphFormat) => void) {
     const xhr = new XMLHttpRequest()
     xhr.open('GET', '/graph')
     xhr.send()
@@ -626,7 +651,7 @@ export module Network {
               }),
             }
           };
-          callback(format, g.pipelines, g.contexts)
+          callback(format)
         } else {
           console.error(this)
           console.error({
@@ -639,11 +664,33 @@ export module Network {
     }
   }
 
-  export function saveGraph(
-    format: GraphFormat,
+  export function savePolicies(
     pipelines: [string, boolean][],
     contexts: [string, string][],
   ) {
+    let policy: ControllerPolicyFormat = {
+      pipelines: pipelines,
+      contexts: contexts,
+    }
+
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', '/policy')
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify(policy))
+    xhr.onreadystatechange = function(e) {
+      if (this.readyState == 4) {
+        if (this.status != 200) {
+          console.error({
+            responseURL: this.responseURL,
+            status: this.status,
+            statusText: this.statusText,
+          })
+        }
+      }
+    }
+  }
+
+  export function saveGraph(format: GraphFormat) {
     const sensors = format.sensors
       .map(function(sensor) {
         return {
@@ -719,8 +766,6 @@ export module Network {
       intervals: format.edges.interval.map(function(edge) {
         return [entityMap[edge.module_id][0], edge.duration_s]
       }),
-      pipelines: pipelines,
-      contexts: contexts,
     }
 
     const xhr = new XMLHttpRequest()
