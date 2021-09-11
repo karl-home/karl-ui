@@ -77,7 +77,8 @@ function initializeSidebar() {
   }
   document.getElementById('save-button').onclick = function() {
     let format = g.getGraphFormat()
-    Network.saveGraph(format)
+    let contexts = ContextHTML.getSecurityContexts()
+    Network.saveGraph(format, contexts)
   }
 }
 

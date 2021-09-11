@@ -19,6 +19,7 @@ interface ControllerGraphFormat {
   stateEdges: [number, number, number, number][],
   networkEdges: [number, string][],
   intervals: [number, number][],
+  contexts: [string, string][],
 };
 
 const SENSORS: { [key: string]: Sensor } = {
@@ -616,7 +617,7 @@ export module Network {
     }
   }
 
-  export function saveGraph(format: GraphFormat) {
+  export function saveGraph(format: GraphFormat, contexts: [string, string][]) {
     const sensors = format.sensors
       .map(function(sensor) {
         return {
@@ -692,6 +693,7 @@ export module Network {
       intervals: format.edges.interval.map(function(edge) {
         return [entityMap[edge.module_id][0], edge.duration_s]
       }),
+      contexts: contexts,
     }
 
     const xhr = new XMLHttpRequest()
