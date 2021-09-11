@@ -170,6 +170,81 @@ export module Examples {
     })
   }
 
+  export function figure3ab(g: Graph) {
+    g.setGraphFormat({
+      sensors: [
+        _sensorWithId('light', 'light'),
+        _sensorWithId('speaker', 'speaker'),
+      ],
+      moduleIds: [
+        _module('picovoice'),
+        _module('weather'),
+        _module('light_switch'),
+        _module('set_true'),
+        _module('set_false'),
+      ],
+      edges: {
+        data: [
+          dataEdge(true, 'speaker', 'speech_command', 'picovoice', 'speech'),
+          dataEdge(true, 'picovoice', 'light_intent', 'light_switch', 'light_intent'),
+          dataEdge(true, 'picovoice', 'weather_intent', 'weather', 'weather_intent'),
+        ],
+        state: [
+          stateEdge('set_true', 'true', 'light', 'state'),
+          stateEdge('set_false', 'false', 'light', 'intensity'),
+          stateEdge('weather', 'weather', 'speaker', 'playback'),
+          stateEdge('light_switch', 'state', 'light', 'state'), // extra
+        ],
+        network: [
+          networkEdge('weather', 'weather.com'),
+        ],
+        interval: [
+        ],
+      },
+    })
+  }
+
+  export function figure3c(g: Graph) {
+    g.setGraphFormat({
+      sensors: [
+        _sensorWithId('occupancy_sensor', 'occupancy_sensor'),
+        _sensorWithId('camera', 'camera'),
+        _sensorWithId('camera', 'camera_1')
+      ],
+      moduleIds: [
+        _module('person_detection'),
+        _module('boolean'),
+        _module('statistics'),
+        _module('query'),
+        _module('firmware_update'),
+        _module('set_true'),
+        _module('set_false'),
+      ],
+      edges: {
+        data: [
+          dataEdge(true, 'camera_1', 'motion', 'person_detection', 'image'),
+          dataEdge(true, 'camera', 'motion', 'person_detection', 'image'),
+          dataEdge(true, 'person_detection', 'training_data', 'boolean', 'value'),
+          dataEdge(false, 'occupancy_sensor', 'at_home', 'boolean', 'condition'),
+          dataEdge(true, 'boolean', 'predicate', 'statistics', 'data'),
+          dataEdge(false, 'camera', 'motion', 'query', 'image_data'),
+        ],
+        state: [
+          stateEdge('set_true', 'true', 'camera', 'livestream'),
+          stateEdge('set_false', 'false', 'camera', 'livestream'),
+          stateEdge('firmware_update', 'firmware', 'camera', 'firmware'),
+        ],
+        network: [
+          networkEdge('statistics', 'statistics.com'),
+          networkEdge('firmware_update', 'firmware.com'),
+        ],
+        interval: [
+          interval('firmware_update', 24*60*60),
+        ],
+      },
+    })
+  }
+
   export function figure4(g: Graph) {
     g.setGraphFormat({
       sensors: [

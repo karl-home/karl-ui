@@ -96,12 +96,18 @@ function initializeExampleButtons() {
   document.getElementById("pipeline-iv").onclick = function() {
     Examples.pipeline_iv(g)
   };
-  document.getElementById("figure4").onclick = function() {
-    Examples.figure4(g)
+  document.getElementById("figure3ab").onclick = function() {
+    Examples.figure3ab(g)
   };
-  document.getElementById("figure5").onclick = function() {
-    Examples.figure5(g)
+  document.getElementById("figure3c").onclick = function() {
+    Examples.figure3c(g)
   };
+  // document.getElementById("figure4").onclick = function() {
+  //   Examples.figure4(g)
+  // };
+  // document.getElementById("figure5").onclick = function() {
+  //   Examples.figure5(g)
+  // };
   document.getElementById("button-A").onclick = function() {
     Examples.diffPrivPipeline(g)
   };
