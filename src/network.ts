@@ -502,7 +502,10 @@ export module Network {
     return MODULES[module_id]
   }
 
-  export function getGraph(callback: (format: GraphFormat) => void) {
+  export function getGraph(callback: (
+    format: GraphFormat,
+    contexts: [string, string][],
+  ) => void) {
     const xhr = new XMLHttpRequest()
     xhr.open('GET', '/graph')
     xhr.send()
@@ -604,7 +607,7 @@ export module Network {
               }),
             }
           };
-          callback(format)
+          callback(format, g.contexts)
         } else {
           console.error(this)
           console.error({

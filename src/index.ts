@@ -71,8 +71,9 @@ function initializeSidebar() {
     g.reset()
     document.getElementById('host-refresh-button').click()
     document.getElementById('sensor-refresh-button').click()
-    Network.getGraph(function(f: GraphFormat) {
+    Network.getGraph(function(f: GraphFormat, contexts: [string, string][]) {
       g.setGraphFormat(f)
+      ContextHTML.setSecurityContexts(contexts)
     })
   }
   document.getElementById('save-button').onclick = function() {
@@ -113,8 +114,9 @@ function initializeExampleButtons() {
 }
 
 function initializeCanvas() {
-  Network.getGraph(function(f: GraphFormat) {
+  Network.getGraph(function(f: GraphFormat, contexts: [string, string][]) {
     g.setGraphFormat(f)
+    ContextHTML.setSecurityContexts(contexts)
   })
   DataCanvas.initialize()
 }

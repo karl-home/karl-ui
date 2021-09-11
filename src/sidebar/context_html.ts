@@ -1,4 +1,4 @@
-import { Graph } from '../graph';
+import { Graph, GraphFormat } from '../graph';
 
 export module ContextHTML {
   let g: Graph = undefined;
@@ -31,5 +31,9 @@ export module ContextHTML {
     return textarea.value.split('\n').filter(val => val != '')
       .map(val => val.split(' '))
       .map(val => [val[0], val[1]]);
+  }
+
+  export function setSecurityContexts(contexts: [string, string][]) {
+    textarea.value = contexts.map(ctx => ctx[0] + " " + ctx[1]).join("\n");
   }
 }
