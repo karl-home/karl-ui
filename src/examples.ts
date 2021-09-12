@@ -162,7 +162,7 @@ export module Examples {
         state: [
         ],
         network: [
-          networkEdge('statistics', 'statistics.com'),
+          networkEdge('statistics', 'https://www.statistics.com'),
         ],
         interval: [
         ],
@@ -235,8 +235,8 @@ export module Examples {
           stateEdge('firmware_update', 'firmware', 'camera', 'firmware'),
         ],
         network: [
-          networkEdge('statistics', 'statistics.com'),
-          networkEdge('firmware_update', 'firmware.com'),
+          networkEdge('statistics', 'https://www.statistics.com'),
+          networkEdge('firmware_update', 'https://www.firmware.com'),
         ],
         interval: [
           interval('firmware_update', 24*60*60),
