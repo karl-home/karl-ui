@@ -191,7 +191,7 @@ export module Examples {
         ],
         state: [
           stateEdge('set_true', 'true', 'light', 'state'),
-          stateEdge('set_false', 'false', 'light', 'intensity'),
+          stateEdge('set_false', 'false', 'light', 'state'),
           stateEdge('weather', 'weather', 'speaker', 'playback'),
           stateEdge('light_switch', 'state', 'light', 'state'), // extra
         ],
