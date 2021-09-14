@@ -1,20 +1,16 @@
 import { Sensor, Module, GraphFormat } from './graph'
 import { Host } from './sidebar/host_html'
 
-interface ControllerSensor {
+interface ControllerNode {
   id: string,
-  stateKeys: [string, string][],
-  returns: [string, string][],
+  globalId: string,
+  inputs: string[],
+  outputs: string[],
 }
 
 interface ControllerGraphFormat {
-  sensors: ControllerSensor[],
-  moduleIds: {
-    localId: string,
-    globalId: string,
-    params: string[],
-    returns: string[],
-  }[],
+  n_devices: number,
+  nodes: ControllerNode[],
   dataEdges: [boolean, number, number, number, number][],
   stateEdges: [number, number, number, number][],
   networkEdges: [number, string][],
@@ -559,52 +555,53 @@ export module Network {
           console.log(this.responseText)
           // see endpoint.rs for format
           let g: ControllerGraphFormat = JSON.parse(this.responseText)
-          let sensors: Sensor[] = g.sensors.map(function(sensor) {
+          let sensors: Sensor[] = g.nodes
+          .filter(function(_value, index) {
+            return index < g.n_devices;
+          })
+          .map(function(sensor) {
             return {
               id: sensor.id,
-              state_keys: sensor.stateKeys.map(x => x[0]),
-              returns: sensor.returns.map(x => x[0]),
+              state_keys: sensor.inputs,
+              returns: sensor.outputs,
               description: {
-                state_keys: sensor.stateKeys.reduce(function(
+                state_keys: sensor.inputs.reduce(function(
                   map: { [key: string]: string },
-                  key_desc: [string, string],
+                  input: string,
                 ) {
-                  map[key_desc[0]] = key_desc[1];
+                  map[input] = input;
                   return map;
                 }, {}),
-                returns: sensor.returns.reduce(function(
+                returns: sensor.outputs.reduce(function(
                   map: { [key: string]: string },
-                  ret_desc: [string, string],
+                  output: string,
                 ) {
-                  map[ret_desc[0]] = ret_desc[1];
+                  map[output] = output;
                   return map;
                 }, {}),
               }
             }
           });
-          let moduleIds = g.moduleIds.map(function(mod) {
+          let moduleIds = g.nodes
+          .filter(function(_value, index) {
+            return index >= g.n_devices;
+          })
+          .map(function(mod) {
             return {
-              local: mod.localId,
+              local: mod.id,
               global: mod.globalId,
-              params: mod.params,
-              returns: mod.returns,
+              params: mod.inputs,
+              returns: mod.outputs,
             }
           });
 
           let getEntity = (index: number) => {
-            if (index < sensors.length) {
-              let sensor = sensors[index]
+            if (index < g.nodes.length) {
+              let mod = g.nodes[index]
               return {
-                id: sensor.id,
-                in: sensor.state_keys,
-                out: sensor.returns,
-              }
-            } else if (index < sensors.length + moduleIds.length) {
-              let mod = g.moduleIds[index - sensors.length]
-              return {
-                id: mod.localId,
-                in: mod.params,
-                out: mod.returns,
+                id: mod.id,
+                in: mod.inputs,
+                out: mod.outputs,
               }
             } else {
               console.error('invalid graph format')
@@ -691,54 +688,40 @@ export module Network {
   }
 
   export function saveGraph(format: GraphFormat) {
-    const sensors = format.sensors
-      .map(function(sensor) {
+    let nodes = format.sensors
+      .map(function(sensor): ControllerNode {
         return {
           id: sensor.id,
-          stateKeys: sensor.state_keys
-            .map(function(key: string): [string, string] {
-              // return [key, sensor.description.state_keys[key]];
-              return [key, "-"];
-            }),
-          returns: sensor.returns
-            .map(function(key: string): [string, string] {
-              // return [key, sensor.description.returns[key]];
-              return [key, "-"];
-            }),
+          globalId: sensor.id,
+          inputs: sensor.state_keys,
+          outputs: sensor.returns,
         }
       })
       .sort((a, b) => a.id.localeCompare(b.id));
-    const moduleIds = format.moduleIds
-      .map(function(mod) {
+    nodes = nodes.concat(format.moduleIds
+      .map(function(mod): ControllerNode {
         return {
-          localId: mod.local,
+          id: mod.local,
           globalId: mod.global,
-          params: mod.params,
-          returns: mod.returns,
+          inputs: mod.params,
+          outputs: mod.returns,
         }
       })
       .sort(function(a, b) {
-        return a.localId.localeCompare(b.localId)
+        return a.id.localeCompare(b.id)
           || a.globalId.localeCompare(b.globalId);
-      });
+      }));
     const entityMap: { [key: string]: [number, string[], string[]] } = {}
-    sensors.forEach(function(sensor, index) {
-      entityMap[sensor.id] = [
+    nodes.forEach(function(node, index) {
+      entityMap[node.id] = [
         index,
-        sensor.stateKeys.map(val => val[0]),
-        sensor.returns.map(val => val[0]),
-      ]
-    })
-    moduleIds.forEach(function(mod, index) {
-      entityMap[mod.localId] = [
-        index + sensors.length,
-        mod.params,
-        mod.returns,
+        node.inputs,
+        node.outputs,
       ]
     })
     let g: ControllerGraphFormat = {
-      sensors: sensors,
-      moduleIds: moduleIds,
+      n_devices: format.sensors.length,
+      nodes: nodes,
       dataEdges: format.edges.data.map(function(edge) {
         let out = entityMap[edge.out_id]
         let mod = entityMap[edge.module_id]
@@ -846,7 +829,7 @@ export module Network {
       if (this.readyState == 4) {
         if (this.status == 200) {
           let res: {
-            sensor: ControllerSensor,
+            sensor: ControllerNode,
             attestation: string,
           }[] = JSON.parse(this.responseText)
           console.log(res)
@@ -854,21 +837,21 @@ export module Network {
             return {
               sensor: {
                 id: val.sensor.id,
-                state_keys: val.sensor.stateKeys.map(x => x[0]),
-                returns: val.sensor.returns.map(x => x[0]),
+                state_keys: val.sensor.inputs,
+                returns: val.sensor.outputs,
                 description: {
-                  state_keys: val.sensor.stateKeys.reduce(function(
+                  state_keys: val.sensor.inputs.reduce(function(
                     map: { [key: string]: string },
-                    key_desc: [string, string],
+                    input: string,
                   ) {
-                    map[key_desc[0]] = key_desc[1];
+                    map[input] = input;
                     return map;
                   }, {}),
-                  returns: val.sensor.returns.reduce(function(
+                  returns: val.sensor.outputs.reduce(function(
                     map: { [key: string]: string },
-                    ret_desc: [string, string],
+                    output: string,
                   ) {
-                    map[ret_desc[0]] = ret_desc[1];
+                    map[output] = output;
                     return map;
                   }, {}),
                 }
