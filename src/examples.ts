@@ -93,31 +93,6 @@ export module Examples {
   export function pipeline_ii(g: Graph) {
     g.setGraphFormat({
       sensors: [
-        _sensorWithId('speaker', 'speaker'),
-      ],
-      moduleIds: [
-        _module('picovoice_weather'),
-        _module('weather'),
-      ],
-      edges: {
-        data: [
-          dataEdge(true, 'picovoice_weather', 'weather_intent', 'weather', 'weather_intent'),
-          dataEdge(true, 'speaker', 'speech_command', 'picovoice_weather', 'speech'),
-        ],
-        state: [
-          stateEdge('weather', 'weather', 'speaker', 'playback'),
-        ],
-        network: [
-          networkEdge('weather', 'weather.com'),
-        ],
-        interval: [],
-      },
-    })
-  }
-
-  export function pipeline_iii(g: Graph) {
-    g.setGraphFormat({
-      sensors: [
         _sensorWithId('light', 'light'),
         _sensorWithId('speaker', 'speaker'),
       ],
@@ -141,7 +116,7 @@ export module Examples {
     })
   }
 
-  export function pipeline_iv(g: Graph) {
+  export function pipeline_iii(g: Graph) {
     g.setGraphFormat({
       sensors: [
         _sensorWithId('occupancy_sensor', 'occupancy_sensor'),
@@ -170,11 +145,37 @@ export module Examples {
     })
   }
 
+  export function pipeline_iv(g: Graph) {
+    g.setGraphFormat({
+      sensors: [
+        _sensorWithId('camera', 'camera')
+      ],
+      moduleIds: [
+        _module('person_detection'),
+        _module('statistics'),
+      ],
+      edges: {
+        data: [
+          dataEdge(true, 'camera', 'motion', 'person_detection', 'image'),
+          dataEdge(true, 'person_detection', 'training_data', 'statistics', 'data'),
+        ],
+        state: [
+        ],
+        network: [
+          networkEdge('statistics', 'https://www.statistics.com'),
+        ],
+        interval: [
+        ],
+      },
+    })
+  }
+
   export function figure3ab(g: Graph) {
     g.setGraphFormat({
       sensors: [
         _sensorWithId('light', 'light'),
         _sensorWithId('speaker', 'speaker'),
+        _sensorWithId('speaker', 'speaker_1'),
       ],
       moduleIds: [
         _module('picovoice'),
@@ -186,6 +187,7 @@ export module Examples {
       edges: {
         data: [
           dataEdge(true, 'speaker', 'speech_command', 'picovoice', 'speech'),
+          dataEdge(true, 'speaker_1', 'speech_command', 'picovoice', 'speech'),
           dataEdge(true, 'picovoice', 'light_intent', 'light_switch', 'light_intent'),
           dataEdge(true, 'picovoice', 'weather_intent', 'weather', 'weather_intent'),
         ],
