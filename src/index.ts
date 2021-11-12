@@ -3,6 +3,7 @@ import './css/style.css';
 import { Examples } from './examples';
 import { Graph, GraphFormat } from './graph';
 import { EdgeHTML } from './sidebar/edge_html';
+import { TextGraphHTML} from './sidebar/text_graph_html';
 import { ModuleHTML } from './sidebar/module_html';
 import { ModuleRepo } from './sidebar/module_repo';
 import { SensorModals } from './sidebar/sensor_html';
@@ -43,6 +44,7 @@ function initializeNavbar() {
 
 function initializeSidebar() {
   EdgeHTML.renderInitialForm(g)
+  TextGraphHTML.addbuttons(g)
   ModuleHTML.renderInitialForm(g)
   ModuleRepo.renderInitialForm(g)
   SensorModals.renderInitialForm(g)
