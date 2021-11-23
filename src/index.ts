@@ -8,6 +8,7 @@ import { ModuleRepo } from './sidebar/module_repo';
 import { SensorModals } from './sidebar/sensor_html';
 import { HostModals } from './sidebar/host_html';
 import { Network, _sensorWithId } from './network';
+import {LegendHTML} from './legend';
 
 const g = new Graph();
 
@@ -104,6 +105,7 @@ function initializeGraph() {
 
 initializeNavbar()
 initializeLegend()
+LegendHTML.initialize()
 initializeSidebar()
 initializeExampleButtons()
 initializeGraph()
