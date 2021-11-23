@@ -115,29 +115,41 @@ export module LegendHTML {
         return arrow 
     }
 
-    function getTableText(arrowName: string) {
+    function getTableText(elemName: string) {
         let td = document.createElement("td")
 
-        if (arrowName == "dataStateless") {
+        if (elemName == "dataStateless") {
             td.innerText="Data (stateless)"
         }
 
-        else if (arrowName == "dataStateful") {
+        else if (elemName == "dataStateful") {
             td.innerText="Data (stateful)"
         }
 
-        else if (arrowName == "state") {
+        else if (elemName == "state") {
             td.innerText="#State"
         }
 
-        else if (arrowName == "network") {
+        else if (elemName == "network") {
             td.innerText="Network"
+        }
+
+        else if(elemName == "clock") {
+            td.innerText="Time"
+        }
+
+        else if (elemName == "module") {
+            td.innerText="Module"
+        }
+
+        else {
+            td.innerText="Sensor"
         }
 
         return td
     }
 
-    function createTableElements(arrowName: string) {
+    function appendArrow(arrowName: string) {
         let td = document.createElement("td")
 
         let element = getTableElement(arrowName)
@@ -147,37 +159,79 @@ export module LegendHTML {
         return td
     }
 
+    function appendTableElement(elemName: string) {
+        let td = document.createElement("td")
+        let color = "transparent"
+
+        if (elemName == "sensor") {
+            color = "#777"
+        }
+
+        let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+        svg.setAttribute("viewBox", "0 0 220 100")
+        svg.setAttribute("xmlns", "http://www.w3.org/2000/svg")
+
+        let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+        rect.setAttribute("x", "35")
+        rect.setAttribute("y", "5")
+        rect.setAttribute("width", "150")
+        rect.setAttribute("height", "90")
+        rect.setAttribute("stroke", "black")
+        rect.setAttribute("fill", color)
+        rect.setAttribute("stroke-width", "3")
+
+        svg.appendChild(rect)
+        td.appendChild(svg)
+
+        return td
+    }
+
+    function appendIMG() {
+        let td = document.createElement("td")
+
+        let img = document.createElement("img")
+        img.setAttribute("src", "file:///Users/mjaylene/karl-ui/src/img/clock.png")
+        img.setAttribute("height", "40")
+        img.setAttribute("weight", "40")
+        img.setAttribute("style", "float:center;margin:0px 20px")
+
+        td.appendChild(img)
+        
+        return td
+    }
+
      export function initialize() {
         let table = document.getElementById("legend-table")
         let tbody = document.createElement("tbody")
         let trTop = document.createElement("tr")
         let trBottom = document.createElement("tr")
+        let trIMG = document.createElement("tr")
+        let trBox = document.createElement("tr")
+
+        trTop.appendChild(appendArrow("dataStateless"))
+        trTop.appendChild(getTableText("dataStateless"))
+        trTop.appendChild(appendArrow("state"))
+        trTop.appendChild(getTableText("state"))
+
+        trBottom.appendChild(appendArrow("dataStateful"))
+        trBottom.appendChild(getTableText("dataStateful"))
+        trBottom.appendChild(appendArrow("network"))
+        trBottom.appendChild(getTableText("network"))
+
+        trBox.appendChild(appendTableElement("module"))
+        trBox.appendChild(getTableText("module"))
+        trBox.appendChild(appendTableElement("sensor"))
+        trBox.appendChild(getTableText("sensor"))
+
+        trIMG.appendChild(appendIMG())
+        trIMG.appendChild(getTableText("clock"))
 
         table.appendChild(tbody)
         tbody.appendChild(trTop)
         tbody.appendChild(trBottom)
-
-        trTop.appendChild(createTableElements("dataStateless"))
-        trTop.appendChild(getTableText("dataStateless"))
-        trTop.appendChild(createTableElements("state"))
-        trTop.appendChild(getTableText("state"))
-
-        trBottom.appendChild(createTableElements("dataStateful"))
-        trBottom.appendChild(getTableText("dataStateful"))
-        trBottom.appendChild(createTableElements("network"))
-        trBottom.appendChild(getTableText("network"))
+        tbody.appendChild(trBox)
+        tbody.appendChild(trIMG)
         
-        //td.innerText="Data (stateless)"
-
         return table
     }
 }
-
-
-
-
-
-
-
-
-

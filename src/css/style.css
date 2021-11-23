@@ -202,7 +202,7 @@ line {
   margin: 20% auto;
   padding: 20px;
   width: 40%;
-  height: 40%;
+  height: 50%;
 }
 
 .closeBtn {
@@ -223,18 +223,4 @@ line {
   margin-right: auto;
   width: 40%;
   height: 20%;
-}
-
-.module-box {
-  height: 50px;
-  width: 75px;
-  background-color: white;
-  border: 1px solid #000;
-}
-
-.sensor-box {
-  height: 50px;
-  width: 75px;
-  background-color: #777;
-  border: 1px solid #000;
 }
