@@ -196,7 +196,7 @@ export module LegendHTML {
         img.setAttribute("style", "float:center;margin:0px 20px")
 
         td.appendChild(img)
-        
+
         return td
     }
 
@@ -205,7 +205,7 @@ export module LegendHTML {
         let tbody = document.createElement("tbody")
         let trTop = document.createElement("tr")
         let trBottom = document.createElement("tr")
-        let trIMG = document.createElement("tr")
+        let trTime = document.createElement("tr")
         let trBox = document.createElement("tr")
 
         trTop.appendChild(appendArrow("dataStateless"))
@@ -223,14 +223,14 @@ export module LegendHTML {
         trBox.appendChild(appendTableElement("sensor"))
         trBox.appendChild(getTableText("sensor"))
 
-        trIMG.appendChild(appendIMG())
-        trIMG.appendChild(getTableText("clock"))
+        trTime.appendChild(appendIMG())
+        trTime.appendChild(getTableText("clock"))
 
         table.appendChild(tbody)
         tbody.appendChild(trTop)
         tbody.appendChild(trBottom)
         tbody.appendChild(trBox)
-        tbody.appendChild(trIMG)
+        tbody.appendChild(trTime)
         
         return table
     }
