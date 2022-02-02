@@ -5,6 +5,11 @@
   left: 100px;
   cursor: pointer;
   min-width: 150px;
+  font-size: 20px;
+}
+
+.module p {
+  margin: 5px;
 }
 
 select {
