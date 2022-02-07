@@ -141,63 +141,81 @@ export module Examples {
     })
   }
 
-  export function figure4(g: Graph) {
+  export function figure3a(g: Graph) {
     g.setGraphFormat({
       sensors: [
-        _sensorWithId('microphone', 'microphone'),
-        _sensorWithId('microphone', 'microphone_1'),
-        _sensorWithId('bulb', 'kitchen_bulb'),
-        _sensorWithId('bulb', 'bathroom_bulb'),
+        _sensorWithId('light', 'light'),
       ],
       moduleIds: [
-        _module('command_classifier'),
-        _module('light_switch'),
-        _module('search'),
+        _module('set_true'),
+        _module('set_false'),
       ],
       edges: {
-        data: [
-          dataEdge(true, 'command_classifier', 'light', 'light_switch', 'light_intent'),
-          dataEdge(true, 'command_classifier', 'search', 'search', 'query_intent'),
-          dataEdge(true, 'microphone', 'sound', 'command_classifier', 'sound'),
-          dataEdge(true, 'microphone_1', 'sound', 'command_classifier', 'sound'),
-        ],
+        data: [],
         state: [
-          stateEdge('light_switch', 'state', 'bathroom_bulb', 'on'),
-          stateEdge('light_switch', 'state', 'kitchen_bulb', 'on'),
-          stateEdge('search', 'response', 'microphone', 'response'),
-        ],
-        network: [
-          networkEdge('search', 'google.com'),
-        ],
+          stateEdge('set_true', 'true', 'light', 'state'),
+          stateEdge('set_false', 'false', 'light', 'intensity'),
+          ],
+        network: [],
         interval: [],
       },
     })
   }
 
-  export function figure5(g: Graph) {
+  export function figure3b(g: Graph) {
     g.setGraphFormat({
-      sensors: [_sensorWithId('camera', 'camera')],
+      sensors: [
+        _sensorWithId('speaker', 'speaker'),
+      ],
+      moduleIds: [
+        _module('picovoice'),
+        _module('weather'),
+        _module('light_switch'),
+      ],
+      edges: {
+        data: [
+          dataEdge(true, 'speaker', 'speech_command', 'picovoice', 'speech'),
+          dataEdge(true, 'picovoice', 'light_intent', 'light_switch', 'light_intent'),
+          dataEdge(true, 'picovoice', 'weather_intent', 'weather', 'weather_intent'),
+        ],
+        state: [
+          stateEdge('weather', 'weather', 'speaker', 'playback'),
+        ],
+        network: [
+          networkEdge('weather', 'weather.com'),
+        ],
+        interval: [
+        ],
+      },
+    })
+  }
+
+  export function figure3c(g: Graph) {
+    g.setGraphFormat({
+      sensors: [
+        _sensorWithId('camera', 'camera'),
+      ],
       moduleIds: [
         _module('person_detection'),
-        _module('differential_privacy'),
+        _module('statistics'),
+        _module('query'),
         _module('firmware_update'),
-        _module('targz'),
-        _module('true'),
-        _module('false'),
+        _module('set_true'),
+        _module('set_false'),
       ],
       edges: {
         data: [
           dataEdge(true, 'camera', 'motion', 'person_detection', 'image'),
-          dataEdge(true, 'person_detection', 'count', 'differential_privacy', 'count'),
-          dataEdge(false, 'camera', 'streaming', 'targz', 'files'),
+          dataEdge(true, 'person_detection', 'training_data', 'statistics', 'data'),
+          dataEdge(false, 'camera', 'motion', 'query', 'image_data'),
         ],
         state: [
+          stateEdge('set_true', 'true', 'camera', 'livestream'),
+          stateEdge('set_false', 'false', 'camera', 'livestream'),
           stateEdge('firmware_update', 'firmware', 'camera', 'firmware'),
-          stateEdge('true', 'true', 'camera', 'livestream'),
-          stateEdge('false', 'false', 'camera', 'livestream'),
         ],
         network: [
-          networkEdge('differential_privacy', 'metrics.com'),
+          networkEdge('statistics', 'statistics.com'),
           networkEdge('firmware_update', 'firmware.com'),
         ],
         interval: [
@@ -207,68 +225,77 @@ export module Examples {
     })
   }
 
-  export function diffPrivPipeline(g: Graph) {
+
+  export function figure9a(g: Graph) {
     g.setGraphFormat({
-      sensors: [_sensorWithId('camera', 'camera')],
+      sensors: [
+        _sensorWithId('light', 'light'),
+        _sensorWithId('speaker', 'speaker'),
+      ],
+      moduleIds: [
+        _module('picovoice'),
+        _module('weather'),
+        _module('light_switch'),
+        _module('set_true'),
+        _module('set_false'),
+      ],
+      edges: {
+        data: [
+          dataEdge(true, 'speaker', 'speech_command', 'picovoice', 'speech'),
+          dataEdge(true, 'picovoice', 'light_intent', 'light_switch', 'light_intent'),
+          dataEdge(true, 'picovoice', 'weather_intent', 'weather', 'weather_intent'),
+        ],
+        state: [
+          stateEdge('set_true', 'true', 'light', 'state'),
+          stateEdge('set_false', 'false', 'light', 'intensity'),
+          stateEdge('weather', 'weather', 'speaker', 'playback'),
+          stateEdge('light_switch', 'state', 'light', 'state'), // extra
+        ],
+        network: [
+          networkEdge('weather', 'weather.com'),
+        ],
+        interval: [
+        ],
+      },
+    })
+  }
+
+  export function figure9b(g: Graph) {
+    g.setGraphFormat({
+      sensors: [
+        _sensorWithId('occupancy_sensor', 'occupancy_sensor'),
+        _sensorWithId('camera', 'camera'),
+        _sensorWithId('camera', 'camera_1')
+      ],
       moduleIds: [
         _module('person_detection'),
-        _module('differential_privacy'),
+        _module('boolean'),
+        _module('statistics'),
+        _module('query'),
+        _module('firmware_update'),
+        _module('set_true'),
+        _module('set_false'),
       ],
       edges: {
         data: [
+          dataEdge(true, 'camera_1', 'motion', 'person_detection', 'image'),
           dataEdge(true, 'camera', 'motion', 'person_detection', 'image'),
-          dataEdge(true, 'person_detection', 'count', 'differential_privacy', 'count'),
+          dataEdge(true, 'person_detection', 'training_data', 'boolean', 'value'),
+          dataEdge(false, 'occupancy_sensor', 'at_home', 'boolean', 'condition'),
+          dataEdge(true, 'boolean', 'predicate', 'statistics', 'data'),
+          dataEdge(false, 'camera', 'motion', 'query', 'image_data'),
         ],
         state: [
+          stateEdge('set_true', 'true', 'camera', 'livestream'),
+          stateEdge('set_false', 'false', 'camera', 'livestream'),
+          stateEdge('firmware_update', 'firmware', 'camera', 'firmware'),
         ],
         network: [
-          networkEdge('differential_privacy', 'metrics.com'),
+          networkEdge('statistics', 'statistics.com'),
+          networkEdge('firmware_update', 'firmware.com'),
         ],
         interval: [
-        ],
-      },
-    })
-  }
-
-  export function searchPipeline(g: Graph) {
-      g.setGraphFormat({
-      sensors: [
-        _sensorWithId('microphone', 'microphone'),
-      ],
-      moduleIds: [
-        _module('command_classifier_search'),
-        _module('search'),
-      ],
-      edges: {
-        data: [
-          dataEdge(true, 'command_classifier_search', 'search', 'search', 'query_intent'),
-          dataEdge(true, 'microphone', 'sound', 'command_classifier_search', 'sound'),
-        ],
-        state: [
-        ],
-        network: [
-          networkEdge('search', 'google.com'),
-        ],
-        interval: [],
-      },
-    })
-  }
-
-  export function truePipeline(g: Graph) {
-    g.setGraphFormat({
-      sensors: [_sensorWithId('camera', 'camera')],
-      moduleIds: [
-        _module('true'),
-      ],
-      edges: {
-        data: [
-        ],
-        state: [
-          stateEdge('true', 'true', 'camera', 'livestream'),
-        ],
-        network: [
-        ],
-        interval: [
+          interval('firmware_update', 24*60*60),
         ],
       },
     })

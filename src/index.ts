@@ -89,20 +89,20 @@ function initializeExampleButtons() {
   document.getElementById("pipeline-iii").onclick = function() {
     Examples.pipeline_iii(g)
   };
-  document.getElementById("figure4").onclick = function() {
-    Examples.figure4(g)
+  document.getElementById("figure3a").onclick = function() {
+    Examples.figure3a(g)
   };
-  document.getElementById("figure5").onclick = function() {
-    Examples.figure5(g)
+  document.getElementById("figure3b").onclick = function() {
+    Examples.figure3b(g)
   };
-  document.getElementById("button-A").onclick = function() {
-    Examples.diffPrivPipeline(g)
+  document.getElementById("figure3c").onclick = function() {
+    Examples.figure3c(g)
   };
-  document.getElementById("button-B").onclick = function() {
-    Examples.searchPipeline(g)
+  document.getElementById("figure9a").onclick = function() {
+    Examples.figure9a(g)
   };
-  document.getElementById("button-C").onclick = function() {
-    Examples.truePipeline(g)
+  document.getElementById("figure9b").onclick = function() {
+    Examples.figure9b(g)
   };
 }
 
