@@ -83,6 +83,11 @@ function formatToIndexedGraph(format: GraphFormat): IndexedGraph {
     let start = g.index[edge.module_id]
     let end = g.index[edge.domain]
     g.edges[start].push(end)
+    // Note: Backwards edge for permissions that start at a domain and
+    // end at a device input. This type of edge should only be traversed
+    // when the first node is a domain. This avoids the situation of
+    // duplicating paths when an intermediate node has network access.
+    g.edges[end].push(start)
   })
 
   return g
@@ -151,6 +156,9 @@ export module PipelineHTML {
         if (nextNode[1] == UnitType.DeviceInput ||
           (startNode[1] == UnitType.DeviceOutput && nextNode[1] == UnitType.DomainName)) {
           perms.push(nextPath)
+        } else if (nextNode[1] == UnitType.DomainName) {
+          // do nothing if reaching an intermediate node with network access
+          // to avoid traversing the edge back to the main module
         } else {
           queue.push(nextPath)
         }
