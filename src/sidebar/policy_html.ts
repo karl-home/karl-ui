@@ -88,10 +88,36 @@ function formatToIndexedGraph(format: GraphFormat): IndexedGraph {
   return g
 }
 
+
+// Returns a string in the corresponding color given the type.
+// device output = orange, module = black,
+// domain name = green, device input = red.
+function unitToTextNode(node: [string, UnitType]): HTMLSpanElement {
+  let span = document.createElement('span')
+  span.innerText = node[0]
+  switch(node[1]) {
+    case UnitType.DeviceOutput: {
+      span.style.color = "orange"
+      break
+    }
+    case UnitType.DomainName: {
+      span.style.color = "green"
+      break
+    }
+    case UnitType.DeviceInput: {
+      span.style.color = "red"
+      break
+    }
+  }
+  return span
+}
+
 export module PipelineHTML {
   let g: Graph = undefined;
 
   let form = document.getElementById('pipeline-form')
+  let inputs: HTMLInputElement[] = [];
+  let labels: HTMLLabelElement[] = [];
 
   export function renderInitialForm(graph: Graph) {
     g = graph
@@ -130,10 +156,40 @@ export module PipelineHTML {
         }
       })
     }
+    perms.sort()
 
-    console.log(perms)
-    // TODO: Sort by the first string.
-    // TODO: Map to HTML elements.
-    // TODO: Store the elements in `inputs` and `labels`.
+    //////////////////////////////////////////////////////////////////////
+    // Update the HTML for pipeline permissions.
+    // Remove previous elements
+    while (form.hasChildNodes()) {
+      form.removeChild(form.lastChild)
+    }
+    inputs = []
+    labels = []
+    // Map permissions to HTML elements
+    let permsLabels = perms.map(function(rawPath) {
+      let label = document.createElement("label")
+      rawPath.map(unitToTextNode).map(function(span, index) {
+        if (index > 0) {
+          let arrow = document.createTextNode(" → ")
+          label.appendChild(arrow)
+        }
+        label.appendChild(span)
+      })
+      return label
+    })
+    // Add a new input and label element for each permission
+    permsLabels.forEach(function(label, index) {
+      let input = document.createElement("input")
+      input.type = "checkbox"
+      input.value = index.toString()
+      input.checked = true
+
+      form.appendChild(input)
+      form.appendChild(label)
+      form.appendChild(document.createElement('br'))
+      inputs.push(input)
+      labels.push(label)
+    })
   }
 }
