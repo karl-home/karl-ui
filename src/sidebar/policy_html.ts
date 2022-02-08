@@ -100,12 +100,38 @@ export module PipelineHTML {
   // Load the pipeline permissions from the current graph.
   // Allow all by default.
   export function load() {
-    // TODO: Find all paths in the graph `g` from a device to the network,
+    //////////////////////////////////////////////////////////////////////
+    // Find all paths in the graph `g` from a device to the network,
     // a device to another device, or the network to a device.
-    let paths: [string, UnitType][] = []
+    let perms: [string, UnitType][][] = []
     let index = formatToIndexedGraph(g.getGraphFormat())
-    console.log(index)
+    let queue: [string, UnitType][][] = index.nodes
+      .filter(node => node[1] == UnitType.DeviceOutput ||
+        node[1] == UnitType.DomainName)
+      .map(node => [node]);
+    while (queue.length > 0) {
+      let path = queue.shift()
+      let node = path[path.length - 1]
+      if (!(node[0] in index.index)) {
+        console.error(`node ${node[0]} not found in index`)
+        return
+      }
+      index.edges[index.index[node[0]]].forEach(function(nextNodeID) {
+        let startNode = path[0]
+        let nextNode = index.nodes[nextNodeID]
+        let nextPath = Object.assign([], path)
+        nextPath.push(nextNode)
+        // Check the end condition for the node
+        if (nextNode[1] == UnitType.DeviceInput ||
+          (startNode[1] == UnitType.DeviceOutput && nextNode[1] == UnitType.DomainName)) {
+          perms.push(nextPath)
+        } else {
+          queue.push(nextPath)
+        }
+      })
+    }
 
+    console.log(perms)
     // TODO: Sort by the first string.
     // TODO: Map to HTML elements.
     // TODO: Store the elements in `inputs` and `labels`.
