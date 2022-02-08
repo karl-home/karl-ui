@@ -3,6 +3,7 @@ import './css/style.css';
 import { Examples } from './examples';
 import { DataCanvas } from './data_canvas';
 import { Graph, GraphFormat } from './graph';
+import { GraphHTML } from './main/graph_html';
 import { EdgeHTML } from './sidebar/edge_html';
 import { PipelineHTML } from './sidebar/policy_html';
 import { ModuleHTML } from './sidebar/module_html';
@@ -79,6 +80,7 @@ function initializeSidebar() {
     let format = g.getGraphFormat()
     Network.saveGraph(format)
   }
+  document.getElementById('toggle-button').onclick = GraphHTML.toggleGraph
 }
 
 function initializeExampleButtons() {

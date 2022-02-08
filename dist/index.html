@@ -16,12 +16,19 @@
           <button id="figure3c">3c</button>
           <button id="figure9a">9a</button>
           <button id="figure9b">9b</button>
-          <button id="reset-button">Reset</button>
-          <button id="refresh-button">Refresh</button>
-          <button id="save-button">Save Graph</button>
+          <button id="reset-button" class="dark-button">Reset</button>
+          <button id="refresh-button" class="dark-button">Refresh</button>
+          <button id="save-button" class="dark-button">Save Graph</button>
+          <button id="toggle-button" class="dark-button"><b>Original</b> / Overlay</button>
         </div>
-        <svg id="canvas"></svg>
-        <div id="graph"></div>
+        <div id="graph-original">
+          <svg class="canvas"></svg>
+          <div class="nodes"></div>
+        </div>
+        <div id="graph-overlay" hidden>
+          <svg class="canvas"></svg>
+          <div class="nodes"></div>
+        </div>
       </div>
       <div class="container" id="data-container">
         <h1>Data Store</h1>

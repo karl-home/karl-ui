@@ -28,12 +28,22 @@ function _nextNodeLocation(): { top: number, left: number } {
   }
 }
 
-const graph = document.getElementById('graph');
-const canvas = document.getElementById("canvas");
+const originalGraph = document.getElementById('graph-original');
+const overlayGraph = document.getElementById('graph-overlay');
 const COLORS = {
   data: '#2196f3',
   network: 'green',
   state: 'red',
+}
+
+let graph = originalGraph;
+
+function getNodes() {
+  return graph.getElementsByClassName('nodes')[0];
+}
+
+function getCanvas() {
+  return graph.getElementsByClassName('canvas')[0];
 }
 
 function _initArrows() {
@@ -68,7 +78,7 @@ function _initArrows() {
   defs.appendChild(genMarker(true, 'network', COLORS.network));
   defs.appendChild(genMarker(false, 'network', COLORS.network));
   defs.appendChild(genMarker(true, 'state', COLORS.state));
-  canvas.appendChild(defs);
+  getCanvas().appendChild(defs);
 }
 _initArrows();
 
@@ -207,7 +217,7 @@ export module GraphHTML {
     node.appendChild(p);
     node.appendChild(footer);
     // modify the DOM
-    graph.appendChild(node);
+    getNodes().appendChild(node);
     return node;
   }
 
@@ -362,7 +372,7 @@ export module GraphHTML {
     line.onclick = function(e) {
       EdgeHTML.clickEdge(sourceButton, targetButton, 'data', stateless);
     }
-    canvas.append(line);
+    getCanvas().append(line);
     return line;
   }
 
@@ -390,11 +400,24 @@ export module GraphHTML {
     line.onclick = function(e) {
       EdgeHTML.clickEdge(sourceButton, targetButton, 'state');
     }
-    canvas.append(line);
+    getCanvas().append(line);
     return line;
   }
 
   export function reset() {
     nnodes = 0
+  }
+
+  export function toggleGraph() {
+    let button = document.getElementById('toggle-button')
+    graph.hidden = true
+    if (graph == originalGraph) {
+      graph = overlayGraph
+      button.innerHTML = "Original / <b>Overlay</b>"
+    } else {
+      graph = originalGraph
+      button.innerHTML = "<b>Original</b> / Overlay"
+    }
+    graph.hidden = false
   }
 }
