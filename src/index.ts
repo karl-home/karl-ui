@@ -4,6 +4,7 @@ import { Examples } from './examples';
 import { DataCanvas } from './data_canvas';
 import { Graph, GraphFormat } from './graph';
 import { EdgeHTML } from './sidebar/edge_html';
+import { PipelineHTML } from './sidebar/policy_html';
 import { ModuleHTML } from './sidebar/module_html';
 import { ModuleRepo } from './sidebar/module_repo';
 import { SensorModals } from './sidebar/sensor_html';
@@ -60,6 +61,7 @@ function initializeSidebar() {
   EdgeHTML.renderInitialForm(g)
   ModuleHTML.renderInitialForm(g)
   ModuleRepo.renderInitialForm(g)
+  PipelineHTML.renderInitialForm(g)
   SensorModals.renderInitialForm(g)
   HostModals.renderInitialForm()
   document.getElementById('reset-button').onclick = function() {

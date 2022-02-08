@@ -1,5 +1,6 @@
 import { GraphHTML } from './main/graph_html';
 import { EdgeHTML } from './sidebar/edge_html';
+import { PipelineHTML } from './sidebar/policy_html';
 import { ModuleList } from './sidebar/module_repo';
 import { SensorList } from './sidebar/sensor_html';
 import { Network } from './network';
@@ -661,5 +662,6 @@ export class Graph {
     f.edges.state.forEach(edge => this.add_state_edge(edge))
     f.edges.network.forEach(edge => this.add_network_edge(edge))
     f.edges.interval.forEach(interval => this.set_interval(interval))
+    PipelineHTML.load()
   }
 }
