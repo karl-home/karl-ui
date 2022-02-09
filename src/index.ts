@@ -12,7 +12,8 @@ import { SensorModals } from './sidebar/sensor_html';
 import { HostModals } from './sidebar/host_html';
 import { Network, _sensorWithId } from './network';
 
-const g = new Graph();
+const g = new Graph(document.getElementById('graph-original'), false);
+const overlay = new Graph(document.getElementById('graph-overlay'), true);
 
 function initializeNavbar() {
   let navbar = document.getElementsByClassName('navbar')[0]
@@ -62,7 +63,7 @@ function initializeSidebar() {
   EdgeHTML.renderInitialForm(g)
   ModuleHTML.renderInitialForm(g)
   ModuleRepo.renderInitialForm(g)
-  PipelineHTML.renderInitialForm(g)
+  PipelineHTML.renderInitialForm(g, overlay)
   SensorModals.renderInitialForm(g)
   HostModals.renderInitialForm()
   document.getElementById('reset-button').onclick = function() {
@@ -77,10 +78,21 @@ function initializeSidebar() {
     })
   }
   document.getElementById('save-button').onclick = function() {
-    let format = g.getGraphFormat()
+    let format = overlay.getGraphFormat()
     Network.saveGraph(format)
   }
-  document.getElementById('toggle-button').onclick = GraphHTML.toggleGraph
+  document.getElementById('toggle-button').onclick = function() {
+    let button = document.getElementById('toggle-button')
+    if (overlay.html.style.visibility == 'hidden') {
+      button.innerHTML = "Original / <b>Overlay</b>"
+      g.html.style.visibility = 'hidden'
+      overlay.html.style.visibility = 'visible'
+    } else {
+      button.innerHTML = "<b>Original</b> / Overlay"
+      g.html.style.visibility = 'visible'
+      overlay.html.style.visibility = 'hidden'
+    }
+  }
 }
 
 function initializeExampleButtons() {

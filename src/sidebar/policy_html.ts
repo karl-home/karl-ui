@@ -118,14 +118,39 @@ function unitToTextNode(node: [string, UnitType]): HTMLSpanElement {
 }
 
 export module PipelineHTML {
-  let g: Graph = undefined;
+  let originalGraph: Graph = undefined;
+  let overlayGraph: Graph = undefined;
 
   let form = document.getElementById('pipeline-form')
   let inputs: HTMLInputElement[] = [];
   let labels: HTMLLabelElement[] = [];
 
-  export function renderInitialForm(graph: Graph) {
-    g = graph
+  function genUpdateButton(): HTMLButtonElement {
+    let button = document.createElement('button')
+    button.innerText = 'Update Overlay'
+    button.onclick = function(e) {
+      e.preventDefault()
+      updateOverlayGraph()
+    }
+    return button
+  }
+
+  function updateOverlayGraph() {
+    // Duplicate the original graph as the overlay graph.
+    overlayGraph.reset()
+    overlayGraph.setGraphFormat(originalGraph.getGraphFormat())
+
+    // Identify the actions needed to revoke disallowed permissions.
+    // The action is to delete the last node, which either removes
+    // network access or a state edge.
+
+    // Update the overlay graph to reflect these actions.
+  }
+
+  export function renderInitialForm(graph: Graph, overlay: Graph) {
+    originalGraph = graph
+    overlayGraph = overlay
+    form.appendChild(genUpdateButton())
   }
 
   // Load the pipeline permissions from the current graph.
@@ -135,7 +160,7 @@ export module PipelineHTML {
     // Find all paths in the graph `g` from a device to the network,
     // a device to another device, or the network to a device.
     let perms: [string, UnitType][][] = []
-    let index = formatToIndexedGraph(g.getGraphFormat())
+    let index = formatToIndexedGraph(originalGraph.getGraphFormat())
     let queue: [string, UnitType][][] = index.nodes
       .filter(node => node[1] == UnitType.DeviceOutput ||
         node[1] == UnitType.DomainName)
@@ -199,5 +224,7 @@ export module PipelineHTML {
       inputs.push(input)
       labels.push(label)
     })
+    // Add the update button
+    form.appendChild(genUpdateButton())
   }
 }

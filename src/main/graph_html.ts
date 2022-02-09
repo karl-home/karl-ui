@@ -28,26 +28,22 @@ function _nextNodeLocation(): { top: number, left: number } {
   }
 }
 
-const originalGraph = document.getElementById('graph-original');
-const overlayGraph = document.getElementById('graph-overlay');
 const COLORS = {
   data: '#2196f3',
   network: 'green',
   state: 'red',
 }
 
-let graph = originalGraph;
-
-function getNodes() {
-  return graph.getElementsByClassName('nodes')[0];
+function getNodes(g: HTMLElement) {
+  return g.getElementsByClassName('nodes')[0];
 }
 
-function getCanvas() {
-  return graph.getElementsByClassName('canvas')[0];
+function getCanvas(g: HTMLElement) {
+  return g.getElementsByClassName('canvas')[0];
 }
 
 function _initArrows() {
-  function genMarker(endarrow: boolean, name: string, fill: string) {
+  function genMarker(endarrow: boolean, name: string, fill: string, overlay: boolean) {
     let marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
     if (endarrow) {
       marker.id = 'endarrow-' + name;
@@ -55,6 +51,9 @@ function _initArrows() {
     } else {
       marker.id = 'startarrow-' + name;
       marker.setAttribute('refX', '0');
+    }
+    if (overlay) {
+      marker.id += '-overlay'
     }
     marker.setAttribute('markerWidth', '10');
     marker.setAttribute('markerHeight', '7');
@@ -73,12 +72,16 @@ function _initArrows() {
     return marker;
   }
 
-  let defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-  defs.appendChild(genMarker(true, 'data', COLORS.data));
-  defs.appendChild(genMarker(true, 'network', COLORS.network));
-  defs.appendChild(genMarker(false, 'network', COLORS.network));
-  defs.appendChild(genMarker(true, 'state', COLORS.state));
-  getCanvas().appendChild(defs);
+  function genDefs(graph: HTMLElement, overlay: boolean) {
+    let defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    defs.appendChild(genMarker(true, 'data', COLORS.data, overlay));
+    defs.appendChild(genMarker(true, 'network', COLORS.network, overlay));
+    defs.appendChild(genMarker(false, 'network', COLORS.network, overlay));
+    defs.appendChild(genMarker(true, 'state', COLORS.state, overlay));
+    getCanvas(graph).appendChild(defs);
+  }
+  genDefs(document.getElementById('graph-original'), false)
+  genDefs(document.getElementById('graph-overlay'), true)
 }
 _initArrows();
 
@@ -147,6 +150,7 @@ export module GraphHTML {
   //if top == null, then go with _nextNodeLocation(), otherwise use
   //given height
   function _renderNode(
+    g: HTMLElement,  // #original-graph or #overlay-graph
     id: string,
     ty: NodeType,
     inputDescs: { [key: string] : string },
@@ -217,7 +221,7 @@ export module GraphHTML {
     node.appendChild(p);
     node.appendChild(footer);
     // modify the DOM
-    getNodes().appendChild(node);
+    getNodes(g).appendChild(node);
     return node;
   }
 
@@ -244,10 +248,17 @@ export module GraphHTML {
     }
   }
 
-  export function renderModule(id: string, inner: ModuleInner, top?: number, left?: number): HTMLDivElement {
+  export function renderModule(
+    g: HTMLElement,
+    id: string,
+    inner: ModuleInner,
+    top?: number,
+    left?: number,
+  ): HTMLDivElement {
     let node
     if(typeof top != 'undefined'){
       node = _renderNode(
+        g,
         id,
         'module',
         inner.value.description.params,
@@ -261,6 +272,7 @@ export module GraphHTML {
       )
     } else {
       node = _renderNode(
+        g,
         id,
         'module',
         inner.value.description.params,
@@ -276,6 +288,7 @@ export module GraphHTML {
   }
 
   export function renderSensor(
+    g: HTMLElement,
     id: string,
     inner: SensorInner,
     outTop?: number,
@@ -287,6 +300,7 @@ export module GraphHTML {
     let nodeIn
     if(typeof outTop != 'undefined'){
       nodeOut = _renderNode(
+        g,
         id,
         'sensor',
         {},
@@ -300,6 +314,7 @@ export module GraphHTML {
       )
     } else {
       nodeOut = _renderNode(
+        g,
         id,
         'sensor',
         {},
@@ -313,6 +328,7 @@ export module GraphHTML {
     }
     if(typeof inTop != 'undefined'){
       nodeIn = _renderNode(
+        g,
         id,
         'sensor',
         inner.value.description.state_keys,
@@ -326,6 +342,7 @@ export module GraphHTML {
       )
     } else {
       nodeIn = _renderNode(
+        g,
         id,
         'sensor',
         inner.value.description.state_keys,
@@ -345,6 +362,7 @@ export module GraphHTML {
   }
 
   export function renderDataEdge(
+    g: HTMLElement,
     sourceNode: HTMLElement,
     sourceButton: HTMLButtonElement,
     sourceOffset: number,
@@ -363,7 +381,11 @@ export module GraphHTML {
     line.setAttribute('y1', y1.toString());
     line.setAttribute('x2', x2.toString());
     line.setAttribute('y2', y2.toString());
-    line.setAttribute('marker-end', 'url(#endarrow-data)');
+    if (g.querySelector('#endarrow-data')) {
+      line.setAttribute('marker-end', 'url(#endarrow-data)');
+    } else {
+      line.setAttribute('marker-end', 'url(#endarrow-data-overlay)');
+    }
     line.setAttribute('stroke', '#2196f3');
     line.setAttribute('stroke-width', '3px');
     if (!stateless) {
@@ -372,11 +394,12 @@ export module GraphHTML {
     line.onclick = function(e) {
       EdgeHTML.clickEdge(sourceButton, targetButton, 'data', stateless);
     }
-    getCanvas().append(line);
+    getCanvas(g).append(line);
     return line;
   }
 
   export function renderStateEdge(
+    g: HTMLElement,
     sourceNode: HTMLElement,
     sourceButton: HTMLButtonElement,
     sourceOffset: number,
@@ -394,30 +417,21 @@ export module GraphHTML {
     line.setAttribute('y1', y1.toString());
     line.setAttribute('x2', x2.toString());
     line.setAttribute('y2', y2.toString());
-    line.setAttribute('marker-end', 'url(#endarrow-state)');
+    if (g.querySelector('#endarrow-state')) {
+      line.setAttribute('marker-end', 'url(#endarrow-state)');
+    } else {
+      line.setAttribute('marker-end', 'url(#endarrow-state-overlay)');
+    }
     line.setAttribute('stroke', 'red');
     line.setAttribute('stroke-width', '3px');
     line.onclick = function(e) {
       EdgeHTML.clickEdge(sourceButton, targetButton, 'state');
     }
-    getCanvas().append(line);
+    getCanvas(g).append(line);
     return line;
   }
 
   export function reset() {
     nnodes = 0
-  }
-
-  export function toggleGraph() {
-    let button = document.getElementById('toggle-button')
-    graph.hidden = true
-    if (graph == originalGraph) {
-      graph = overlayGraph
-      button.innerHTML = "Original / <b>Overlay</b>"
-    } else {
-      graph = originalGraph
-      button.innerHTML = "<b>Original</b> / Overlay"
-    }
-    graph.hidden = false
   }
 }

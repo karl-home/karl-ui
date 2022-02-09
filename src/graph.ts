@@ -127,10 +127,14 @@ function buttonOffset(index: number, length: number): number {
 }
 
 export class Graph {
+  html: HTMLElement
+  htmlOnly: boolean
   sensors: { [key: string]: SensorInner }
   modules: { [key: string]: ModuleInner }
 
-  constructor() {
+  constructor(html: HTMLElement, htmlOnly: boolean) {
+    this.html = html;
+    this.htmlOnly = htmlOnly;
     this.sensors = {};
     this.modules = {};
   }
@@ -174,11 +178,13 @@ export class Graph {
         outgoing_buttons: [],
         incoming_buttons: [],
       }
-      let html = GraphHTML.renderSensor(sensor.id, inner, outTop, inTop, outLeft, inLeft);
+      let html = GraphHTML.renderSensor(this.html, sensor.id, inner, outTop, inTop, outLeft, inLeft);
       inner.htmlOut = html[0]
       inner.htmlIn = html[1]
       this.sensors[sensor.id] = inner;
-      SensorList.addSensor(sensor.id)
+      if (!this.htmlOnly) {
+        SensorList.addSensor(sensor.id)
+      }
       return true
     }
   }
@@ -210,13 +216,16 @@ export class Graph {
           activeButton = true
         }
       })
-      if (activeButton) {
+      if (!this.htmlOnly && activeButton) {
         EdgeHTML.resetForm()
       }
       sensor.htmlOut.remove()
       sensor.htmlIn.remove()
       delete this.sensors[sensor_id]
-      SensorList.removeSensor(sensor_id)
+      if (!this.htmlOnly) {
+        SensorList.removeSensor(sensor_id)
+        PipelineHTML.load()
+      }
       return true
     }
   }
@@ -240,12 +249,15 @@ export class Graph {
       incoming_buttons: [],
     }
     if(top == null){
-      inner.html = GraphHTML.renderModule(id, inner)
+      inner.html = GraphHTML.renderModule(this.html, id, inner)
     } else {
-      inner.html = GraphHTML.renderModule(id, inner, top, left);
+      inner.html = GraphHTML.renderModule(this.html, id, inner, top, left);
     }
     GraphHTML.renderModuleProperties(inner)
-    ModuleList.addModule(id)
+    if (!this.htmlOnly) {
+      ModuleList.addModule(id)
+      PipelineHTML.load()
+    }
     this.modules[id] = inner;
   }
 
@@ -284,12 +296,15 @@ export class Graph {
           activeButton = true
         }
       })
-      if (activeButton) {
+      if (!this.htmlOnly && activeButton) {
         EdgeHTML.resetForm()
       }
       mod.html.remove()
       delete this.modules[module_id]
-      ModuleList.removeModule(module_id)
+      if (!this.htmlOnly) {
+        ModuleList.removeModule(module_id)
+        PipelineHTML.load()
+      }
       return true
     }
   }
@@ -322,6 +337,7 @@ export class Graph {
       let sourceIndex = sourceReturns.indexOf(edge.module_ret);
       let targetIndex = targetKeys.indexOf(edge.sensor_key);
       let html = GraphHTML.renderStateEdge(
+        this.html,
         source.html,
         source.outgoing_buttons[sourceIndex],
         buttonOffset(sourceIndex, sourceReturns.length),
@@ -332,6 +348,9 @@ export class Graph {
       source.state_edges.push(edge)
       source.outgoing_edges.push(html);
       target.incoming_edges.push(html);
+      if (!this.htmlOnly) {
+        PipelineHTML.load()
+      }
       return true
     }
     console.error(JSON.stringify(edge))
@@ -368,6 +387,9 @@ export class Graph {
         } else {
           console.error('failed to delete SVG line from outgoing edges')
         }
+        if (!this.htmlOnly) {
+          PipelineHTML.load()
+        }
         return true
       }
     }
@@ -391,6 +413,9 @@ export class Graph {
       let mod = this.modules[edge.module_id];
       mod.network_edges.push(edge)
       GraphHTML.renderModuleProperties(mod)
+      if (!this.htmlOnly) {
+        PipelineHTML.load()
+      }
       return true
     }
     console.error(JSON.stringify(edge))
@@ -402,6 +427,9 @@ export class Graph {
       let mod = this.modules[module_id]
       mod.network_edges = []
       GraphHTML.renderModuleProperties(mod)
+      if (!this.htmlOnly) {
+        PipelineHTML.load()
+      }
       return true
     } else {
       console.error(`output module does not exist: ${module_id}`)
@@ -445,6 +473,7 @@ export class Graph {
         console.error("data edge already exists")
       } else {
         let html = GraphHTML.renderDataEdge(
+          this.html,
           sourceHTML,
           source.outgoing_buttons[sourceIndex],
           buttonOffset(sourceIndex, sourceReturns.length),
@@ -456,6 +485,9 @@ export class Graph {
         sourceDataEdges.push(edge)
         source.outgoing_edges.push(html);
         target.incoming_edges.push(html);
+        if (!this.htmlOnly) {
+          PipelineHTML.load()
+        }
         return true
       }
     }
@@ -502,6 +534,9 @@ export class Graph {
           }
         } else {
           console.error('failed to delete SVG line from outgoing edges')
+        }
+        if (!this.htmlOnly) {
+          PipelineHTML.load()
         }
         return true
       }
@@ -662,6 +697,5 @@ export class Graph {
     f.edges.state.forEach(edge => this.add_state_edge(edge))
     f.edges.network.forEach(edge => this.add_network_edge(edge))
     f.edges.interval.forEach(interval => this.set_interval(interval))
-    PipelineHTML.load()
   }
 }
