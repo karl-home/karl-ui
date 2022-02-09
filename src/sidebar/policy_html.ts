@@ -1,4 +1,4 @@
-import { Graph, GraphFormat } from '../graph';
+import { ModuleID, StateEdge, Graph, GraphFormat } from '../graph';
 
 enum UnitType {
   DeviceOutput = 0,
@@ -123,7 +123,7 @@ export module PipelineHTML {
 
   let form = document.getElementById('pipeline-form')
   let inputs: HTMLInputElement[] = [];
-  let labels: HTMLLabelElement[] = [];
+  let paths: [string, UnitType][][] = [];
 
   function genUpdateButton(): HTMLButtonElement {
     let button = document.createElement('button')
@@ -137,14 +137,56 @@ export module PipelineHTML {
 
   function updateOverlayGraph() {
     // Duplicate the original graph as the overlay graph.
+    const originalFormat = originalGraph.getGraphFormat()
     overlayGraph.reset()
-    overlayGraph.setGraphFormat(originalGraph.getGraphFormat())
+    overlayGraph.setGraphFormat(originalFormat)
+
+    // Identify which pipeline permissions to revoke
+    let deniedPaths: [string, UnitType][][] = inputs
+      .map(function(value, index): [HTMLInputElement, number] {
+        return [value, index]
+      })
+      .filter(value => !value[0].checked)
+      .map(value => paths[value[1]]);
 
     // Identify the actions needed to revoke disallowed permissions.
     // The action is to delete the last node, which either removes
     // network access or a state edge.
+    let networkToRemove: Set<ModuleID> = new Set()
+    let stateToRemove: Set<StateEdge> = new Set()
+    deniedPaths.forEach(function(path) {
+      let endNode = path[path.length - 1]
+      let prevNode = path[path.length - 2]
+      if (endNode[1] == UnitType.DomainName) {
+        networkToRemove.add(prevNode[0])
+      } else if (endNode[1] == UnitType.DeviceInput) {
+        const splitEndNode = endNode[0].split('.')
+        const module_id = prevNode[0]
+        const sensor_id = splitEndNode[0].substring(1)
+        const sensor_key = splitEndNode[1]
+        originalFormat.edges.state.filter(edge =>
+          edge.module_id == module_id
+            && edge.sensor_id == sensor_id
+            && edge.sensor_key == sensor_key
+        ).forEach(edge => stateToRemove.add(edge))
+      } else {
+        console.error('expected permission to terminate in domain or input')
+      }
+    })
 
     // Update the overlay graph to reflect these actions.
+    networkToRemove.forEach(function(moduleID) {
+      let removed = overlayGraph.remove_network_edges(moduleID)
+      if (!removed) {
+        console.error(`failed to remove network edge from ${moduleID}`)
+      }
+    })
+    stateToRemove.forEach(function(edge) {
+      let removed = overlayGraph.remove_state_edge(edge)
+      if (!removed) {
+        console.error(`failed to remove state edge ${edge}`)
+      }
+    })
   }
 
   export function renderInitialForm(graph: Graph, overlay: Graph) {
@@ -198,7 +240,7 @@ export module PipelineHTML {
       form.removeChild(form.lastChild)
     }
     inputs = []
-    labels = []
+    paths = []
     // Map permissions to HTML elements
     let permsLabels = perms.map(function(rawPath) {
       let label = document.createElement("label")
@@ -209,6 +251,7 @@ export module PipelineHTML {
         }
         label.appendChild(span)
       })
+      paths.push(rawPath)
       return label
     })
     // Add a new input and label element for each permission
@@ -222,7 +265,6 @@ export module PipelineHTML {
       form.appendChild(label)
       form.appendChild(document.createElement('br'))
       inputs.push(input)
-      labels.push(label)
     })
     // Add the update button
     form.appendChild(genUpdateButton())
