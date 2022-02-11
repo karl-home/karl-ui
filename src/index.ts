@@ -8,7 +8,7 @@ import { ModuleRepo } from './sidebar/module_repo';
 import { SensorModals } from './sidebar/sensor_html';
 import { HostModals } from './sidebar/host_html';
 import { Network, _sensorWithId } from './network';
-import {LegendHTML} from './legend';
+import { LegendHTML } from './legend';
 
 const g = new Graph();
 
@@ -43,6 +43,7 @@ function initializeNavbar() {
 }
 
 function initializeLegend() {
+  LegendHTML.initialize()
   var modal = document.getElementById("simpleModal");
   var modalBtn = document.getElementById("modalBtn");
   var closeBtn = document.getElementsByClassName("closeBtn")[0];
@@ -105,7 +106,6 @@ function initializeGraph() {
 
 initializeNavbar()
 initializeLegend()
-LegendHTML.initialize()
 initializeSidebar()
 initializeExampleButtons()
 initializeGraph()

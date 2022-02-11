@@ -1,6 +1,5 @@
 export module LegendHTML {
     function genSVGArrow(color: string, dashed: boolean, double: boolean, start: string, end: string, urlName: string, markerID: string, doubleMarkerID: string): SVGElement{
-        const svgURL = "http://www.w3.org/2000/svg"
 
         let line = document.createElementNS(svgURL, "line")
         line.setAttribute("x1", "0")
@@ -96,6 +95,7 @@ export module LegendHTML {
 
         return arrowSVG
     }
+    const svgURL = "http://www.w3.org/2000/svg"
 
     function getTableElement(arrowName: string) {
         let arrow = genSVGArrow("#2196f3", false, false, "n/a", "n/a", "url(#arrowhead1)", "arrowhead1", "n/a") // default is stateless arrow 
@@ -149,6 +149,8 @@ export module LegendHTML {
         return td
     }
 
+
+
     function appendArrow(arrowName: string) {
         let td = document.createElement("td")
 
@@ -167,11 +169,11 @@ export module LegendHTML {
             color = "#777"
         }
 
-        let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+        let svg = document.createElementNS(svgURL, "svg")
         svg.setAttribute("viewBox", "0 0 220 100")
-        svg.setAttribute("xmlns", "http://www.w3.org/2000/svg")
+        svg.setAttribute("xmlns", svgURL)
 
-        let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+        let rect = document.createElementNS(svgURL, "rect")
         rect.setAttribute("x", "35")
         rect.setAttribute("y", "5")
         rect.setAttribute("width", "150")
@@ -190,7 +192,7 @@ export module LegendHTML {
         let td = document.createElement("td")
 
         let img = document.createElement("img")
-        img.setAttribute("src", "file:///Users/mjaylene/karl-ui/src/img/clock.png")
+        img.setAttribute("src", "img/clock.png")
         img.setAttribute("height", "40")
         img.setAttribute("weight", "40")
         img.setAttribute("style", "float:center;margin:0px 20px")
