@@ -13,7 +13,7 @@ export module LegendHTML {
         line.setAttribute("stroke-width", "8")
         line.setAttribute("marker-end", urlName)
 
-         if (dashed) {
+        if (dashed) {
             line.setAttribute("stroke-dasharray", "30")
         }
 
@@ -190,9 +190,8 @@ export module LegendHTML {
 
     function appendIMG() {
         let td = document.createElement("td")
-
-        let img = document.createElement("img")
-        img.setAttribute("src", "img/clock.png")
+        const img = new Image()
+        img.src = require('./img/clock.png')
         img.setAttribute("height", "40")
         img.setAttribute("weight", "40")
         img.setAttribute("style", "float:center;margin:0px 20px")
