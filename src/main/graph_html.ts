@@ -222,7 +222,7 @@ export module GraphHTML {
     }
 
     // add a clock icon if the module is on an interval schedule
-    let images = inner.html.getElementsByTagName('app')
+    let images = inner.html.getElementsByTagName('IMG')
     if (images.length > 0) {
       images[0].remove()
     }
