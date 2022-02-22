@@ -172,6 +172,13 @@ line {
   text-align: left;
 }
 
+.modal {
+  border: 1px solid black;
+  border-radius: 6px;
+  margin-bottom: 5px;
+  background-color: #ddd;
+}
+
 .legend-modal {
   display: none;
   position: fixed;
@@ -183,9 +190,10 @@ line {
   overflow: auto;
   padding: 8px;
   background-color: rgba(0,0,0,0.5);
-  border: 1px solid black;
-  border-radius: 6px;
-  margin-bottom: 5px;
+}
+
+.modal p {
+  margin: 2px;
 }
 
 .legend-modal p {

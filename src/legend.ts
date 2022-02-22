@@ -15,9 +15,7 @@ export module LegendHTML {
 
         if (dashed) {
             line.setAttribute("stroke-dasharray", "30")
-        }
-
-        else if (double) {
+        } else if (double) {
             line.setAttribute("marker-end", end)
             line.setAttribute("marker-start", start)
         }
@@ -85,8 +83,7 @@ export module LegendHTML {
 
             startMarker.appendChild(startPolygon)
             endMarker.appendChild(endPolygon)
-        }
-        else {
+        } else {
             defs.appendChild(marker)
             marker.appendChild(polygon)
         }
@@ -102,13 +99,9 @@ export module LegendHTML {
 
         if (arrowName == "dataStateful") {
             arrow = genSVGArrow("#2196f3", true, false, "n/a", "n/a", "url(#arrowhead)", "arrowhead", "n/a")
-        }
-
-        else if (arrowName == "state") {
+        } else if (arrowName == "state") {
             arrow = genSVGArrow("red", false, false, "n/a", "n/a", "url(#endarrow-state)", "endarrow-state", "n/a")
-        }
-
-        else if (arrowName == "network") {
+        } else if (arrowName == "network") {
             arrow = genSVGArrow("#71c94f", false, true, "url(#startarrow)", "url(#endarrow)", "n/a", "startarrow", "endarrow")
         }
 
@@ -120,29 +113,17 @@ export module LegendHTML {
 
         if (elemName == "dataStateless") {
             td.innerText="Data (stateless)"
-        }
-
-        else if (elemName == "dataStateful") {
+        } else if (elemName == "dataStateful") {
             td.innerText="Data (stateful)"
-        }
-
-        else if (elemName == "state") {
+        } else if (elemName == "state") {
             td.innerText="#State"
-        }
-
-        else if (elemName == "network") {
+        } else if (elemName == "network") {
             td.innerText="Network"
-        }
-
-        else if(elemName == "clock") {
+        } else if(elemName == "clock") {
             td.innerText="Time"
-        }
-
-        else if (elemName == "module") {
+        } else if (elemName == "module") {
             td.innerText="Module"
-        }
-
-        else {
+        } else {
             td.innerText="Sensor"
         }
 
