@@ -1,5 +1,14 @@
 export module LegendHTML {
-    function genSVGArrow(color: string, dashed: boolean, double: boolean, start: string, end: string, urlName: string, markerID: string, doubleMarkerID: string): SVGElement{
+    function genSVGArrow(
+        color: string,
+        dashed: boolean,
+        double: boolean,
+        start: string,
+        end: string,
+        urlName: string,
+        markerID: string,
+        doubleMarkerID: string,
+    ): SVGElement{
 
         let line = document.createElementNS(svgURL, "line")
         line.setAttribute("x1", "0")
@@ -95,14 +104,19 @@ export module LegendHTML {
     const svgURL = "http://www.w3.org/2000/svg"
 
     function getTableElement(arrowName: string) {
-        let arrow = genSVGArrow("#2196f3", false, false, "n/a", "n/a", "url(#arrowhead1)", "arrowhead1", "n/a") // default is stateless arrow 
+        let arrow = genSVGArrow("#2196f3", false, false, "n/a", "n/a",
+            "url(#legend-stateless)", "legend-stateless", "n/a") // default is stateless arrow
 
         if (arrowName == "dataStateful") {
-            arrow = genSVGArrow("#2196f3", true, false, "n/a", "n/a", "url(#arrowhead)", "arrowhead", "n/a")
+            arrow = genSVGArrow("#2196f3", true, false, "n/a", "n/a",
+                "url(#legend-stateful)", "legend-stateful", "n/a")
         } else if (arrowName == "state") {
-            arrow = genSVGArrow("red", false, false, "n/a", "n/a", "url(#endarrow-state)", "endarrow-state", "n/a")
+            arrow = genSVGArrow("red", false, false, "n/a", "n/a",
+                "url(#legend-state)", "legend-state", "n/a")
         } else if (arrowName == "network") {
-            arrow = genSVGArrow("#71c94f", false, true, "url(#startarrow)", "url(#endarrow)", "n/a", "startarrow", "endarrow")
+            arrow = genSVGArrow("#71c94f", false, true,
+                "url(#legend-network-start)", "url(#legend-network-end)",
+                "n/a", "legend-network-start", "legend-network-end")
         }
 
         return arrow 
