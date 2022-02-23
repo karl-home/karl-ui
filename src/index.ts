@@ -11,6 +11,7 @@ import { ModuleRepo } from './sidebar/module_repo';
 import { SensorModals } from './sidebar/sensor_html';
 import { HostModals } from './sidebar/host_html';
 import { Network, _sensorWithId } from './network';
+import { LegendHTML } from './legend';
 
 const g = new Graph(document.getElementById('graph-original'), false);
 const overlay = new Graph(document.getElementById('graph-overlay'), true);
@@ -57,6 +58,21 @@ function initializeNavbar() {
     }
   })
   navbarElems[0].click()
+}
+
+function initializeLegend() {
+  LegendHTML.initialize()
+  var modal = document.getElementById("simpleModal");
+  var modalBtn = document.getElementById("modalBtn");
+  var closeBtn = document.getElementsByClassName("closeBtn")[0];
+  modalBtn.addEventListener("click", openModal);
+  closeBtn.addEventListener("click", closeModal);
+  function openModal() {
+    modal.style.display = "block";
+  }
+  function closeModal() {
+    modal.style.display = "none";
+  }
 }
 
 function initializeSidebar() {
@@ -130,6 +146,7 @@ function initializeCanvas() {
 }
 
 initializeNavbar()
+initializeLegend()
 initializeSidebar()
 initializeExampleButtons()
 initializeCanvas()
