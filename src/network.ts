@@ -46,6 +46,34 @@ const SENSORS: { [key: string]: Sensor } = {
       returns: {}
     }
   },
+  speaker: {
+    id: 'speaker',
+    state_keys: ['playback'],
+    returns: ['speech_command'],
+    description: {
+      state_keys: {
+        'playback': ''
+      },
+      returns: {
+        'speech_command': ''
+      }
+    }
+  },
+  light: {
+    id: 'light',
+    state_keys: ['state', 'intensity'],
+    returns: ['state', 'intensity'],
+    description: {
+      state_keys: {
+        'state': '',
+        'intensity': ''
+      },
+      returns: {
+        'state': '',
+        'intensity': ''
+      }
+    }
+  },
   camera: {
     id: 'camera',
     state_keys: ['firmware', 'livestream'],
@@ -58,6 +86,18 @@ const SENSORS: { [key: string]: Sensor } = {
       returns: {
         'motion': 'motion-detected image',
         'streaming': 'live video stream',
+      }
+    }
+  },
+  occupancy_sensor: {
+    id: 'occupancy_sensor',
+    state_keys: [],
+    returns: ['at_home'],
+    description: {
+      state_keys: {
+      },
+      returns: {
+        'at_home': '',
       }
     }
   }
@@ -80,6 +120,75 @@ const MODULES: { [key: string]: Module } = {
         'light': 'JSON { state: <state> }, where <state> is on or off',
       },
       network: {},
+    }
+  },
+  picovoice: {
+    globalId: 'picovoice',
+    params: ['speech'],
+    returns: ['weather_intent', 'light_intent'],
+    network: [],
+    description: {
+      module: '',
+      params: {
+        'speech': '',
+      },
+      returns: {
+        'weather_intent': '',
+        'light_intent': '',
+      },
+      network: {},
+    }
+  },
+  picovoice_weather: {
+    globalId: 'picovoice_weather',
+    params: ['speech'],
+    returns: ['weather_intent', 'light_intent'],
+    network: [],
+    description: {
+      module: '',
+      params: {
+        'speech': '',
+      },
+      returns: {
+        'weather_intent': '',
+        'light_intent': '',
+      },
+      network: {},
+    }
+  },
+  picovoice_light: {
+    globalId: 'picovoice_light',
+    params: ['speech'],
+    returns: ['weather_intent', 'light_intent'],
+    network: [],
+    description: {
+      module: '',
+      params: {
+        'speech': '',
+      },
+      returns: {
+        'weather_intent': '',
+        'light_intent': '',
+      },
+      network: {},
+    }
+  },
+  weather: {
+    globalId: 'weather',
+    params: ['weather_intent'],
+    returns: ['weather'],
+    network: ['weather.com'],
+    description: {
+      module: '',
+      params: {
+        'weather_intent': ''
+      },
+      returns: {
+        'weather': ''
+      },
+      network: {
+        'weather.com': ''
+      }
     }
   },
   command_classifier_search: {
@@ -150,10 +259,27 @@ const MODULES: { [key: string]: Module } = {
       },
     }
   },
+  boolean: {
+    globalId: 'boolean',
+    params: ['condition', 'value'],
+    returns: ['predicate'],
+    network: [],
+    description: {
+      module: '',
+      params: {
+        'condition': '',
+        'value': ''
+      },
+      returns: {
+        'predicate': '',
+      },
+      network: {}
+    }
+  },
   person_detection: {
     globalId: 'person_detection',
     params: ['image'],
-    returns: ['box', 'all_count', 'count'],
+    returns: ['training_data', 'count'],
     network: ['metrics.com'],
     description: {
       module: 'Detects a person in an image.',
@@ -161,12 +287,11 @@ const MODULES: { [key: string]: Module } = {
         'image': 'an image in a standard format e.g., PNG, JPEG',
       },
       returns: {
-        'box': 'the original image, with boxes around detected persons',
-        'all_count': 'number of detected objects',
+        'training_data': 'the original image, with boxes around detected persons',
         'count': 'number of detected persons',
       },
       network: {
-        'metrics.com': 'share count statistics'
+        'statistics.com': 'share count statistics'
       },
     }
   },
@@ -183,6 +308,22 @@ const MODULES: { [key: string]: Module } = {
       returns: {},
       network: {
         'metrics.com': 'share anonymized numerical statistics'
+      },
+    }
+  },
+  statistics: {
+    globalId: 'statistics',
+    params: ['data'],
+    returns: [],
+    network: ['statistics.com'],
+    description: {
+      module: 'Anonymize a numerical statistic.',
+      params: {
+        'data': '',
+      },
+      returns: {},
+      network: {
+        'statistics.com': 'share anonymized numerical statistics'
       },
     }
   },
@@ -203,6 +344,22 @@ const MODULES: { [key: string]: Module } = {
       network: {},
     }
   },
+  query: {
+    globalId: 'query',
+    params: ['image_data'],
+    returns: ['result'],
+    network: [],
+    description: {
+      module: '',
+      params: {
+        'image_data': '',
+      },
+      returns: {
+        'result': '',
+      },
+      network: {},
+    }
+  },
   true: {
     globalId: 'true',
     params: [],
@@ -219,6 +376,34 @@ const MODULES: { [key: string]: Module } = {
   },
   false: {
     globalId: 'false',
+    params: [],
+    returns: ['false'],
+    network: [],
+    description: {
+      module: 'Output a single 0 bit.',
+      params: {},
+      returns: {
+        'false': '0 bit',
+      },
+      network: {},
+    }
+  },
+  set_true: {
+    globalId: 'set_true',
+    params: [],
+    returns: ['true'],
+    network: [],
+    description: {
+      module: 'Output a single 1 bit.',
+      params: {},
+      returns: {
+        'true': '1 bit',
+      },
+      network: {},
+    }
+  },
+  set_false: {
+    globalId: 'set_false',
     params: [],
     returns: ['false'],
     network: [],
@@ -694,6 +879,47 @@ export module Network {
             unconfirmed: string[]
           } = JSON.parse(this.responseText)
           callback(res.confirmed, res.unconfirmed)
+        } else {
+          console.error({
+            responseURL: this.responseURL,
+            status: this.status,
+            statusText: this.statusText,
+          })
+        }
+      }
+    }
+  }
+
+  export function listTags(callback: (tags: string[]) => void) {
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', '/tags')
+    xhr.send()
+    xhr.onreadystatechange = function(e) {
+      if (this.readyState == 4) {
+        if (this.status == 200) {
+          callback(JSON.parse(this.responseText))
+        } else {
+          console.error({
+            responseURL: this.responseURL,
+            status: this.status,
+            statusText: this.statusText,
+          })
+        }
+      }
+    }
+  }
+
+  export function readTag(
+    tag: string,
+    callback: (result: { timestamps: string[], data: Uint8Array[] }) => void,
+  ) {
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', '/tags/' + tag)
+    xhr.send()
+    xhr.onreadystatechange = function(e) {
+      if (this.readyState == 4) {
+        if (this.status == 200) {
+          callback(JSON.parse(this.responseText))
         } else {
           console.error({
             responseURL: this.responseURL,

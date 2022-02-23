@@ -6,16 +6,20 @@
   </head>
   <body>
     <div class="split left">
-      <div class="container">
+      <div class="container" id="main-container">
         <div>
-          <button id="figure4">Figure 4</button>
-          <button id="figure5">Figure 5</button>
-          <button id="button-A">DIFF_PRIV</button>
-          <button id="button-B">SEARCH</button>
-          <button id="button-C">TRUE</button>
-          <button id="reset-button">Reset</button>
-          <button id="refresh-button">Refresh</button>
-          <button id="save-button">Save Graph</button>
+          <button id="pipeline-i">I</button>
+          <button id="pipeline-ii">II</button>
+          <button id="pipeline-iii">III</button>
+          <button id="figure3a">3a</button>
+          <button id="figure3b">3b</button>
+          <button id="figure3c">3c</button>
+          <button id="figure9a">9a</button>
+          <button id="figure9b">9b</button>
+          <button id="reset-button" class="dark-button">Reset</button>
+          <button id="refresh-button" class="dark-button">Refresh</button>
+          <button id="save-button" class="dark-button">Save Graph</button>
+          <button id="toggle-button" class="dark-button"><b>Original</b> / Overlay</button>
           <button id="modalBtn">View Legend</button>
         </div>
         <div id="simpleModal" class="legend-modal">
@@ -25,8 +29,19 @@
             </table>
           </div>
         </div>
-        <svg id="canvas"></svg>
-        <div id="graph"></div>
+        <div id="graph-original">
+          <svg class="canvas"></svg>
+          <div class="nodes"></div>
+        </div>
+        <div id="graph-overlay" style="visibility:hidden">
+          <svg class="canvas"></svg>
+          <div class="nodes"></div>
+        </div>
+      </div>
+      <div class="container" id="data-container">
+        <h1>Data Store</h1>
+        <div id="data-form"></div>
+        <div id="data-canvas"></div>
       </div>
     </div>
     <div class="split right">
@@ -42,6 +57,8 @@
         <form id="module-form"></form>
         <h1>Edge Modifier</h1>
         <form id="edge-form"></form>
+        <h1>Pipeline Permissions</h1>
+        <form id="pipeline-form"></form>
       </div>
       <div class="container" id="modules-container">
         <h1>Internet Repository</h1>
